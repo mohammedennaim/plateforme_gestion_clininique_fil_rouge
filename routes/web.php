@@ -34,6 +34,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
     Route::get('/dashboard/doctors/{id}', [DashboardController::class, 'showDoctor']);
+    Route::get('/dashboard/patients', [DashboardController::class, 'showpatients']);
     Route::post('/dashboard/doctors', [DashboardController::class, 'storeDoctor']);
     Route::put('/dashboard/doctors/{id}', [DashboardController::class, 'updateDoctor']);
     Route::delete('/dashboard/doctors/{id}', [DashboardController::class, 'destroyDoctor']);

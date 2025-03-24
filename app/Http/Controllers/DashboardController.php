@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use App\Services\DashboardService;
 
@@ -38,6 +39,13 @@ class DashboardController extends Controller
     public function destroyDoctor($id)
     {
         return response()->json($this->dashboardService->deleteDoctor($id));
+    }
+
+    public function showPatients()
+    {
+        $patients = $this->dashboardService->getAllPatients();
+        // dd($patients);
+        return view('admin.dashboard', compact('patients'));
     }
 
 }

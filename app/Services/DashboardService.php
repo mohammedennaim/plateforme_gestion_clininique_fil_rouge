@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\Eloquent\DoctorRepository;
+use App\Repositories\Eloquent\PatientRepository;
 use App\Repositories\Interfaces\DoctorRepositoryInterface;
 
 class DashboardService
@@ -12,9 +13,12 @@ class DashboardService
     protected $appointmentRepository;
 
     public function __construct(
-        DoctorRepository $doctorRepository
+        DoctorRepository $doctorRepository,
+        PatientRepository $patientRepository
     ) {
         $this->doctorRepository = $doctorRepository;
+        $this->patientRepository = $patientRepository;
+
     }
 
     public function getAllDoctors()
@@ -39,7 +43,28 @@ class DashboardService
 
     public function deleteDoctor($id)
     {
-        return $this->doctorRepository->delete($id);
+        return $this->patientRepository->delete($id);
     }
+
+    public function getAllPatients()
+    {
+        return $this->patientRepository->getAll();
+    }
+
+    public function getPatientById($id)
+    {
+        return $this->patientRepository->getById($id);
+    }
+
+    public function updatePatient($id, array $data)
+    {
+        return $this->patientRepository->update($id, $data);
+    }
+
+    public function deletePatient($id)
+    {
+        return $this->patientRepository->delete($id);
+    }
+
 
 }

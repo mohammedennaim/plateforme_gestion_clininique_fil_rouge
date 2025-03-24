@@ -360,24 +360,24 @@
                 Reports
             </div>
 
-            <li class="nav-item {{ request()->is('admin/reports*') ? 'active' : '' }}" data-title="Statistics">
+            <!-- <li class="nav-item {{ request()->is('admin/reports*') ? 'active' : '' }}" data-title="Statistics">
                 <a class="nav-link" href="/admin/reports">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Statistics</span>
                 </a>
-            </li>
+            </li> -->
 
             <hr class="sidebar-divider">
             <div class="sidebar-heading text-white-50">
                 Settings
             </div>
 
-            <li class="nav-item {{ request()->is('admin/settings*') ? 'active' : '' }}" data-title="Settings">
+            <!-- <li class="nav-item {{ request()->is('admin/settings*') ? 'active' : '' }}" data-title="Settings">
                 <a class="nav-link" href="/admin/settings">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Settings</span>
                 </a>
-            </li>
+            </li> -->
 
             <hr class="sidebar-divider d-none d-md-block mb-4">
             <div class="text-center d-none d-md-inline">
@@ -432,7 +432,7 @@
                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
-                                <span class="badge badge-danger badge-counter">3+</span>
+                                <span class="badge badge-danger badge-counter mt-2">3+</span>
                             </a>
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">

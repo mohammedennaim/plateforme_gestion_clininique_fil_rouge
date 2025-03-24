@@ -21,6 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
+        'role',
+        'phone',
+        'adresse', 
+        'date_of_birth'
     ];
 
     /**
@@ -40,5 +45,41 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
+
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class);
+    }
+
+    public function patient()
+    {
+        return $this->hasOne(Patient::class);
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isDoctor()
+    {
+        return $this->role === 'medecin';
+    }
+
+    public function isPatient()
+    {
+        return $this->role === 'patient';
+    }
+
+    public function isNotActive()
+    {
+        return $this->status === 'not active';
+    }
+
+    public function isActive()
+    {
+        return $this->status === 'active';
+    }
 }
