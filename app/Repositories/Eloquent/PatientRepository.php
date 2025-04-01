@@ -17,7 +17,12 @@ class PatientRepository implements PatientRepositoryInterface
         return Patient::findOrFail($id);
     }
 
-    public function update($id, array $data)
+    public function create($data)
+    {
+        return Patient::create($data);
+    }
+
+    public function update($id, $data)
     {
         $doctor = Patient::findOrFail($id);
         $doctor->update($data);

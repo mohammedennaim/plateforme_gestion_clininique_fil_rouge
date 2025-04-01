@@ -17,12 +17,12 @@ class DoctorRepository implements DoctorRepositoryInterface
         return Doctor::findOrFail($id);
     }
 
-    public function create(array $data)
+    public function create($data)
     {
         return Doctor::create($data);
     }
 
-    public function update($id, array $data)
+    public function update($id, $data)
     {
         $doctor = Doctor::findOrFail($id);
         $doctor->update($data);

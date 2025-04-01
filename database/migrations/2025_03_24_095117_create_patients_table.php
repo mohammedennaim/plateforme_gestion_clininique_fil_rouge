@@ -9,7 +9,11 @@ return new class extends Migration {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('assurance')->nullable();
+            $table->string('name_assurance')->nullable();
+            $table->string('assurance_number')->nullable();
+            // $table->text('medical_history')->nullable();
+            $table->string('blood_type')->nullable();
+            $table->string('emergency_contact')->nullable();
             $table->timestamps();
         });
     }

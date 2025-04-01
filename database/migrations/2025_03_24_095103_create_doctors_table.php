@@ -9,7 +9,9 @@ return new class extends Migration {
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('specialty');
+            $table->string('speciality');
+            $table->boolean('is_available')->default(true);
+            $table->string('emergency_contact')->nullable();
             $table->timestamps();
         });
     }

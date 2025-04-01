@@ -297,51 +297,20 @@
                             <div id="patient-fields" class="role-specific-fields">
                                 <div class="form-section-title">Patient Information</div>
                                 <div class="mb-3">
-                                    <label for="name_assurance" class="form-label">Name Assurance</label>
-                                    <input type="text" class="form-control @error('name_assurance') is-invalid @enderror" 
-                                        id="name_assurance" name="name_assurance" value="{{ old('name_assurance') }}">
-                                    @error('name_assurance')
+                                    <label for="assurance" class="form-label">Insurance Information</label>
+                                    <input type="text" class="form-control @error('assurance') is-invalid @enderror" 
+                                        id="assurance" name="assurance" value="{{ old('assurance') }}">
+                                    <small class="form-text text-muted">Enter your insurance provider and policy number</small>
+                                    @error('assurance')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="assurance_number" class="form-label">Number Assurance</label>
-                                    <input type="text" class="form-control @error('assurance_number') is-invalid @enderror" 
-                                        id="assurance_number" name="assurance_number" value="{{ old('assurance_number') }}">
-                                    <small class="form-text text-muted">Enter your insurance policy number</small>
-                                    @error('assurance_number')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="emergency_contact" class="form-label">Emergency Contact</label>
                                     <input type="text" class="form-control @error('emergency_contact') is-invalid @enderror" 
                                         id="emergency_contact" name="emergency_contact" value="{{ old('emergency_contact') }}">
-                                    <small class="form-text text-muted">Name and phone number of emergency contact</small>
                                     @error('emergency_contact')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="blood_type" class="form-label">Blood Type</label>
-                                    <select class="form-control @error('blood_type') is-invalid @enderror" 
-                                        id="blood_type" name="blood_type">
-                                        <option value="">Select your blood type (optional)</option>
-                                        <option value="A+" {{ old('blood_type') == 'A+' ? 'selected' : '' }}>A+</option>
-                                        <option value="A-" {{ old('blood_type') == 'A-' ? 'selected' : '' }}>A-</option>
-                                        <option value="B+" {{ old('blood_type') == 'B+' ? 'selected' : '' }}>B+</option>
-                                        <option value="B-" {{ old('blood_type') == 'B-' ? 'selected' : '' }}>B-</option>
-                                        <option value="AB+" {{ old('blood_type') == 'AB+' ? 'selected' : '' }}>AB+</option>
-                                        <option value="AB-" {{ old('blood_type') == 'AB-' ? 'selected' : '' }}>AB-</option>
-                                        <option value="O+" {{ old('blood_type') == 'O+' ? 'selected' : '' }}>O+</option>
-                                        <option value="O-" {{ old('blood_type') == 'O-' ? 'selected' : '' }}>O-</option>
-                                    </select>
-                                    <small class="form-text text-muted">Helpful for emergency situations</small>
-                                    @error('blood_type')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -500,10 +469,8 @@
                 // Update required fields
                 document.getElementById('assurance').required = true;
                 document.getElementById('emergency_contact').required = true;
-                document.getElementById('blood_type').required = false;  // Blood type is optional
                 document.getElementById('speciality').required = false;
                 document.getElementById('license_number').required = false;
-                document.getElementById('biography').required = false;
             } else {
                 patientFields.style.display = 'none';
                 doctorFields.style.display = 'block';
@@ -515,10 +482,8 @@
                 // Update required fields
                 document.getElementById('assurance').required = false;
                 document.getElementById('emergency_contact').required = false;
-                document.getElementById('blood_type').required = false;
                 document.getElementById('speciality').required = true;
                 document.getElementById('license_number').required = true;
-                document.getElementById('biography').required = false;  // Biography is optional but recommended
             }
         }
         
@@ -547,11 +512,6 @@
                 
                 if(!document.getElementById('license_number').value) {
                     document.getElementById('license_number').classList.add('is-invalid');
-                    hasErrors = true;
-                }
-            } else if(selectedRole === 'patient') {
-                if(!document.getElementById('emergency_contact').value) {
-                    document.getElementById('emergency_contact').classList.add('is-invalid');
                     hasErrors = true;
                 }
             }

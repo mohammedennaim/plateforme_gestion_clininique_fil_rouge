@@ -18,7 +18,8 @@ class DashboardController extends Controller
     public function index()
     {
         // return response()->json($this->dashboardService->getAllDoctors());
-        return view('admin.dashboard');
+        $patients = $this->dashboardService->getAllPatients();
+        return view('admin.dashboard', compact('patients'));
     }
 
     public function showDoctor($id)

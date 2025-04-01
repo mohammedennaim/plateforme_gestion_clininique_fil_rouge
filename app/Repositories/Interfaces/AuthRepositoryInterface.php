@@ -4,7 +4,7 @@ namespace App\Repositories\Interfaces;
 
 interface AuthRepositoryInterface
 {
-    public function register(array $data);
-    public function login(array $credentials);
+    public function register($data);
+    public function login($credentials);
     public function logout();
 }
