@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class DoctorMiddleware
@@ -18,6 +19,15 @@ class DoctorMiddleware
     {
         if ($request->user() && $request->user()->role === 'doctor') {
             return $next($request);
+        }
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
+        }
+        if (Auth::user()->role !== 'doctor') {
+            return redirect('home')->with('error', 'Only doctors can access this area.');
+        }
+        if (Auth::user()->role === 'doctor' && Auth::user()->status === 'pending') {
+            return redirect()->route('doctor.pending')->with('warning', 'Your account is pending approval.');
         }
         return redirect('/login')->withErrors(['access' => 'You do not have access to this page.']);
     }

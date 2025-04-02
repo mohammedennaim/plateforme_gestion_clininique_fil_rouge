@@ -25,24 +25,30 @@ class AuthRepository implements AuthRepositoryInterface
             'date_of_birth' => $data['date_of_birth'] ?? null,
         ]);
 
-        if ($data['role'] === 'doctor') {
-            Doctor::create([
-                'user_id' => $user->id,
-                'speciality' => $data['speciality'] ?? '',
-                'emergency_contact' => $data['emergency_contact'] ?? null,
-                'is_available' => true
-            ]);
-        } else {
-            Patient::create([
-                'user_id' => $user->id,
-                'name_assurance' => $data['name_assurance'] ?? null,
-                'assurance_number' => $data['assurance_number'] ?? null,
-                'emergency_contact' => $data['emergency_contact'] ?? null,
-                'blood_type' => $data['blood_type'] ?? null
-            ]);
-        }
 
-        return $user;
+        if ($data['role'] === "doctor") {
+            $doctor = new DoctorRepository()->create([
+                'user_id' => $user->id,
+                'speciality' => $data['speciality'],
+                'is_available' => true,
+                'emergency_contact' => $data['emergency_contact']
+            ]);
+            $doctor->user()->associate($user);
+            $doctor->save();
+            return $doctor;
+        } else {
+            $patient = new PatientRepository()->create([
+                'user_id' => $user->id,
+                'name_assurance' => $data['name_assurance'],
+                'assurance_number' => $data['assurance_number'],
+                'blood_type' => $data['blood_type'],
+                'emergency_contact' => $data['emergency_contact'],
+            ]);
+            $patient->user()->associate($user);
+            $patient->save();
+
+            return $patient;
+        }
     }
 
     public function login($credentials)

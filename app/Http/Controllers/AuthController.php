@@ -47,6 +47,7 @@ class AuthController extends Controller
     {
         $user = $this->authRepository->register($request->all());
 
+        // dd($user);
         if ($user->role === 'doctor' && $user->status === 'active') {
             return redirect()->route('auth.doctor-pending');
         } else {

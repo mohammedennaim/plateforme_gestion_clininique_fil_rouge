@@ -372,21 +372,11 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="license_number" class="form-label">License/Registration Number</label>
-                                    <input type="text" class="form-control @error('license_number') is-invalid @enderror" 
-                                        id="license_number" name="license_number" value="{{ old('license_number') }}">
-                                    <small class="form-text text-muted">This will be verified by our administration</small>
-                                    @error('license_number')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="biography" class="form-label">Professional Biography</label>
-                                    <textarea class="form-control @error('biography') is-invalid @enderror" 
-                                        id="biography" name="biography" rows="3">{{ old('biography') }}</textarea>
-                                    <small class="form-text text-muted">Briefly describe your education, experience, and expertise</small>
-                                    @error('biography')
+                                    <label for="emergency_contact" class="form-label">Emergency Contact</label>
+                                    <input type="text" class="form-control @error('emergency_contact') is-invalid @enderror" 
+                                        id="emergency_contact" name="emergency_contact" value="{{ old('emergency_contact') }}">
+                                    <small class="form-text text-muted">Name and phone number of emergency contact</small>
+                                    @error('emergency_contact')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
