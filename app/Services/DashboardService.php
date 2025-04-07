@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
+use App\Repositories\Eloquent\AppointmentRepository;
 use App\Repositories\Eloquent\DoctorRepository;
 use App\Repositories\Eloquent\PatientRepository;
-use App\Repositories\Interfaces\DoctorRepositoryInterface;
+// use App\Repositories\Interfaces\DoctorRepositoryInterface;
 
 class DashboardService
 {
@@ -14,10 +15,12 @@ class DashboardService
 
     public function __construct(
         DoctorRepository $doctorRepository,
-        PatientRepository $patientRepository
+        PatientRepository $patientRepository,
+        AppointmentRepository $appointmentRepository
     ) {
         $this->doctorRepository = $doctorRepository;
         $this->patientRepository = $patientRepository;
+        $this->appointmentRepository = $appointmentRepository;
 
     }
 
@@ -66,5 +69,53 @@ class DashboardService
         return $this->patientRepository->delete($id);
     }
 
+    public function getTotalPatients()
+    {
+        return $this->patientRepository->getAll()->count();
+    }
+    public function getTotalDoctors()
+    {
+        return $this->doctorRepository->getAll()->count();
+    }
+    public function getTotalAppointments()
+    {
+        return $this->appointmentRepository->getAll()->count();
+    }
+    public function getTotalRevenue()
+    {
+        return $this->appointmentRepository->getAll()->sum('price');
+    }
+    public function getTodayAppointments()
+    {
+        return $this->appointmentRepository->getAll()->where('date', now()->format('Y-m-d'));
+    }
+    public function getPendingRequests()
+    {
+        return $this->appointmentRepository->getAll()->where('status', 'pending')->count();
+    }
+    // public function getMonthlyRevenue()
+    // {
+    //     return $this->appointmentRepository->getAll()->whereMonth('created_at', now()->month)->sum('price');
+    // }
+    public function getAppointmentsByDate($date)
+    {
+        return $this->appointmentRepository->getAll()->where('date', $date);
+    }
+
+    public function getAllAppointments(){
+        return $this->appointmentRepository->getAll();
+    }
+    public function getAppointmentById($id){
+        return $this->appointmentRepository->getById($id);
+    }
+    public function createAppointment(array $data){
+        return $this->appointmentRepository->create($data);
+    }
+    public function updateAppointment($id, array $data){
+        return $this->appointmentRepository->update($id, $data);
+    }
+    public function deleteAppointment($id){
+        return $this->appointmentRepository->delete($id);
+    }
 
 }

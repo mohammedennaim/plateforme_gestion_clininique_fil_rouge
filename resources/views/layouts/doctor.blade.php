@@ -1,4 +1,3 @@
-php
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,18 +9,11 @@ php
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'Doctor Dashboard') | MediClinic</title>
-
-    <!-- Custom fonts -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Toastr notifications -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     
-    <!-- Custom styles -->
     <style>
         :root {
             --primary: #4e73df;
@@ -51,7 +43,6 @@ php
             flex: 1 0 auto;
         }
         
-        /* Sidebar */
         .sidebar {
             width: 225px;
             background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
@@ -129,7 +120,6 @@ php
             overflow: hidden;
         }
         
-        /* Topbar */
         .topbar {
             height: 4.375rem;
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
@@ -220,7 +210,6 @@ php
             color: #3a3b45;
         }
         
-        /* Custom utilties */
         .border-left-primary {
             border-left: 0.25rem solid #4e73df !important;
         }
@@ -244,7 +233,6 @@ php
             }
         }
         
-        /* Responsive navigation */
         #sidebarToggleTop {
             height: 2.5rem;
             width: 2.5rem;
@@ -266,7 +254,6 @@ php
             background-color: #eaecf4;
         }
         
-        /* Badge styles */
         .badge-counter {
             position: relative;
             transform: scale(0.7);
@@ -275,7 +262,6 @@ php
             margin-top: -0.25rem;
         }
         
-        /* Card styles */
         .card .card-header[data-toggle="collapse"]::after {
             font-family: 'Font Awesome 5 Free';
             content: "\f107";
@@ -293,14 +279,8 @@ php
 </head>
 
 <body id="page-top">
-
-    <!-- Page Wrapper -->
     <div id="wrapper">
-
-        <!-- Sidebar -->
         <ul class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('doctor.dashboard') }}">
                 <div class="sidebar-brand-icon">
                     <i class="fas fa-heartbeat"></i>
@@ -308,10 +288,8 @@ php
                 <div class="sidebar-brand-text mx-3">MediClinic</div>
             </a>
 
-            <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Dashboard -->
             <li class="nav-item {{ request()->is('doctor/dashboard') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('doctor.dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -319,39 +297,28 @@ php
                 </a>
             </li>
 
-            <!-- Divider -->
             <hr class="sidebar-divider">
-
-            <!-- Heading -->
             <div class="sidebar-heading">
                 Patient Care
             </div>
-
-            <!-- Nav Item - Appointments -->
             <li class="nav-item {{ request()->is('doctor/appointments*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-calendar-check"></i>
                     <span>Appointments</span>
                 </a>
             </li>
-
-            <!-- Nav Item - Patients -->
             <li class="nav-item {{ request()->is('doctor/patients*') ? 'active' : '' }}">
                 <a class="nav-link" href="">
                     <i class="fas fa-fw fa-users"></i>
                     <span>My Patients</span>
                 </a>
             </li>
-
-            <!-- Nav Item - Medical Records -->
             <li class="nav-item {{ request()->is('doctor/records*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-file-medical"></i>
                     <span>Medical Records</span>
                 </a>
             </li>
-
-            <!-- Nav Item - Prescriptions -->
             <li class="nav-item {{ request()->is('doctor/prescriptions*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-prescription-bottle-alt"></i>
@@ -359,15 +326,10 @@ php
                 </a>
             </li>
 
-            <!-- Divider -->
             <hr class="sidebar-divider">
-
-            <!-- Heading -->
             <div class="sidebar-heading">
                 Communication
             </div>
-
-            <!-- Nav Item - Messages -->
             <li class="nav-item {{ request()->is('doctor/messages*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-comments"></i>
@@ -375,73 +337,48 @@ php
                     <span class="badge badge-danger badge-counter">7</span>
                 </a>
             </li>
-
-            <!-- Nav Item - Video Consultations -->
             <li class="nav-item {{ request()->is('doctor/consultations*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-video"></i>
                     <span>Video Consultations</span>
                 </a>
             </li>
-
-            <!-- Divider -->
+            
             <hr class="sidebar-divider">
-
-            <!-- Heading -->
             <div class="sidebar-heading">
                 Settings
             </div>
-
-            <!-- Nav Item - Profile -->
             <li class="nav-item {{ request()->is('doctor/profile*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-user-md"></i>
                     <span>My Profile</span>
                 </a>
             </li>
-
-            <!-- Nav Item - Availability -->
             <li class="nav-item {{ request()->is('doctor/availability*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-clock"></i>
                     <span>My Availability</span>
                 </a>
             </li>
-
-            <!-- Nav Item - Settings -->
             <li class="nav-item {{ request()->is('doctor/settings*') ? 'active' : '' }}">
                 <a class="nav-link" href="#">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Settings</span>
                 </a>
             </li>
-
-            <!-- Divider -->
+            
             <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
-
         </ul>
-        <!-- End of Sidebar -->
 
-        <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
             <div id="content">
-
-                <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
-
-                    <!-- Current Time -->
                     <div class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 text-gray-800">
                         <div>
                             <i class="fas fa-clock mr-1"></i>
@@ -449,31 +386,21 @@ php
                             <span class="ml-1">{{ date('D, d M Y') }}</span>
                         </div>
                     </div>
-
-                    <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
-
-                        <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle notifications-btn" href="#" id="alertsDropdown" role="button">
                                 <i class="fas fa-bell fa-fw"></i>
-                                <!-- Counter - Alerts -->
                                 <span class="badge badge-danger badge-counter">3+</span>
                             </a>
                         </li>
-
-                        <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle chat-open-btn" href="#" id="messagesDropdown" role="button">
                                 <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
                                 <span class="badge badge-danger badge-counter">7</span>
                             </a>
                         </li>
 
                         <div class="topbar-divider d-none d-sm-block"></div>
-
-                        <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -481,7 +408,7 @@ php
                                     Dr. {{ Auth::user()->name ?? 'Jonathan Smith' }}
                                 </span>
                                 <img class="img-profile rounded-circle"
-                                    src="{{ Auth::user()->profile_image ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name ?? 'Doctor').'&size=128&background=4e73df&color=ffffff' }}">
+                                    src="{{ Auth::user()->profile_image ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name ?? 'Doctor').'&size=28&background=4e73df&color=ffffff' }}">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -512,63 +439,43 @@ php
                     </ul>
 
                 </nav>
-                <!-- End of Topbar -->
 
                 @yield('content')
 
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; MediClinic 2025</span>
+                <footer class="sticky-footer bg-white">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <span>Copyright &copy; MediClinic 2025</span>
+                        </div>
                     </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-
+                </footer>
+            </div>
         </div>
-        <!-- End of Content Wrapper -->
 
     </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Core plugin JavaScript-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-    
-    <!-- Toastr Notifications -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-    <!-- Custom scripts -->
     <script>
         (function($) {
             "use strict";
-
-            // Toggle the side navigation
             $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
                 $("body").toggleClass("sidebar-toggled");
                 $(".sidebar").toggleClass("toggled");
             });
 
-            // Close any open menu accordions when window is resized below 768px
             $(window).resize(function() {
                 if ($(window).width() < 768) {
                     $('.sidebar .collapse').collapse('hide');
                 }
             });
 
-            // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
             $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
                 if ($(window).width() > 768) {
                     var e0 = e.originalEvent,
@@ -578,7 +485,6 @@ php
                 }
             });
 
-            // Scroll to top button appear
             $(document).on('scroll', function() {
                 var scrollDistance = $(this).scrollTop();
                 if (scrollDistance > 100) {
@@ -588,7 +494,6 @@ php
                 }
             });
 
-            // Smooth scrolling using jQuery easing
             $(document).on('click', 'a.scroll-to-top', function(e) {
                 var $anchor = $(this);
                 $('html, body').stop().animate({
@@ -599,17 +504,12 @@ php
 
         })(jQuery);
 
-        // Show success message if exists
         @if(session('success'))
             toastr.success('{{ session('success') }}');
         @endif
-
-        // Show error message if exists
         @if(session('error'))
             toastr.error('{{ session('error') }}');
         @endif
-
-        // Show warning message if exists
         @if(session('warning'))
             toastr.warning('{{ session('warning') }}');
         @endif

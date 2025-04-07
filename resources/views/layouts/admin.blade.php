@@ -1,661 +1,646 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="h-full bg-gray-50">
 <head>
-    <!-- Keep the existing head content -->
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Clinic Management System">
-    <meta name="author" content="Your Name">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MediClinic - Admin Dashboard">
+    <meta name="author" content="MediClinic">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Clinic Management') }} - Admin Dashboard</title>
-
-    <!-- Custom fonts -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-
-    <style>
-        :root {
-            --primary: #4e73df;
-            --secondary: #5a5c69;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-            --light: #f8f9fc;
-            --dark: #5a5c69;
-            --sidebar-width: 225px;
-            --sidebar-collapsed-width: 90px;
-            --transition-speed: 0.35s;
+    <title>@yield('title', 'Admin Dashboard') | MediClinic</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    transitionProperty: {
+                        'width': 'width',
+                        'spacing': 'margin, padding',
+                    }
+                }
+            },
+            variants: {
+                extend: {},
+            },
+            plugins: [],
         }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            min-height: 100vh;
-            background-color: #4e73df;
-            background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
-            background-size: cover;
-            position: fixed;
-            z-index: 100;
-            transition: width var(--transition-speed) ease;
-            overflow-x: hidden;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    </script>
+    
+    <!-- Framer Motion -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.umd.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Toastify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .sidebar-expanded {
+                width: 16rem;
+            }
+            .sidebar-collapsed {
+                width: 5rem;
+            }
+            .content-expanded {
+                margin-left: 5rem;
+            }
+            .content-collapsed {
+                margin-left: 16rem;
+            }
         }
-
-        .sidebar.toggled {
-            width: var(--sidebar-collapsed-width);
+        
+        .appointment-card {
+            transition: all 0.3s ease;
         }
-
-        .sidebar-brand {
-            height: 4.375rem;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 800;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.05rem;
-            z-index: 1;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem 1rem;
-            white-space: nowrap;
+        
+        .appointment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-
-        .sidebar hr {
-            margin: 0 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        
+        .stat-card {
+            transition: all 0.2s ease;
         }
-
-        .sidebar .nav-item {
-            position: relative;
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
         }
-
-        .sidebar .nav-item .nav-link {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            text-align: left;
-            padding: 0.75rem 1rem;
-            color: rgba(255, 255, 255, 0.8);
-            white-space: nowrap;
-        }
-
-        .sidebar .nav-item .nav-link:hover,
-        .sidebar .nav-item .nav-link.active {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #fff;
-            padding-left: calc(1rem - 4px);
-        }
-
-        .sidebar .nav-item .nav-link i {
-            margin-right: 0.5rem;
-            width: 1.25rem;
-            font-size: 1.1rem;
-            text-align: center;
-        }
-
-        .sidebar .sidebar-heading {
-            padding: 0.75rem 1rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 800;
-            color: rgba(255, 255, 255, 0.5);
-            white-space: nowrap;
-        }
-
-        .sidebar.toggled .sidebar-brand .sidebar-brand-text {
-            display: none;
-        }
-
-        .sidebar.toggled .nav-item .nav-link span,
-        .sidebar.toggled .sidebar-heading {
-            width: 0;
-            visibility: hidden;
-            opacity: 0;
-            display: none;
-        }
-
-        .sidebar.toggled .nav-item .nav-link {
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .sidebar.toggled .nav-item .nav-link i {
-            margin-right: 0;
-            font-size: 1.2rem;
-        }
-
-        .sidebar.toggled #sidebarToggle::after {
-            content: '\f105';
-        }
-
-        .sidebar #sidebarToggle {
-            width: 2.5rem;
-            height: 2.5rem;
-            text-align: center;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .sidebar #sidebarToggle:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .sidebar #sidebarToggle::after {
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            content: '\f104';
-            transition: all 0.3s;
-        }
-
-        .content-wrapper {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            background-color: #f8f9fc;
-            transition: margin-left var(--transition-speed) ease;
-        }
-
-        body.sidebar-toggled .content-wrapper {
-            margin-left: var(--sidebar-collapsed-width);
-        }
-
-        .topbar {
-            height: 4.375rem;
-            background-color: #fff;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .topbar .nav-item .nav-link {
-            position: relative;
-            height: 4.375rem;
-            display: flex;
-            align-items: center;
-            color: #d1d3e2;
-        }
-
-        .topbar .nav-item .nav-link:hover {
-            color: #4e73df;
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .card .card-header {
-            background-color: #f8f9fc;
-            border-bottom: 1px solid #e3e6f0;
-        }
-
-        .border-left-primary {
-            border-left: 0.25rem solid var(--primary) !important;
-        }
-
-        .border-left-success {
-            border-left: 0.25rem solid var(--success) !important;
-        }
-
-        .border-left-info {
-            border-left: 0.25rem solid var(--info) !important;
-        }
-
-        .border-left-warning {
-            border-left: 0.25rem solid var(--warning) !important;
-        }
-
-        .border-left-danger {
-            border-left: 0.25rem solid var(--danger) !important;
-        }
-
-        .sidebar.toggled .nav-item {
-            position: relative;
-        }
-
-        .sidebar.toggled .nav-item:hover::after {
-            content: attr(data-title);
+        
+        .activity-timeline::before {
+            content: '';
             position: absolute;
-            left: 100%;
             top: 0;
-            background: #2e59d9;
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 0 4px 4px 0;
-            white-space: nowrap;
-            z-index: 99;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        /* Footer */
-        footer.sticky-footer {
-            padding: 2rem 0;
-            flex-shrink: 0;
-            background-color: #fff;
-            box-shadow: 0 -0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: var(--sidebar-collapsed-width);
-            }
-
-            .sidebar .nav-item .nav-link span,
-            .sidebar .sidebar-heading,
-            .sidebar-brand .sidebar-brand-text {
-                display: none;
-            }
-
-            .sidebar .nav-item .nav-link {
-                text-align: center;
-                padding: 1rem;
-            }
-
-            .sidebar .nav-item .nav-link i {
-                margin-right: 0;
-                font-size: 1.2rem;
-            }
-
-            .content-wrapper {
-                margin-left: var(--sidebar-collapsed-width);
-            }
-
-            .sidebar #sidebarToggle::after {
-                content: '\f105';
-            }
-        }
-
-        .img-profile {
-            height: 2rem;
-            width: 2rem;
-            border: 2px solid #eaecf4;
-        }
-
-        .badge-counter {
-            position: absolute;
-            transform: scale(0.7);
-            transform-origin: top right;
-            right: 0.25rem;
-            top: 0.25rem;
-        }
-
-        .animated--grow-in {
-            animation: growIn 0.2s ease;
-        }
-
-        @keyframes growIn {
-            0% {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            bottom: 0;
+            left: 20px;
+            width: 2px;
+            background-color: #e5e7eb;
         }
     </style>
-
+    
     @yield('styles')
 </head>
 
-<body id="page-top">
-    <div id="wrapper">
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/admin">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-clinic-medical"></i>
+<body class="font-sans antialiased h-full bg-gray-50 flex overflow-x-hidden">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 bg-gradient-to-b from-primary-600 to-primary-800 text-white z-50 transition-width duration-300 ease-in-out sidebar-expanded">
+        <div class="flex flex-col h-full">
+            <!-- Logo -->
+            <div class="flex items-center justify-center h-16 px-4">
+                <a href="" class="flex items-center space-x-2">
+                    <span class="text-2xl">
+                        <i class="fas fa-clinic-medical"></i>
+                    </span>
+                    <span class="font-bold text-xl sidebar-text">MediClinic</span>
+                </a>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 pt-5 pb-4">
+                <div class="px-4">
+                    <h3 class="text-xs font-semibold text-primary-100 uppercase tracking-wider pb-2">
+                        Main
+                    </h3>
                 </div>
-                <div class="sidebar-brand-text mx-3">Clinic Admin</div>
-            </a>
-
-            <hr class="sidebar-divider my-0">
-            <li class="nav-item {{ request()->is('admin') ? 'active' : '' }}" data-title="Dashboard">
-                <a class="nav-link" href="/admin">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/dashboard') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-tachometer-alt w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Dashboard</span>
                 </a>
-            </li>
-
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading text-white-50">
-                Management
-            </div>
-
-            <li class="nav-item {{ request()->is('admin/patients*') ? 'active' : '' }}" data-title="Patients">
-                <a class="nav-link" href="/admin/patients">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Patients</span>
+                
+                <div class="px-4 mt-6">
+                    <h3 class="text-xs font-semibold text-primary-100 uppercase tracking-wider pb-2">
+                        Management
+                    </h3>
+                </div>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/patients*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-users w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Patients</span>
                 </a>
-            </li>
-            <li class="nav-item {{ request()->is('admin/doctors*') ? 'active' : '' }}" data-title="Doctors">
-                <a class="nav-link" href="/admin/doctors">
-                    <i class="fas fa-fw fa-user-md"></i>
-                    <span>Doctors</span>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/doctors*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-user-md w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Doctors</span>
                 </a>
-            </li>
-
-            <li class="nav-item {{ request()->is('admin/appointments*') ? 'active' : '' }}" data-title="Appointments">
-                <a class="nav-link" href="/admin/appointments">
-                    <i class="fas fa-fw fa-calendar-check"></i>
-                    <span>Appointments</span>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium relative {{ request()->is('admin/appointments*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-calendar-check w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Appointments</span>
+                    <span class="bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center ml-auto">12</span>
                 </a>
-            </li>
-
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading text-white-50">
-                Reports
-            </div>
-
-            <!-- <li class="nav-item {{ request()->is('admin/reports*') ? 'active' : '' }}" data-title="Statistics">
-                <a class="nav-link" href="/admin/reports">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Statistics</span>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/records*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-file-medical w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Medical Records</span>
                 </a>
-            </li> -->
-
-            <hr class="sidebar-divider">
-            <div class="sidebar-heading text-white-50">
-                Settings
-            </div>
-
-            <!-- <li class="nav-item {{ request()->is('admin/settings*') ? 'active' : '' }}" data-title="Settings">
-                <a class="nav-link" href="/admin/settings">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Settings</span>
+                
+                <div class="px-4 mt-6">
+                    <h3 class="text-xs font-semibold text-primary-100 uppercase tracking-wider pb-2">
+                        Finance
+                    </h3>
+                </div>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/billing*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-file-invoice-dollar w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Billing</span>
                 </a>
-            </li> -->
-
-            <hr class="sidebar-divider d-none d-md-block mb-4">
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle">
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/reports*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-chart-bar w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Reports</span>
+                </a>
+                
+                <div class="px-4 mt-6">
+                    <h3 class="text-xs font-semibold text-primary-100 uppercase tracking-wider pb-2">
+                        System
+                    </h3>
+                </div>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/settings*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-cog w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">Settings</span>
+                </a>
+                <a href="" class="group flex items-center px-6 py-3 text-sm font-medium {{ request()->is('admin/users*') ? 'bg-primary-700 text-white' : 'text-primary-100 hover:bg-primary-700 hover:text-white' }} transition duration-150 ease-in-out">
+                    <i class="fas fa-user-cog w-5 h-5 mr-3"></i>
+                    <span class="sidebar-text">User Management</span>
+                </a>
+            </nav>
+            
+            <!-- Sidebar toggle button -->
+            <div class="border-t border-primary-700 p-4">
+                <button id="sidebarToggle" class="flex items-center justify-center w-full h-10 bg-primary-700 hover:bg-primary-600 text-primary-100 rounded-lg transition-colors duration-150 ease-in-out">
+                    <i id="sidebarToggleIcon" class="fas fa-chevron-left"></i>
                 </button>
             </div>
-        </ul>
+        </div>
+    </aside>
 
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <form
-                        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
+    <!-- Main Content -->
+    <div id="main-content" class="flex-1 ml-64 transition-all duration-300 ease-in-out">
+        <!-- Header -->
+        <header class="bg-white shadow-sm z-10 relative">
+            <div class="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-button" class="md:hidden rounded-md p-2 inline-flex items-center justify-center text-gray-500 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+                    <span class="sr-only">Open sidebar</span>
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- Date and welcome message -->
+                <div class="hidden md:flex items-center">
+                    <div class="text-gray-600">
+                        <span id="current-date" class="text-sm font-medium">Saturday, April 5, 2025</span>
+                        <span class="mx-2 text-gray-400">|</span>
+                        <span id="current-time" class="text-sm font-medium">08:22:33</span>
+                    </div>
+                </div>
+                
+                <!-- Search bar -->
+                <div class="flex-1 max-w-lg mx-auto px-4 md:px-0">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="search" name="search" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 sm:text-sm" placeholder="Search patients, doctors, appointments...">
+                    </div>
+                </div>
+                
+                <!-- Right side navigation -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button aria-label="View notifications" class="relative rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                            <span class="sr-only">View notifications</span>
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-500 text-xs text-white font-bold flex items-center justify-center transform -translate-y-1/2 translate-x-1/2">3</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Messages -->
+                    <div class="relative">
+                        <button aria-label="View messages" class="relative rounded-full p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                            <span class="sr-only">View messages</span>
+                            <i class="fas fa-envelope"></i>
+                            <span class="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-500 text-xs text-white font-bold flex items-center justify-center transform -translate-y-1/2 translate-x-1/2">7</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Profile dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button id="user-menu-button" class="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full">
+                            <span class="sr-only">Open user menu</span>
+                            <div class="hidden md:block text-right">
+                                <span class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Mohammed Ennaim' }}</span>
+                                <p class="text-xs text-gray-500">Admin</p>
+                            </div>
+                            <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_image ?? 'https://ui-avatars.com/api/?name=Mohammed+Ennaim&background=6366F1&color=ffffff' }}" alt="User profile">
+                            <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                        </button>
+                        
+                        <!-- Profile dropdown panel -->
+                        <div id="user-menu-dropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                            <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Profile
+                            </a>
+                            <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Settings
+                            </a>
+                            <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Activity Log
+                            </a>
+                            <div class="border-t border-gray-100"></div>
+                            <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
                                 </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
+            <!-- Dashboard content -->
+            @yield('content')
+            
+            <!-- Footer -->
+            <footer class="mt-auto py-4">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <p class="text-center text-sm text-gray-500">
+                        &copy; 2025 MediClinic. All rights reserved.
+                    </p>
+                </div>
+            </footer>
+        </main>
+    </div>
+    
+    <!-- Back to top button -->
+    <button id="back-to-top" aria-label="Back to top" class="hidden fixed right-4 bottom-4 rounded-full bg-primary-600 p-2 text-white shadow-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+        <span class="sr-only">Back to top</span>
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Add appointment modal -->
+    <div id="addAppointmentModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl transform transition-all">
+                <!-- Modal header -->
+                <div class="bg-primary-600 px-4 py-3 rounded-t-lg flex items-center justify-between">
+                    <h3 class="text-lg font-medium text-white">
+                        <i class="fas fa-calendar-plus mr-2"></i>Add New Appointment
+                    </h3>
+                    <button id="closeAppointmentModal" class="text-white hover:text-gray-200 focus:outline-none">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Modal body -->
+                <div class="px-4 py-5 sm:p-6">
+                    <form id="appointmentForm">
+                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                            <div class="sm:col-span-3">
+                                <label for="patient" class="block text-sm font-medium text-gray-700">Patient</label>
+                                <div class="mt-1">
+                                    <select id="patient" name="patient" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                        <option value="">Select Patient</option>
+                                        <option value="1">John Doe</option>
+                                        <option value="2">Jane Smith</option>
+                                        <option value="3">Robert Johnson</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="sm:col-span-3">
+                                <label for="doctor" class="block text-sm font-medium text-gray-700">Doctor</label>
+                                <div class="mt-1">
+                                    <select id="doctor" name="doctor" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                        <option value="">Select Doctor</option>
+                                        <option value="1">Dr. Ahmed Lahlou</option>
+                                        <option value="2">Dr. Leila Bouzidi</option>
+                                        <option value="3">Dr. Omar Tazi</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="sm:col-span-3">
+                                <label for="appointmentDate" class="block text-sm font-medium text-gray-700">Date</label>
+                                <div class="mt-1">
+                                    <input type="date" name="appointmentDate" id="appointmentDate" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                </div>
+                            </div>
+                            
+                            <div class="sm:col-span-3">
+                                <label for="appointmentTime" class="block text-sm font-medium text-gray-700">Time</label>
+                                <div class="mt-1">
+                                    <input type="time" name="appointmentTime" id="appointmentTime" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                </div>
+                            </div>
+                            
+                            <div class="sm:col-span-6">
+                                <label for="appointmentType" class="block text-sm font-medium text-gray-700">Appointment Type</label>
+                                <div class="mt-1">
+                                    <select id="appointmentType" name="appointmentType" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                        <option value="">Select Type</option>
+                                        <option value="check-up">Check-up</option>
+                                        <option value="follow-up">Follow-up</option>
+                                        <option value="consultation">Consultation</option>
+                                        <option value="emergency">Emergency</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="sm:col-span-6">
+                                <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                                <div class="mt-1">
+                                    <textarea id="notes" name="notes" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"></textarea>
+                                </div>
                             </div>
                         </div>
                     </form>
-
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-search fa-fw"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Search for..." aria-label="Search"
-                                            aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
-                                <span class="badge badge-danger badge-counter mt-2">3+</span>
-                            </a>
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-calendar-check text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">Today</div>
-                                        <span>New appointment scheduled with Dr. Smith</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-user-plus text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">Yesterday</div>
-                                        <span>New patient registered: John Doe</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">March 22, 2025</div>
-                                        <span>Doctor availability conflict detected</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
-                        </li>
-
-                        <div class="topbar-divider d-none d-sm-block"></div>
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span
-                                    class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
-                                <img class="img-profile rounded-circle"
-                                    src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=4e73df&color=ffffff">
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="/admin/profile">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                <a class="dropdown-item" href="/admin/settings">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="/admin/logs">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-                @yield('content')
-            </div>
-
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Clinic Management System {{ date('Y') }}</span>
-                    </div>
                 </div>
-            </footer>
-        </div>
-    </div>
-
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                
+                <!-- Modal footer -->
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
+                    <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Schedule Appointment
+                    </button>
+                    <button type="button" id="cancelAppointmentBtn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-primary">Logout</button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const sidebarState = localStorage.getItem('sidebarState');
-            if (sidebarState === 'toggled') {
-                document.body.classList.add('sidebar-toggled');
-                document.querySelector('.sidebar').classList.add('toggled');
-            }
-
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle functionality
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
             const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebarToggleTop = document.getElementById('sidebarToggleTop');
-
-            function toggleSidebar(e) {
-                if (e) e.preventDefault();
-                document.body.classList.toggle('sidebar-toggled');
-                const sidebar = document.querySelector('.sidebar');
-                sidebar.classList.toggle('toggled');
-
-                if (sidebar.classList.contains('toggled')) {
-                    localStorage.setItem('sidebarState', 'toggled');
-
-                    const collapseElements = sidebar.querySelectorAll('.collapse.show');
-                    collapseElements.forEach(function (element) {
-                        bootstrap.Collapse.getInstance(element)?.hide();
+            const sidebarToggleIcon = document.getElementById('sidebarToggleIcon');
+            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            
+            // Initialize with animation from Framer Motion
+            const { animate } = window.Motion;
+            
+            sidebarToggle.addEventListener('click', function() {
+                const isExpanded = sidebar.classList.contains('sidebar-expanded');
+                
+                if (isExpanded) {
+                    // Collapse sidebar
+                    animate(sidebar, { width: '5rem' }, { duration: 0.3 });
+                    animate(mainContent, { marginLeft: '5rem' }, { duration: 0.3 });
+                    sidebarToggleIcon.classList.replace('fa-chevron-left', 'fa-chevron-right');
+                    
+                    // Hide text elements with animation
+                    sidebarTexts.forEach(text => {
+                        animate(text, { opacity: 0 }, { duration: 0.15 });
+                        text.style.display = 'none';
                     });
+                    
+                    setTimeout(() => {
+                        sidebar.classList.remove('sidebar-expanded');
+                        sidebar.classList.add('sidebar-collapsed');
+                        mainContent.classList.remove('content-collapsed');
+                        mainContent.classList.add('content-expanded');
+                    }, 300);
                 } else {
-                    localStorage.setItem('sidebarState', 'expanded');
-                }
-            }
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', toggleSidebar);
-            }
-
-            if (sidebarToggleTop) {
-                sidebarToggleTop.addEventListener('click', toggleSidebar);
-            }
-
-            function handleResize() {
-                if (window.innerWidth < 768) {
-                    const collapseElements = document.querySelectorAll('.sidebar .collapse.show');
-                    collapseElements.forEach(function (element) {
-                        bootstrap.Collapse.getInstance(element)?.hide();
+                    // Expand sidebar
+                    animate(sidebar, { width: '16rem' }, { duration: 0.3 });
+                    animate(mainContent, { marginLeft: '16rem' }, { duration: 0.3 });
+                    sidebarToggleIcon.classList.replace('fa-chevron-right', 'fa-chevron-left');
+                    
+                    // Show text elements with animation
+                    sidebarTexts.forEach(text => {
+                        text.style.display = 'inline';
+                        animate(text, { opacity: 1 }, { delay: 0.1, duration: 0.2 });
                     });
-                    document.body.classList.add('sidebar-toggled');
-                    document.querySelector('.sidebar').classList.add('toggled');
-                }
-            }
-            handleResize();
-
-            window.addEventListener('resize', handleResize);
-            const fixedSidebar = document.querySelector('body.fixed-nav .sidebar');
-            if (fixedSidebar) {
-                fixedSidebar.addEventListener('wheel', function (e) {
-                    if (window.innerWidth > 768) {
-                        const delta = e.deltaY || -e.detail;
-                        this.scrollTop += (delta > 0 ? 1 : -1) * 30;
-                        e.preventDefault();
-                    }
-                });
-            }
-            window.addEventListener('scroll', function () {
-                const scrollDistance = window.pageYOffset || document.documentElement.scrollTop;
-                const scrollTopButton = document.querySelector('.scroll-to-top');
-
-                if (scrollTopButton) {
-                    if (scrollDistance > 100) {
-                        scrollTopButton.style.display = 'block';
-                        setTimeout(() => scrollTopButton.style.opacity = 1, 10);
-                    } else {
-                        scrollTopButton.style.opacity = 0;
-                        setTimeout(() => scrollTopButton.style.display = 'none', 300);
-                    }
+                    
+                    setTimeout(() => {
+                        sidebar.classList.remove('sidebar-collapsed');
+                        sidebar.classList.add('sidebar-expanded');
+                        mainContent.classList.remove('content-expanded');
+                        mainContent.classList.add('content-collapsed');
+                    }, 300);
                 }
             });
-
-            const scrollTopLinks = document.querySelectorAll('a.scroll-to-top');
-            scrollTopLinks.forEach(function (link) {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-
-                    const scrollOptions = {
-                        top: 0,
-                        behavior: 'smooth'
-                    };
-
-                    window.scrollTo(scrollOptions);
-                });
+            
+            // User menu dropdown
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenuDropdown = document.getElementById('user-menu-dropdown');
+            
+            userMenuButton.addEventListener('click', function() {
+                const isHidden = userMenuDropdown.classList.contains('hidden');
+                
+                if (isHidden) {
+                    userMenuDropdown.classList.remove('hidden');
+                    animate(userMenuDropdown, 
+                        { opacity: [0, 1], scale: [0.95, 1] }, 
+                        { duration: 0.2, ease: 'easeOut' }
+                    );
+                } else {
+                    animate(userMenuDropdown, 
+                        { opacity: [1, 0], scale: [1, 0.95] }, 
+                        { duration: 0.15, ease: 'easeIn', onComplete: () => {
+                            userMenuDropdown.classList.add('hidden');
+                        }}
+                    );
+                }
             });
-
-            const sidebarItems = document.querySelectorAll('.nav-item');
-            sidebarItems.forEach(function (item) {
-                item.addEventListener('mouseenter', function () {
-                    const sidebar = document.querySelector('.sidebar');
-                    if (sidebar.classList.contains('toggled')) {
-                        this.classList.add('sidebar-item-hover');
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) && !userMenuDropdown.contains(event.target)) {
+                    if (!userMenuDropdown.classList.contains('hidden')) {
+                        animate(userMenuDropdown, 
+                            { opacity: [1, 0], scale: [1, 0.95] }, 
+                            { duration: 0.15, ease: 'easeIn', onComplete: () => {
+                                userMenuDropdown.classList.add('hidden');
+                            }}
+                        );
                     }
-                });
-
-                item.addEventListener('mouseleave', function () {
-                    this.classList.remove('sidebar-item-hover');
+                }
+            });
+            
+            // Mobile menu button
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                const isSidebarHidden = sidebar.classList.contains('translate-x-full');
+                
+                if (isSidebarHidden) {
+                    sidebar.classList.remove('translate-x-full');
+                    animate(sidebar, { x: ['-100%', '0%'] }, { duration: 0.3 });
+                } else {
+                    animate(sidebar, { x: ['0%', '-100%'] }, { 
+                        duration: 0.3,
+                        onComplete: () => {
+                            sidebar.classList.add('translate-x-full');
+                        }
+                    });
+                }
+            });
+            
+            // Back to top button
+            const backToTopButton = document.getElementById('back-to-top');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    if (backToTopButton.classList.contains('hidden')) {
+                        backToTopButton.classList.remove('hidden');
+                        animate(backToTopButton, { opacity: [0, 1], scale: [0.5, 1] }, { duration: 0.3 });
+                    }
+                } else {
+                    if (!backToTopButton.classList.contains('hidden')) {
+                        animate(backToTopButton, { opacity: [1, 0], scale: [1, 0.5] }, { 
+                            duration: 0.3,
+                            onComplete: () => {
+                                backToTopButton.classList.add('hidden');
+                            }
+                        });
+                    }
+                }
+            });
+            
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
                 });
             });
+            
+            // Update current date and time
+            const currentDate = document.getElementById('current-date');
+            const currentTime = document.getElementById('current-time');
+            
+            function updateDateTime() {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                currentDate.textContent = now.toLocaleDateString('en-US', options);
+                
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                currentTime.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+            
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Add appointment modal functionality
+            const addAppointmentBtns = document.querySelectorAll('.add-appointment-btn');
+            const addAppointmentModal = document.getElementById('addAppointmentModal');
+            const closeAppointmentModal = document.getElementById('closeAppointmentModal');
+            const cancelAppointmentBtn = document.getElementById('cancelAppointmentBtn');
+            
+            function openAppointmentModal() {
+                addAppointmentModal.classList.remove('hidden');
+                animate(addAppointmentModal.querySelector('.max-w-2xl'), 
+                    { opacity: [0, 1], scale: [0.9, 1] }, 
+                    { duration: 0.3 }
+                );
+            }
+            
+            function closeAppointmentModalFunc() {
+                animate(addAppointmentModal.querySelector('.max-w-2xl'), 
+                    { opacity: [1, 0], scale: [1, 0.9] }, 
+                    { duration: 0.2, onComplete: () => {
+                        addAppointmentModal.classList.add('hidden');
+                    }}
+                );
+            }
+            
+            addAppointmentBtns.forEach(btn => {
+                btn.addEventListener('click', openAppointmentModal);
+            });
+            
+            closeAppointmentModal.addEventListener('click', closeAppointmentModalFunc);
+            cancelAppointmentBtn.addEventListener('click', closeAppointmentModalFunc);
+            
+            // Toast notifications
+            @if(session('success'))
+                Toastify({
+                    text: "{{ session('success') }}",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#10B981",
+                    stopOnFocus: true,
+                }).showToast();
+            @endif
+            
+            @if(session('error'))
+                Toastify({
+                    text: "{{ session('error') }}",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#EF4444",
+                    stopOnFocus: true,
+                }).showToast();
+            @endif
+            
+            @if(session('warning'))
+                Toastify({
+                    text: "{{ session('warning') }}",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#F59E0B",
+                    stopOnFocus: true,
+                }).showToast();
+            @endif
         });
     </script>
-
+    
     @yield('scripts')
 </body>
-
 </html>

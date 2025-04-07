@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\AppointmentRepository;
 use App\Repositories\Eloquent\DoctorRepository;
 use App\Repositories\Eloquent\AuthRepository;
+use App\Repositories\Interfaces\AppointmentRepositoryInterface;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
 use App\Repositories\Interfaces\DoctorRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -17,6 +19,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
         $this->app->bind(DoctorRepositoryInterface::class, DoctorRepository::class);
+        $this->app->bind(AppointmentRepositoryInterface::class, AppointmentRepository::class);
     }
 
     /**

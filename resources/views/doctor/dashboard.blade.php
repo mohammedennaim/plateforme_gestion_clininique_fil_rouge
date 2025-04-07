@@ -1,1416 +1,2428 @@
-@extends('layouts.doctor')
-@section('title', 'Tableau de Bord Médecin')
-@section('styles')
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediDash - Tableau de Bord Médical</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <style>
-        /* Styles généraux */
-        .text-primary-custom {
-            color: #4e73df;
+        /* Base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
         }
 
-        .text-success-custom {
-            color: #1cc88a;
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
 
-        .text-warning-custom {
-            color: #f6c23e;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
 
-        .text-danger-custom {
-            color: #e74a3b;
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 10px;
         }
 
-        .text-info-custom {
-            color: #36b9cc;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366F1;
         }
 
-        /* Cards des rendez-vous */
+        /* Sidebar animation */
+        #sidebar {
+            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        .sidebar-item {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin: 5px 10px;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .sidebar-item.active {
+            background-color: #6366F1;
+            color: white;
+        }
+
+        .sidebar-item.active i {
+            color: white;
+        }
+
+        .logout-item {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin: 5px 10px;
+            width: 92%;
+        }
+
+        .logout-item:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .logout-item.active {
+            background-color: #6366F1;
+            color: white;
+        }
+
+        .logout-item.active i {
+            color: white;
+        }
+
+        /* Card animations */
+        .stats-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card-gradient-1 {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+        }
+
+        .stats-card-gradient-2 {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        }
+
+        .stats-card-gradient-3 {
+            background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+        }
+
+        .stats-card-gradient-4 {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+
+        /* Appointments and patient cards */
         .appointment-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
         }
 
         .appointment-card:hover {
+            transform: translateX(5px);
+            background-color: #f9fafb;
+        }
+
+        .patient-card {
+            transition: all 0.3s ease;
+        }
+
+        .patient-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        .appointment-pending {
-            border-left-color: #f6c23e;
-        }
-
-        .appointment-confirmed {
-            border-left-color: #1cc88a;
-        }
-
-        .appointment-cancelled {
-            border-left-color: #e74a3b;
-        }
-
-        .appointment-completed {
-            border-left-color: #4e73df;
-        }
-
-        /* Badges de statut */
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 10rem;
-        }
-
-        /* Chat et messages */
-        .chat-container {
-            height: 450px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-            background: #f8f9fc;
-            border-radius: 0.35rem;
-        }
-
-        .chat-message {
-            margin-bottom: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            max-width: 80%;
-            position: relative;
-        }
-
-        .chat-message.outgoing {
-            background-color: #4e73df;
-            color: white;
-            align-self: flex-end;
-            margin-left: auto;
-        }
-
-        .chat-message.incoming {
-            background-color: #e9ecef;
-            color: #3a3b45;
-            align-self: flex-start;
-        }
-
-        /* Badges de notification */
-        .nav-notification-badge {
-            position: absolute;
-            top: 0.25rem;
-            right: 0.75rem;
-            font-size: 0.7rem;
-        }
-
-        /* Avatar et photos de profil */
-        .avatar {
-            width: 45px;
-            height: 45px;
+        /* Status indicators */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            object-fit: cover;
+            display: inline-block;
+            margin-right: 6px;
         }
 
-        /* Cards statistiques */
-        .stat-card {
-            border-left: 4px solid;
-            transition: transform 0.2s;
+        .status-confirmed {
+            background-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
+        .status-pending {
+            background-color: #F97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
         }
 
-        .stat-patients {
-            border-left-color: #4e73df;
+        .status-cancelled {
+            background-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
         }
 
-        .stat-appointments {
-            border-left-color: #1cc88a;
+        .status-completed {
+            background-color: #6366F1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        .stat-pending {
-            border-left-color: #f6c23e;
+        /* Pulse animation */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
         }
 
-        .stat-revenue {
-            border-left-color: #36b9cc;
+        .pulse {
+            animation: pulse 2s infinite;
         }
 
-        /* Calendrier */
+        /* Calendar day styles */
         .calendar-day {
-            height: 100px;
-            transition: background-color 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .calendar-day:hover {
-            background-color: rgba(78, 115, 223, 0.05);
+            background-color: #e0e7ff;
         }
 
-        .calendar-event {
-            border-radius: 0.25rem;
-            padding: 0.25rem;
-            margin-bottom: 0.25rem;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .calendar-event:hover {
-            transform: scale(1.02);
-        }
-
-        .calendar-event-primary {
-            background-color: rgba(78, 115, 223, 0.15);
-            border-left: 3px solid #4e73df;
-        }
-
-        .calendar-event-success {
-            background-color: rgba(28, 200, 138, 0.15);
-            border-left: 3px solid #1cc88a;
-        }
-
-        .calendar-event-warning {
-            background-color: rgba(246, 194, 62, 0.15);
-            border-left: 3px solid #f6c23e;
-        }
-
-        /* Statistiques et graphiques */
-        .stats-container {
-            height: 300px;
-        }
-
-        /* Liste des patients */
-        .patient-list-item {
-            transition: background-color 0.2s;
-            border-left: 3px solid transparent;
-        }
-
-        .patient-list-item:hover {
-            background-color: rgba(78, 115, 223, 0.05);
-            border-left-color: #4e73df;
-        }
-
-        /* Prescription numérique */
-        .prescription-form label {
+        .calendar-day.active {
+            background-color: #6366F1;
+            color: white;
             font-weight: 600;
-            color: #4e73df;
         }
 
-        .medicine-item {
-            background-color: #f8f9fc;
-            border-radius: 0.35rem;
-            padding: 0.75rem;
-            margin-bottom: 0.75rem;
-            border-left: 3px solid #4e73df;
+        .calendar-day.has-appointments::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #6366F1;
+        }
+
+        .calendar-day.active.has-appointments::after {
+            background-color: white;
+        }
+
+        /* Patient vitals card */
+        .vital-card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .vital-card:hover {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Tab styles */
+        .tab-button {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #6366F1;
+            font-weight: 500;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -8px;
+            left: 0;
+            background-color: #6366F1;
+        }
+
+        /* Analytics card styles */
+        .analytics-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Task item styles */
+        .task-item {
+            position: relative;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #d1d5db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-checkbox.checked {
+            background-color: #6366F1;
+            border-color: #6366F1;
+        }
+
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            left: 19px;
+            top: 14px;
+        }
+
+        .task-text {
+            transition: all 0.3s ease;
+        }
+
+        .task-text.checked {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        /* Message styles */
+        .message-item {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .message-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Section transitions */
+        .dashboard-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .dashboard-section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #EF4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pills */
+        .pill {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .pill:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        /* Custom toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e7eb;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: #6366F1;
+        }
+
+        input:focus+.toggle-slider {
+            box-shadow: 0 0 1px #6366F1;
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            height: 100%;
+            transition: width 1s ease;
+            border-radius: 3px;
+        }
+
+        /* Collapses for mobile */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                left: -260px;
+                z-index: 40;
+            }
+
+            #sidebar.open {
+                left: 0;
+            }
+
+            #overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 30;
+            }
+
+            #overlay.active {
+                display: block;
+            }
+
+            #main-content {
+                width: 100%;
+                padding-left: 0;
+            }
+        }
+
+        /* Print and PDF optimizations */
+        @media print {
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+
+            #sidebar,
+            .no-print,
+            button[data-section] {
+                display: none !important;
+            }
+
+            #main-content {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                width: 100% !important;
+            }
+
+            .dashboard-section {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+            }
+
+            .dashboard-section:not(.active) {
+                display: block !important;
+            }
+
+            /* Expand all charts to ensure they render properly */
+            .chart-container {
+                height: 300px !important;
+                max-width: 100% !important;
+                page-break-inside: avoid;
+            }
         }
     </style>
-@endsection
-@section('content')
-    <div class="container-fluid">
-        <!-- En-tête de la page -->
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <div>
-                <h1 class="h3 mb-0 text-gray-800">Tableau de Bord Médecin</h1>
-                <p class="text-muted">Bienvenue, Dr. Martin. Vous avez <span class="font-weight-bold text-primary">8</span>
-                    rendez-vous aujourd'hui.</p>
+</head>
+
+<body class="text-gray-800">
+    <!-- Overlay for mobile sidebar -->
+    <div id="overlay" class="md:hidden"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="bg-white w-64 fixed h-full shadow-lg overflow-y-auto z-30">
+        <div class="p-4 border-b">
+            <div class="flex items-center justify-center mb-6">
+                <div class="text-2xl font-bold text-indigo-600 flex items-center">
+                    <i class="fas fa-heartbeat mr-2"></i>
+                    <span>MediDash</span>
+                </div>
             </div>
-            <div class="d-flex">
-                <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-outline-primary shadow-sm mr-2"
-                    data-toggle="modal" data-target="#availabilityModal">
-                    <i class="fas fa-calendar fa-sm text-primary-50"></i> Disponibilités
+
+            <div class="flex flex-col items-center">
+                <div class="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center mb-2">
+                    <i class="fas fa-user-md text-indigo-600 text-3xl"></i>
+                </div>
+                <h2 class="text-lg font-semibold">Dr. Mohammed Ennaim</h2>
+                <p class="text-sm text-gray-500">Cardiologue</p>
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 pulse"></span>
+                    En ligne
+                </span>
+            </div>
+        </div>
+
+        <nav class="mt-6">
+            <div class="px-4 mb-3">
+                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Principal</p>
+            </div>
+            <a href="#" class="sidebar-item active flex items-center p-3" data-section="dashboard">
+                <i class="fas fa-home text-lg text-indigo-600 w-6"></i>
+                <span class="ml-3">Tableau de bord</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center p-3" data-section="patients">
+                <i class="fas fa-users text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Patients</span>
+                <span
+                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">154</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center p-3" data-section="appointments">
+                <i class="fas fa-calendar-alt text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Rendez-vous</span>
+                <span class="ml-auto bg-amber-100 text-amber-600 rounded-full px-2 py-0.5 text-xs font-medium">8</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center p-3" data-section="medical-records">
+                <i class="fas fa-file-medical text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Dossiers médicaux</span>
+            </a>
+
+            <div class="px-4 mt-6 mb-3">
+                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Organisation</p>
+            </div>
+            <a href="#" class="sidebar-item flex items-center p-3" data-section="analytics">
+                <i class="fas fa-chart-line text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Analyses</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center p-3" data-section="communications">
+                <i class="fas fa-comments text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Communications</span>
+                <div class="ml-auto relative">
+                    <i class="fas fa-bell text-gray-500"></i>
+                    <span class="notification-badge">7</span>
+                </div>
+            </a>
+            <a href="#" class="sidebar-item flex items-center p-3" data-section="tasks">
+                <i class="fas fa-tasks text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Tâches</span>
+                <span class="ml-auto bg-red-100 text-red-600 rounded-full px-2 py-0.5 text-xs font-medium">5</span>
+            </a>
+
+            <div class="px-4 mt-6 mb-3">
+                <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Paramètres</p>
+            </div>
+            <a href="#" class="sidebar-item flex items-center p-3">
+                <i class="fas fa-user-circle text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Mon Profil</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center p-3">
+                <i class="fas fa-cog text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Paramètres</span>
+            </a>
+            <a href="#" class="sidebar-item flex items-center p-3">
+                <i class="fas fa-question-circle text-lg text-gray-500 w-6"></i>
+                <span class="ml-3">Aide</span>
+            </a>
+            <form action="{{ route('logout') }}" method="POST" >
+                @csrf
+                <button type="submit" class="logout-item flex items-center p-3 w-full text-left">
+                    <i class="fas fa-sign-out-alt text-lg text-gray-500 w-6"></i>
+                    <span class="ml-3">Déconnexion</span>
                 </button>
-                <div class="dropdown mr-2">
-                    <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm dropdown-toggle" type="button"
-                        id="reportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-download fa-sm text-white-50"></i> Rapports
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                        aria-labelledby="reportsDropdown">
-                        <a class="dropdown-item" href="#"><i class="fas fa-file-pdf fa-sm fa-fw mr-2 text-danger"></i>
-                            Rapport mensuel</a>
-                        <a class="dropdown-item" href="#"><i class="fas fa-file-medical fa-sm fa-fw mr-2 text-primary"></i>
-                            Statistiques patients</a>
-                        <a class="dropdown-item" href="#"><i
-                                class="fas fa-file-invoice-dollar fa-sm fa-fw mr-2 text-success"></i> Rapport financier</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#"><i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-500"></i>
-                            Paramètres des rapports</a>
-                    </div>
+            </form>
+
+            
+            <!-- <form action="/logout" method="post" >
+                @csrf
+                <button type="submit" class="sidebar-item flex items-center p-3 mb-10 w-full text-left">
+                    <i class="fas fa-sign-out-alt text-lg text-gray-500 w-6"></i>
+                    <span class="ml-3">Déconnexion</span>
+                </button>
+            </form> -->
+        </nav>
+    </div>
+
+    <!-- Main content -->
+    <div id="main-content" class="ml-0 md:ml-64 min-h-screen transition-all duration-300">
+        
+        <!-- Mobile header -->
+        <header class="bg-white shadow-sm py-4 px-4 md:hidden">
+            <div class="flex items-center justify-between">
+                <button id="sidebar-toggle" class="text-gray-600 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="text-xl font-bold text-indigo-600 flex items-center">
+                    <i class="fas fa-heartbeat mr-2"></i>
+                    <span>MediDash</span>
                 </div>
-                <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-toggle="modal"
-                    data-target="#newAppointmentModal">
-                    <i class="fas fa-plus fa-sm text-white-50"></i> Nouveau Rendez-vous
-                </a>
-            </div>
-        </div>
-
-        <!-- Cartes statistiques -->
-        <div class="row">
-            <!-- Patients totaux -->
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 stat-card stat-patients">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Patients Totaux</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalPatients ?? 124 }}</div>
-                                <div class="small text-success mt-2">
-                                    <i class="fas fa-arrow-up fa-sm"></i> +5% ce mois
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-users fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rendez-vous du jour -->
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 stat-card stat-appointments">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Rendez-vous Aujourd'hui</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $todayAppointments ?? 8 }}</div>
-                                <div class="small text-muted mt-2">
-                                    Prochain dans <span class="text-primary">25 min</span>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Demandes en attente -->
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 stat-card stat-pending">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Demandes en Attente</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $pendingRequests ?? 12 }}</div>
-                                <div class="small text-danger mt-2">
-                                    <i class="fas fa-exclamation-circle fa-sm"></i> 3 urgentes
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-comments fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Revenu mensuel -->
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow h-100 py-2 stat-card stat-revenue">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Revenu Mensuel
-                                </div>
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col-auto">
-                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                                            {{ $monthlyRevenue ?? '4 250 €' }}</div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="progress progress-sm mr-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 75%"
-                                                aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="small text-success mt-2">
-                                    <i class="fas fa-arrow-up fa-sm"></i> +8% vs dernier mois
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ligne de contenu principale -->
-        <div class="row">
-            <!-- Rendez-vous à venir -->
-            <div class="col-lg-8 mb-4">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Rendez-vous à Venir</h6>
-                        <div class="dropdown no-arrow">
-                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                aria-labelledby="dropdownMenuLink">
-                                <div class="dropdown-header">Filtrer par:</div>
-                                <a class="dropdown-item" href="#">Aujourd'hui</a>
-                                <a class="dropdown-item" href="#">Cette Semaine</a>
-                                <a class="dropdown-item" href="#">Ce Mois</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Tous</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        @php
-                            // Données de rendez-vous d'exemple (à remplacer par les données réelles)
-                            $appointments = [
-                                [
-                                    'id' => 1,
-                                    'patient_name' => 'Marie Dupont',
-                                    'patient_avatar' => 'https://randomuser.me/api/portraits/women/45.jpg',
-                                    'date' => '2025-04-02',
-                                    'time' => '09:30:00',
-                                    'reason' => 'Bilan annuel',
-                                    'status' => 'confirmed',
-                                    'notes' => 'Antécédents de diabète type 2'
-                                ],
-                                [
-                                    'id' => 2,
-                                    'patient_name' => 'Jean Lefebvre',
-                                    'patient_avatar' => 'https://randomuser.me/api/portraits/men/32.jpg',
-                                    'date' => '2025-04-02',
-                                    'time' => '11:00:00',
-                                    'reason' => 'Suivi post-opératoire',
-                                    'status' => 'pending',
-                                    'notes' => 'Opération genou droit il y a 2 semaines'
-                                ],
-                                [
-                                    'id' => 3,
-                                    'patient_name' => 'Émilie Moreau',
-                                    'patient_avatar' => 'https://randomuser.me/api/portraits/women/22.jpg',
-                                    'date' => '2025-04-03',
-                                    'time' => '14:15:00',
-                                    'reason' => 'Révision traitement',
-                                    'status' => 'confirmed',
-                                    'notes' => 'Hypertension artérielle'
-                                ],
-                                [
-                                    'id' => 4,
-                                    'patient_name' => 'Michel Bernard',
-                                    'patient_avatar' => 'https://randomuser.me/api/portraits/men/34.jpg',
-                                    'date' => '2025-04-03',
-                                    'time' => '16:45:00',
-                                    'reason' => 'Douleurs thoraciques',
-                                    'status' => 'confirmed',
-                                    'notes' => 'Urgence relative - Antécédents cardiaques'
-                                ],
-                            ];
-                        @endphp
-
-                        <!-- Barre de filtres et recherche -->
-                        <div class="mb-3">
-                            <div class="row align-items-center">
-                                <div class="col-md-6 mb-2 mb-md-0">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-primary active">Tous</button>
-                                        <button type="button" class="btn btn-sm btn-outline-primary">Aujourd'hui</button>
-                                        <button type="button" class="btn btn-sm btn-outline-primary">Demain</button>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" placeholder="Rechercher un patient...">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        @forelse($appointments as $appointment)
-                            <div class="card mb-3 shadow-sm appointment-card appointment-{{ $appointment['status'] }}">
-                                <div class="card-body p-3">
-                                    <div class="row align-items-center">
-                                        <div class="col-auto">
-                                            <img src="{{ $appointment['patient_avatar'] }}" class="avatar"
-                                                alt="{{ $appointment['patient_name'] }}">
-                                        </div>
-                                        <div class="col">
-                                            <h6 class="mb-0 font-weight-bold">{{ $appointment['patient_name'] }}</h6>
-                                            <div class="small text-muted">
-                                                {{ \Carbon\Carbon::parse($appointment['date'])->locale('fr')->format('D j M Y') }}
-                                                à
-                                                {{ \Carbon\Carbon::parse($appointment['time'])->format('H:i') }}
-                                            </div>
-                                            <div class="small mt-1">
-                                                <span class="font-weight-bold">Motif:</span> {{ $appointment['reason'] }}
-                                                @if(isset($appointment['notes']))
-                                                    <span class="text-danger ml-2" data-toggle="tooltip"
-                                                        title="{{ $appointment['notes'] }}">
-                                                        <i class="fas fa-info-circle"></i>
-                                                    </span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 text-md-right mt-2 mt-md-0">
-                                            @if($appointment['status'] == 'pending')
-                                                <span class="badge badge-warning status-badge">En Attente</span>
-                                            @elseif($appointment['status'] == 'confirmed')
-                                                <span class="badge badge-success status-badge">Confirmé</span>
-                                            @elseif($appointment['status'] == 'cancelled')
-                                                <span class="badge badge-danger status-badge">Annulé</span>
-                                            @elseif($appointment['status'] == 'completed')
-                                                <span class="badge badge-primary status-badge">Terminé</span>
-                                            @endif
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm" type="button" data-toggle="dropdown">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    @if($appointment['status'] == 'pending')
-                                                        <a class="dropdown-item" href="#">
-                                                            <i class="fas fa-check-circle text-success fa-sm mr-2"></i> Confirmer
-                                                        </a>
-                                                    @endif
-                                                    <a class="dropdown-item" href="#" data-toggle="modal"
-                                                        data-target="#medicalRecordModal">
-                                                        <i class="fas fa-file-medical text-primary fa-sm mr-2"></i> Dossier
-                                                        Médical
-                                                    </a>
-                                                    <a class="dropdown-item" href="#" data-toggle="modal"
-                                                        data-target="#chatModal">
-                                                        <i class="fas fa-comments text-info fa-sm mr-2"></i> Envoyer Message
-                                                    </a>
-                                                    <a class="dropdown-item" href="#" data-toggle="modal"
-                                                        data-target="#prescriptionModal">
-                                                        <i class="fas fa-prescription fa-sm mr-2 text-success"></i> Nouvelle
-                                                        Ordonnance
-                                                    </a>
-                                                    <div class="dropdown-divider"></div>
-                                                    @if($appointment['status'] != 'cancelled' && $appointment['status'] != 'completed')
-                                                        <a class="dropdown-item text-danger" href="#">
-                                                            <i class="fas fa-times-circle fa-sm mr-2"></i> Annuler
-                                                        </a>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="text-center py-4">
-                                <img src="{{ asset('images/empty-calendar.svg') }}" alt="Aucun Rendez-vous"
-                                    style="width: 120px; opacity: 0.5;">
-                                <p class="mt-3 text-muted">Aucun rendez-vous à venir</p>
-                                <a href="#" class="btn btn-sm btn-primary">Voir Calendrier</a>
-                            </div>
-                        @endforelse
-
-                        @if(count($appointments) > 0)
-                            <div class="text-center mt-3">
-                                <a href="#" class="btn btn-sm btn-outline-primary">Voir Tous les Rendez-vous</a>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Analyse des tendances - NOUVEAU BLOC -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Analyse des Tendances</h6>
-                        <div class="dropdown no-arrow">
-                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#">Ce Mois</a>
-                                <a class="dropdown-item" href="#">Ce Trimestre</a>
-                                <a class="dropdown-item" href="#">Cette Année</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="stats-container mb-4">
-                            <canvas id="appointmentsTrend"></canvas>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <h6 class="font-weight-bold">Répartition par Type de Consultation</h6>
-                                <div class="stats-container mt-2" style="height: 200px;">
-                                    <canvas id="consultationTypes"></canvas>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 class="font-weight-bold">Satisfaction Patients</h6>
-                                <div class="stats-container mt-2" style="height: 200px;">
-                                    <canvas id="patientSatisfaction"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Colonne de droite -->
-            <div class="col-lg-4 mb-4">
-                <!-- Zone de messagerie -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Messages Patients</h6>
-                        <a href="#" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#chatModal">
-                            <i class="fas fa-comments fa-sm"></i> Ouvrir Discussion
-                        </a>
-                    </div>
-                    <div class="card-body chat-container">
-                        <div class="nav nav-tabs mb-3" id="chat-tabs" role="tablist">
-                            <a class="nav-link active" id="chat-all-tab" data-toggle="tab" href="#chat-all" role="tab"
-                                aria-selected="true">
-                                Tous <span class="badge badge-danger ml-1">3</span>
-                            </a>
-                            <a class="nav-link" id="chat-unread-tab" data-toggle="tab" href="#chat-unread" role="tab"
-                                aria-selected="false">
-                                Non lus <span class="badge badge-danger ml-1">2</span>
-                            </a>
-                        </div>
-                        <div class="tab-content">
-                            <div class="tab-pane fade show active" id="chat-all">
-                                <div class="chat-messages">
-                                    @php
-                                        // Messages de chat d'exemple
-                                        $chatMessages = [
-                                            [
-                                                'patient' => [
-                                                    'name' => 'Marie Dupont',
-                                                    'avatar' => 'https://randomuser.me/api/portraits/women/45.jpg',
-                                                ],
-                                                'unread' => true,
-                                                'messages' => [
-                                                    [
-                                                        'type' => 'incoming',
-                                                        'text' => 'Bonjour Dr. Martin, j\'ai des maux de tête sévères depuis deux jours. Devrais-je m\'inquiéter?',
-                                                        'time' => '09:45'
-                                                    ],
-                                                    [
-                                                        'type' => 'outgoing',
-                                                        'text' => 'Bonjour Marie, ressentez-vous d\'autres symptômes comme des nausées ou une sensibilité à la lumière?',
-                                                        'time' => '09:48'
-                                                    ],
-                                                    [
-                                                        'type' => 'incoming',
-                                                        'text' => 'Oui, je me sens un peu nauséeuse, surtout le matin.',
-                                                        'time' => '09:52'
-                                                    ],
-                                                ]
-                                            ],
-                                            [
-                                                'patient' => [
-                                                    'name' => 'Jean Lefebvre',
-                                                    'avatar' => 'https://randomuser.me/api/portraits/men/32.jpg',
-                                                ],
-                                                'unread' => true,
-                                                'messages' => [
-                                                    [
-                                                        'type' => 'incoming',
-                                                        'text' => 'Dr. Martin, je voulais vous demander si je dois continuer le traitement que vous m\'avez prescrit la dernière fois?',
-                                                        'time' => 'Hier'
-                                                    ],
-                                                ]
-                                            ],
-                                        ];
-                                    @endphp
-
-                                    @foreach($chatMessages as $conversation)
-                                        <div class="d-flex align-items-center mb-3">
-                                            <img src="{{ $conversation['patient']['avatar'] }}" class="avatar mr-3"
-                                                alt="{{ $conversation['patient']['name'] }}">
-                                            <div>
-                                                <h6 class="mb-0 font-weight-bold">
-                                                    {{ $conversation['patient']['name'] }}
-                                                    @if(isset($conversation['unread']) && $conversation['unread'])
-                                                        <span class="badge badge-danger ml-2">Nouveau</span>
-                                                    @endif
-                                                </h6>
-                                                <div class="small text-muted">{{ count($conversation['messages']) }} messages
-                                                </div>
-                                            </div>
-                                            <a href="#" class="btn btn-sm btn-outline-primary ml-auto" data-toggle="modal"
-                                                data-target="#chatModal">Voir</a>
-                                        </div>
-
-                                        @foreach($conversation['messages'] as $index => $message)
-                                            @if($index < 2)
-                                                <div class="chat-message {{ $message['type'] }} mb-3">
-                                                    <div class="mb-1">
-                                                        @if($message['type'] == 'incoming')
-                                                            <span
-                                                                class="small font-weight-bold">{{ $conversation['patient']['name'] }}</span>
-                                                        @else
-                                                            <span class="small font-weight-bold">Vous</span>
-                                                        @endif
-                                                        <span class="small text-muted ml-2">{{ $message['time'] }}</span>
-                                                    </div>
-                                                    {{ $message['text'] }}
-                                                </div>
-                                            @endif
-                                        @endforeach
-
-                                        @if(count($conversation['messages']) > 2)
-                                            <div class="text-center mb-4">
-                                                <a href="#" class="small">Voir conversation complète</a>
-                                            </div>
-                                        @endif
-
-                                        @if(!$loop->last)
-                                            <hr class="my-3">
-                                        @endif
-                                    @endforeach
-
-                                    <div class="text-center mt-3">
-                                        <a href="#" class="btn btn-sm btn-outline-primary">Voir Tous les Messages</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="chat-unread">
-                                <div class="chat-messages">
-                                    @foreach($chatMessages as $conversation)
-                                        @if(isset($conversation['unread']) && $conversation['unread'])
-                                            <div class="d-flex align-items-center mb-3">
-                                                <img src="{{ $conversation['patient']['avatar'] }}" class="avatar mr-3"
-                                                    alt="{{ $conversation['patient']['name'] }}">
-                                                <div>
-                                                    <h6 class="mb-0 font-weight-bold">
-                                                        {{ $conversation['patient']['name'] }}
-                                                        <span class="badge badge-danger ml-2">Nouveau</span>
-                                                    </h6>
-                                                    <div class="small text-muted">{{ count($conversation['messages']) }} messages
-                                                    </div>
-                                                </div>
-                                                <a href="#" class="btn btn-sm btn-outline-primary ml-auto" data-toggle="modal"
-                                                    data-target="#chatModal">Voir</a>
-                                            </div>
-
-                                            <!-- Affichage du dernier message non lu -->
-                                            <div class="chat-message {{ end($conversation['messages'])['type'] }} mb-3">
-                                                <div class="mb-1">
-                                                    @if(end($conversation['messages'])['type'] == 'incoming')
-                                                        <span
-                                                            class="small font-weight-bold">{{ $conversation['patient']['name'] }}</span>
-                                                    @else
-                                                        <span class="small font-weight-bold">Vous</span>
-                                                    @endif
-                                                    <span
-                                                        class="small text-muted ml-2">{{ end($conversation['messages'])['time'] }}</span>
-                                                </div>
-                                                {{ end($conversation['messages'])['text'] }}
-                                            </div>
-
-                                            @if(!$loop->last)
-                                                <hr class="my-3">
-                                            @endif
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Rechercher dans les messages...">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button">
-                                        <i class="fas fa-search fa-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Prochains Rendez-vous -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Prochain Rendez-vous</h6>
-                    </div>
-                    <div class="card-body">
-                        @php
-                            $nextAppointment = $appointments[0] ?? null;
-                        @endphp
-
-                        @if($nextAppointment)
-                            <div class="text-center mb-3">
-                                <img src="{{ $nextAppointment['patient_avatar'] }}" class="avatar"
-                                    alt="{{ $nextAppointment['patient_name'] }}" style="width: 80px; height: 80px;">
-                                <h5 class="mt-2 mb-0 font-weight-bold">{{ $nextAppointment['patient_name'] }}</h5>
-                                <div class="text-muted">Patient #{{ 1000 + $nextAppointment['id'] }}</div>
-                            </div>
-
-                            <div class="row text-center">
-                                <div class="col-6 border-right">
-                                    <div class="font-weight-bold text-primary">Date</div>
-                                    <div class="h5 mb-0">{{ \Carbon\Carbon::parse($nextAppointment['date'])->format('d/m/Y') }}
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="font-weight-bold text-primary">Heure</div>
-                                    <div class="h5 mb-0">{{ \Carbon\Carbon::parse($nextAppointment['time'])->format('H:i') }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <div class="small">
-                                <div class="font-weight-bold mb-1">Motif de consultation</div>
-                                <p>{{ $nextAppointment['reason'] }}</p>
-
-                                @if(isset($nextAppointment['notes']))
-                                    <div class="font-weight-bold mb-1">Notes</div>
-                                    <p class="text-danger">{{ $nextAppointment['notes'] }}</p>
-                                @endif
-                            </div>
-
-                            <div class="mt-3 d-flex justify-content-between">
-                                <a href="#" class="btn btn-sm btn-outline-primary" data-toggle="modal"
-                                    data-target="#medicalRecordModal">
-                                    <i class="fas fa-file-medical mr-1"></i> Dossier
-                                </a>
-                                <a href="#" class="btn btn-sm btn-outline-success" data-toggle="modal"
-                                    data-target="#prescriptionModal">
-                                    <i class="fas fa-prescription mr-1"></i> Ordonnance
-                                </a>
-                                <a href="#" class="btn btn-sm btn-primary" data-toggle="modal"
-                                    data-target="#appointmentDetailsModal">
-                                    <i class="fas fa-eye mr-1"></i> Détails
-                                </a>
-                            </div>
-                        @else
-                            <div class="text-center py-5">
-                                <i class="fas fa-calendar-check fa-4x text-light mb-3"></i>
-                                <p class="text-muted">Aucun rendez-vous programmé</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Notifications</h6>
-                        <a href="#" class="btn btn-sm btn-outline-primary">Tout marquer comme lu</a>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1 font-weight-bold">Nouveau rendez-vous</h6>
-                                    <small class="text-danger">Il y a 15 min</small>
-                                </div>
-                                <p class="mb-1">Marie Dupont a demandé un rendez-vous pour demain à 14h30.</p>
-                                <small class="text-primary">Cliquez pour confirmer</small>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1 font-weight-bold">Message de patient</h6>
-                                    <small class="text-muted">Hier</small>
-                                </div>
-                                <p class="mb-1">Jean Lefebvre a une question sur son traitement.</p>
-                                <small class="text-primary">Voir le message</small>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1 font-weight-bold">Résultats d'analyses</h6>
-                                    <small class="text-muted">Il y a 2 jours</small>
-                                </div>
-                                <p class="mb-1">Résultats d'analyses disponibles pour Émilie Moreau.</p>
-                                <small class="text-primary">Consulter les résultats</small>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1 font-weight-bold">Rappel de conférence</h6>
-                                    <small class="text-muted">Il y a 3 jours</small>
-                                </div>
-                                <p class="mb-1">Conférence sur les avancées en cardiologie le 15 avril.</p>
-                                <small class="text-primary">Voir les détails</small>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Calendrier hebdomadaire -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Calendrier Hebdomadaire</h6>
-                <div>
-                    <button class="btn btn-sm btn-outline-primary mr-2">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <span class="font-weight-bold">02 - 08 Avril 2025</span>
-                    <button class="btn btn-sm btn-outline-primary ml-2">
-                        <i class="fas fa-chevron-right"></i>
+                <div class="relative">
+                    <button class="text-gray-600 focus:outline-none relative">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="notification-badge">7</span>
                     </button>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th style="width: 10%">Heure</th>
-                                <th style="width: 15%">Lundi 02/04</th>
-                                <th style="width: 15%">Mardi 03/04</th>
-                                <th style="width: 15%">Mercredi 04/04</th>
-                                <th style="width: 15%">Jeudi 05/04</th>
-                                <th style="width: 15%">Vendredi 06/04</th>
-                                <th style="width: 15%">Samedi 07/04</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'] as $hour)
-                                <tr>
-                                    <td class="font-weight-bold text-primary">{{ $hour }}</td>
-                                    @foreach([1, 2, 3, 4, 5, 6] as $day)
-                                        <td class="calendar-day">
-                                            @if($day == 1 && $hour == '09:30')
-                                                <div class="calendar-event calendar-event-primary">
-                                                    <div class="small font-weight-bold">Marie Dupont</div>
-                                                    <div class="small">Bilan annuel</div>
-                                                </div>
-                                            @endif
-                                            @if($day == 1 && $hour == '11:00')
-                                                <div class="calendar-event calendar-event-warning">
-                                                    <div class="small font-weight-bold">Jean Lefebvre</div>
-                                                    <div class="small">Suivi post-opératoire</div>
-                                                </div>
-                                            @endif
-                                            @if($day == 2 && $hour == '14:00')
-                                                <div class="calendar-event calendar-event-primary">
-                                                    <div class="small font-weight-bold">Émilie Moreau</div>
-                                                    <div class="small">Révision traitement</div>
-                                                </div>
-                                            @endif
-                                            @if($day == 2 && $hour == '16:00')
-                                                <div class="calendar-event calendar-event-success">
-                                                    <div class="small font-weight-bold">Michel Bernard</div>
-                                                    <div class="small">Douleurs thoraciques</div>
-                                                </div>
-                                            @endif
-                                        </td>
-                                    @endforeach
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        </header>
+
+        <!-- Dashboard section -->
+        <section id="dashboard-section" class="p-4 md:p-8 dashboard-section active">
+            <!-- Header with welcome message and date -->
+            <div
+                class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 mb-8 text-white relative overflow-hidden">
+                <div
+                    class="absolute right-0 top-0 w-40 h-40 bg-white opacity-10 rounded-full transform translate-x-20 -translate-y-20">
                 </div>
-            </div>
-        </div>
+                <div
+                    class="absolute left-20 bottom-0 w-20 h-20 bg-white opacity-10 rounded-full transform -translate-y-10">
+                </div>
 
-        <!-- Modals -->
-
-        <!-- Modal Chat -->
-        <div class="modal fade" id="chatModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            <img src="https://randomuser.me/api/portraits/women/45.jpg" class="avatar mr-2"
-                                alt="Marie Dupont">
-                            Discussion avec Marie Dupont
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between relative z-10">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold">Bienvenue, Dr. Mohammed Ennaim!</h1>
+                        <p class="mt-2 flex items-center text-indigo-100">
+                            <i class="fas fa-calendar-day mr-2"></i>
+                            <span id="current-date-time">Samedi, 5 Avril 2025 | 08:49:54</span>
+                        </p>
                     </div>
-                    <div class="modal-body">
-                        <div class="chat-messages p-3" style="height: 350px; overflow-y: auto;">
-                            <div class="chat-message incoming">
-                                <div class="mb-1">
-                                    <span class="small font-weight-bold">Marie Dupont</span>
-                                    <span class="small text-muted ml-2">09:45</span>
-                                </div>
-                                Bonjour Dr. Martin, j'ai des maux de tête sévères depuis deux jours. Devrais-je m'inquiéter?
-                            </div>
-
-                            <div class="chat-message outgoing">
-                                <div class="mb-1">
-                                    <span class="small font-weight-bold">Vous</span>
-                                    <span class="small text-muted ml-2">09:48</span>
-                                </div>
-                                Bonjour Marie, ressentez-vous d'autres symptômes comme des nausées ou une sensibilité à la
-                                lumière?
-                            </div>
-
-                            <div class="chat-message incoming">
-                                <div class="mb-1">
-                                    <span class="small font-weight-bold">Marie Dupont</span>
-                                    <span class="small text-muted ml-2">09:52</span>
-                                </div>
-                                Oui, je me sens un peu nauséeuse, surtout le matin.
-                            </div>
-
-                            <div class="chat-message outgoing">
-                                <div class="mb-1">
-                                    <span class="small font-weight-bold">Vous</span>
-                                    <span class="small text-muted ml-2">09:55</span>
-                                </div>
-                                Ces symptômes pourraient indiquer une migraine. Avez-vous déjà souffert de migraines par le
-                                passé?
-                            </div>
-
-                            <div class="chat-message incoming">
-                                <div class="mb-1">
-                                    <span class="small font-weight-bold">Marie Dupont</span>
-                                    <span class="small text-muted ml-2">10:01</span>
-                                </div>
-                                Non, c'est la première fois que je ressens ces symptômes de manière aussi intense.
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="d-flex mt-3">
-                            <div class="dropdown mr-2">
-                                <button class="btn btn-light dropdown-toggle" type="button" id="responseTemplates"
-                                    data-toggle="dropdown">
-                                    <i class="fas fa-reply-all"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Réponse standard - Conseil</a>
-                                    <a class="dropdown-item" href="#">Réponse standard - Urgence</a>
-                                    <a class="dropdown-item" href="#">Réponse standard - Rendez-vous</a>
-                                </div>
-                            </div>
-                            <input type="text" class="form-control" placeholder="Tapez votre message...">
-                            <button class="btn btn-primary ml-2">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
+                    <div class="mt-4 md:mt-0">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-full py-2 px-4 inline-flex items-center">
+                            <i class="fas fa-sun mr-2 text-yellow-300"></i>
+                            <span>24°C • Casablanca</span>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-primary mr-auto">
-                            <i class="fas fa-calendar-plus mr-1"></i> Créer Rendez-vous
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fermer</button>
-                        <button type="button" class="btn btn-primary">Marquer comme résolu</button>
+                </div>
+
+                <div class="mt-6 flex flex-wrap gap-2">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-full py-1.5 px-4 flex items-center">
+                        <div class="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
+                        <span>8 rendez-vous aujourd'hui</span>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm rounded-full py-1.5 px-4 flex items-center">
+                        <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                        <span>3 résultats de laboratoire urgents</span>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm rounded-full py-1.5 px-4 flex items-center">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span>12 messages non lus</span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Modal Dossier Médical -->
-        <div class="modal fade" id="medicalRecordModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Dossier Médical - Marie Dupont</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
+                <div
+                    class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mb-2">
+                        <i class="fas fa-user-plus text-indigo-600 text-xl"></i>
                     </div>
-                    <div class="modal-body">
-                        <ul class="nav nav-tabs" id="medicalRecordTabs" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="summary-tab" data-toggle="tab" href="#summary"
-                                    role="tab">Résumé</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="history-tab" data-toggle="tab" href="#history"
-                                    role="tab">Antécédents</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="visits-tab" data-toggle="tab" href="#visits"
-                                    role="tab">Consultations</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="prescriptions-tab" data-toggle="tab" href="#prescriptions"
-                                    role="tab">Ordonnances</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="results-tab" data-toggle="tab" href="#results"
-                                    role="tab">Résultats</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content p-3" id="medicalRecordTabsContent">
-                            <div class="tab-pane fade show active" id="summary" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-md-4 text-center mb-4">
-                                        <img src="https://randomuser.me/api/portraits/women/45.jpg"
-                                            class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
-                                        <h5>Marie Dupont</h5>
-                                        <p class="text-muted">Née le 15/03/1985 (40 ans)</p>
-                                        <span class="badge badge-primary">Groupe sanguin: A+</span>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <h6 class="font-weight-bold">Informations personnelles</h6>
-                                        <div class="row mb-3">
-                                            <div class="col-md-4 text-muted">N° Sécurité Sociale:</div>
-                                            <div class="col-md-8">285037512345678</div>
+                    <span class="text-sm font-medium">Nouveau Patient</span>
+                </div>
+                <div
+                    class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-2">
+                        <i class="fas fa-calendar-plus text-emerald-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">Nouveau RDV</span>
+                </div>
+                <div
+                    class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-2">
+                        <i class="fas fa-file-medical text-amber-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">Dossiers</span>
+                </div>
+                <div
+                    class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-rose-100 flex items-center justify-center mb-2">
+                        <i class="fas fa-heartbeat text-rose-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">Signes Vitaux</span>
+                </div>
+                <div
+                    class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                        <i class="fas fa-file-prescription text-purple-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">Ordonnances</span>
+                </div>
+                <div
+                    class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-sky-100 flex items-center justify-center mb-2">
+                        <i class="fas fa-chart-pie text-sky-600 text-xl"></i>
+                    </div>
+                    <span class="text-sm font-medium">Analyses</span>
+                </div>
+            </div>
+
+            <!-- Statistics cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 p-3 rounded-full bg-indigo-100 text-indigo-600">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Patients</dt>
+                                    <dd class="flex items-center">
+                                        <div class="text-2xl font-semibold text-gray-900" id="patient-counter">154</div>
+                                        <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
+                                            <i class="fas fa-arrow-up mr-1"></i>
+                                            <span>8 ce mois</span>
                                         </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-4 text-muted">Adresse:</div>
-                                            <div class="col-md-8">12 Rue des Lilas, 75011 Paris</div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-4 text-muted">Téléphone:</div>
-                                            <div class="col-md-8">06 12 34 56 78</div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-4 text-muted">Email:</div>
-                                            <div class="col-md-8">marie.dupont@email.com</div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-4 text-muted">Contact urgence:</div>
-                                            <div class="col-md-8">Pierre Dupont (Époux) - 06 98 76 54 32</div>
-                                        </div>
+                                    </dd>
+                                </dl>
+                                <div class="mt-2">
+                                    <div class="progress-bar">
+                                        <div class="progress-bar-fill bg-indigo-600" style="width: 75%"></div>
                                     </div>
                                 </div>
-                                <hr>
-                                <h6 class="font-weight-bold">Allergies et contre-indications</h6>
-                                <div class="alert alert-danger">
-                                    <i class="fas fa-exclamation-triangle mr-2"></i> Allergie à la pénicilline
-                                </div>
-                                <h6 class="font-weight-bold">Notes importantes</h6>
-                                <p>Antécédents de diabète type 2 dans la famille. Suivi régulier de la glycémie recommandé.
-                                </p>
-                            </div>
-
-                            <div class="tab-pane fade" id="history" role="tabpanel">
-                                <!-- Contenu des antécédents médicaux -->
-                            </div>
-
-                            <div class="tab-pane fade" id="visits" role="tabpanel">
-                                <!-- Historique des consultations -->
-                            </div>
-
-                            <div class="tab-pane fade" id="prescriptions" role="tabpanel">
-                                <!-- Historique des ordonnances -->
-                            </div>
-
-                            <div class="tab-pane fade" id="results" role="tabpanel">
-                                <!-- Résultats des analyses -->
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-primary mr-auto">
-                            <i class="fas fa-print mr-1"></i> Imprimer
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Fermer</button>
-                        <button type="button" class="btn btn-primary">
-                            <i class="fas fa-edit mr-1"></i> Modifier
-                        </button>
+                    <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500 flex items-center">
+                                Voir les détails
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        <span class="text-xs text-gray-500">Mis à jour à l'instant</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 p-3 rounded-full bg-emerald-100 text-emerald-600">
+                                <i class="fas fa-calendar-check text-xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">RDV Aujourd'hui</dt>
+                                    <dd class="flex items-center">
+                                        <div class="text-2xl font-semibold text-gray-900" id="appointment-counter">32
+                                        </div>
+                                        <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
+                                            <i class="fas fa-arrow-up mr-1"></i>
+                                            <span>14% vs hier</span>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <div class="mt-2">
+                                    <div class="progress-bar">
+                                        <div class="progress-bar-fill bg-emerald-600" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-emerald-600 hover:text-emerald-500 flex items-center">
+                                Voir l'agenda
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        <span class="text-xs text-gray-500">Mises à jour en direct</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 p-3 rounded-full bg-amber-100 text-amber-600">
+                                <i class="fas fa-money-bill-wave text-xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Revenu Mensuel</dt>
+                                    <dd class="flex items-center">
+                                        <div class="text-2xl font-semibold text-gray-900">28 350 MAD</div>
+                                        <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
+                                            <i class="fas fa-arrow-up mr-1"></i>
+                                            <span>12%</span>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <div class="mt-2">
+                                    <div class="progress-bar">
+                                        <div class="progress-bar-fill bg-amber-600" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-amber-600 hover:text-amber-500 flex items-center">
+                                Voir les détails
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        <span class="text-xs text-gray-500">Mis à jour aujourd'hui à 07:30</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 p-3 rounded-full bg-rose-100 text-rose-600">
+                                <i class="fas fa-smile text-xl"></i>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Satisfaction Patients</dt>
+                                    <dd class="flex items-center">
+                                        <div class="text-2xl font-semibold text-gray-900">92%</div>
+                                        <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
+                                            <i class="fas fa-arrow-up mr-1"></i>
+                                            <span>3%</span>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <div class="mt-2">
+                                    <div class="progress-bar">
+                                        <div class="progress-bar-fill bg-rose-600" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-rose-600 hover:text-rose-500 flex items-center">
+                                Voir les avis
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        <span class="text-xs text-gray-500">Basé sur 120 avis</span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Modal Nouvelle Ordonnance -->
-        <div class="modal fade" id="prescriptionModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Nouvelle Ordonnance - Marie Dupont</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+            <!-- Next appointment & Calendar -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Next appointment -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div
+                        class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-4 flex justify-between items-center">
+                        <h2 class="text-xl font-bold flex items-center">
+                            <i class="fas fa-star text-yellow-300 mr-2"></i>
+                            Prochain Rendez-vous
+                        </h2>
+                        <div
+                            class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                            <i class="fas fa-clock mr-1.5"></i>
+                            <span id="appointment-countdown">Dans 40 minutes</span>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <form class="prescription-form">
-                            <div class="form-group">
-                                <label>Date de prescription</label>
-                                <input type="date" class="form-control" value="{{ date('Y-m-d') }}">
+                    <div class="md:flex">
+                        <!-- Date column -->
+                        <div
+                            class="bg-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center">
+                            <div class="text-center">
+                                <p class="text-indigo-200 text-sm">Aujourd'hui</p>
+                                <p class="text-3xl font-bold">09:30</p>
+                                <p class="text-xs">AM</p>
                             </div>
-
-                            <div class="form-group">
-                                <label>Diagnostic</label>
-                                <input type="text" class="form-control" placeholder="Entrez le diagnostic">
+                            <div class="md:mt-4 text-center">
+                                <span class="px-2 py-1 bg-indigo-700 rounded-lg text-xs">Salle 204</span>
                             </div>
+                        </div>
 
-                            <hr>
-                            <h6 class="font-weight-bold mb-3">Médicaments</h6>
-
-                            <div id="medicationsList">
-                                <div class="medicine-item">
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <div class="form-group">
-                                                <label>Médicament</label>
-                                                <input type="text" class="form-control" placeholder="Nom du médicament">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Dose</label>
-                                                <input type="text" class="form-control" placeholder="Dose">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Unité</label>
-                                                <select class="form-control">
-                                                    <option>mg</option>
-                                                    <option>g</option>
-                                                    <option>ml</option>
-                                                    <option>comprimé(s)</option>
-                                                </select>
+                        <!-- Content -->
+                        <div class="p-6 flex-grow">
+                            <div class="flex flex-wrap">
+                                <div class="w-full lg:w-2/3">
+                                    <div class="flex items-center">
+                                        <img class="h-12 w-12 rounded-full mr-4"
+                                            src="https://ui-avatars.com/api/?name=Mohammed+Alami&background=6366F1&color=ffffff"
+                                            alt="Patient">
+                                        <div>
+                                            <h3 class="text-lg font-medium text-indigo-700">Mohammed Alami</h3>
+                                            <div class="flex flex-wrap text-sm text-gray-600">
+                                                <span class="mr-3">Homme • 42 ans</span>
+                                                <span>Patient ID: #MED-12345</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="form-group">
-                                                <label>Instructions</label>
-                                                <input type="text" class="form-control" placeholder="Instruction de prise">
-                                            </div>
+
+                                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Type de rendez-vous</p>
+                                            <p class="font-medium flex items-center mt-1">
+                                                <i class="fas fa-heartbeat text-indigo-500 mr-2"></i>
+                                                Contrôle de routine
+                                            </p>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Durée</label>
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control" value="7">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">jours</span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div>
+                                            <p class="text-gray-500">Médecin</p>
+                                            <p class="font-medium flex items-center mt-1">
+                                                <i class="fas fa-user-md text-indigo-500 mr-2"></i>
+                                                Dr. Ahmed Lahlou
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Département</p>
+                                            <p class="font-medium flex items-center mt-1">
+                                                <i class="fas fa-stethoscope text-indigo-500 mr-2"></i>
+                                                Cardiologie
+                                            </p>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        <button type="button" class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash-alt"></i>
+
+                                    <div class="mt-4 pt-4 border-t border-gray-100">
+                                        <div class="flex items-center text-sm">
+                                            <div class="w-24 text-gray-500">Dernière visite:</div>
+                                            <div class="font-medium">12 Mars 2025 (24 jours)</div>
+                                        </div>
+                                        <div class="flex items-center text-sm mt-1.5">
+                                            <div class="w-24 text-gray-500">Téléphone:</div>
+                                            <div class="font-medium">+212 661-234567</div>
+                                        </div>
+                                        <div class="flex items-center text-sm mt-1.5">
+                                            <div class="w-24 text-gray-500">Email:</div>
+                                            <div class="font-medium">m.alami@example.com</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="w-full lg:w-1/3 mt-4 lg:mt-0 lg:border-l lg:pl-6 border-gray-100">
+                                    <span
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 pulse"></span>
+                                        Confirmé
+                                    </span>
+                                    <div class="mt-4">
+                                        <p class="text-sm font-medium text-gray-700">Notes:</p>
+                                        <p class="text-sm text-gray-600 mt-1">Le patient a mentionné des douleurs
+                                            thoraciques lors de la dernière visite. Suivi de l'efficacité des
+                                            médicaments.</p>
+                                    </div>
+
+                                    <div class="mt-6 flex flex-wrap gap-2">
+                                        <button
+                                            class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                            <i class="fas fa-file-medical text-indigo-500 mr-2"></i>
+                                            Dossier médical
+                                        </button>
+                                        <button
+                                            class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                            <i class="fas fa-history text-amber-500 mr-2"></i>
+                                            Historique
+                                        </button>
+                                        <button
+                                            class="flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            Enregistrer
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="text-center mt-3">
-                                <button type="button" class="btn btn-outline-primary">
-                                    <i class="fas fa-plus"></i> Ajouter un médicament
+                <!-- Mini Calendar -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-calendar-alt text-indigo-500 mr-2"></i>
+                            Avril 2025
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="text-sm font-medium">Aujourd'hui</span>
+                            <button class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-7 text-center gap-1 mb-2">
+                            <div class="text-xs font-medium text-gray-500">Lun</div>
+                            <div class="text-xs font-medium text-gray-500">Mar</div>
+                            <div class="text-xs font-medium text-gray-500">Mer</div>
+                            <div class="text-xs font-medium text-gray-500">Jeu</div>
+                            <div class="text-xs font-medium text-gray-500">Ven</div>
+                            <div class="text-xs font-medium text-gray-500">Sam</div>
+                            <div class="text-xs font-medium text-gray-500">Dim</div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1">
+                            <!-- Week 1 -->
+                            <div class="calendar-day text-gray-400">31</div>
+                            <div class="calendar-day">1</div>
+                            <div class="calendar-day">2</div>
+                            <div class="calendar-day has-appointments">3</div>
+                            <div class="calendar-day has-appointments">4</div>
+                            <div class="calendar-day active has-appointments">5</div>
+                            <div class="calendar-day">6</div>
+
+                            <!-- Week 2 -->
+                            <div class="calendar-day">7</div>
+                            <div class="calendar-day has-appointments">8</div>
+                            <div class="calendar-day">9</div>
+                            <div class="calendar-day has-appointments">10</div>
+                            <div class="calendar-day">11</div>
+                            <div class="calendar-day">12</div>
+                            <div class="calendar-day">13</div>
+
+                            <!-- Week 3 -->
+                            <div class="calendar-day has-appointments">14</div>
+                            <div class="calendar-day has-appointments">15</div>
+                            <div class="calendar-day">16</div>
+                            <div class="calendar-day has-appointments">17</div>
+                            <div class="calendar-day">18</div>
+                            <div class="calendar-day has-appointments">19</div>
+                            <div class="calendar-day">20</div>
+
+                            <!-- Week 4 -->
+                            <div class="calendar-day">21</div>
+                            <div class="calendar-day has-appointments">22</div>
+                            <div class="calendar-day">23</div>
+                            <div class="calendar-day has-appointments">24</div>
+                            <div class="calendar-day">25</div>
+                            <div class="calendar-day">26</div>
+                            <div class="calendar-day">27</div>
+
+                            <!-- Week 5 -->
+                            <div class="calendar-day">28</div>
+                            <div class="calendar-day has-appointments">29</div>
+                            <div class="calendar-day">30</div>
+                            <div class="calendar-day text-gray-400">1</div>
+                            <div class="calendar-day text-gray-400">2</div>
+                            <div class="calendar-day text-gray-400">3</div>
+                            <div class="calendar-day text-gray-400">4</div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-gray-50 flex justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-indigo-600 rounded-full mr-1"></div>
+                                <span class="text-xs text-gray-600">8 aujourd'hui</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-amber-500 rounded-full mr-1"></div>
+                                <span class="text-xs text-gray-600">5 demain</span>
+                            </div>
+                        </div>
+                        <a href="#" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics and patient data -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+                <div class="border-b border-gray-200">
+                    <nav class="flex">
+                        <button class="tab-button active text-indigo-600 py-4 px-6 font-medium text-sm"
+                            data-tab="dashboard-analytics">
+                            Analyses du tableau de bord
+                        </button>
+                        <button class="tab-button text-gray-500 hover:text-gray-700 py-4 px-6 font-medium text-sm"
+                            data-tab="demographics">
+                            Démographie des patients
+                        </button>
+                        <button class="tab-button text-gray-500 hover:text-gray-700 py-4 px-6 font-medium text-sm"
+                            data-tab="revenue">
+                            Analyse des revenus
+                        </button>
+                        <button class="tab-button text-gray-500 hover:text-gray-700 py-4 px-6 font-medium text-sm"
+                            data-tab="performance">
+                            Performance du personnel
+                        </button>
+                    </nav>
+                </div>
+
+                <div class="p-6">
+                    <!-- Tab content -->
+                    <div id="dashboard-analytics" class="tab-content block">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Patient Visits Chart -->
+                            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                                    <h3 class="text-lg font-medium text-gray-900">Visites des patients</h3>
+                                    <div class="flex space-x-2">
+                                        <button
+                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
+                                            Semaine
+                                        </button>
+                                        <button
+                                            class="px-3 py-1 bg-indigo-600 border border-indigo-600 rounded-md text-sm text-white hover:bg-indigo-700">
+                                            Mois
+                                        </button>
+                                        <button
+                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
+                                            Année
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="chart-container">
+                                        <canvas id="patientVisitsChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-3 bg-gray-50 text-sm">
+                                    <div class="flex justify-between items-center text-gray-600">
+                                        <span>Total des visites ce mois: 412</span>
+                                        <span class="text-emerald-600 flex items-center font-medium">
+                                            <i class="fas fa-arrow-up mr-1"></i> 14% vs mois dernier
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Revenue Distribution Chart -->
+                            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                                    <h3 class="text-lg font-medium text-gray-900">Distribution des revenus</h3>
+                                    <div class="flex items-center">
+                                        <span class="text-sm text-gray-500 mr-3">Avril 2025</span>
+                                        <button class="flex items-center text-sm text-indigo-600 hover:text-indigo-500">
+                                            <i class="fas fa-download mr-1"></i> Exporter
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="chart-container">
+                                        <canvas id="revenueChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-3 bg-gray-50 text-sm">
+                                    <div class="flex justify-between items-center text-gray-600">
+                                        <span>Revenu total: 28 350 MAD</span>
+                                        <span class="text-emerald-600 flex items-center font-medium">
+                                            <i class="fas fa-arrow-up mr-1"></i> 12% vs mois dernier
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key performance indicators -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-sm font-medium text-gray-500">Temps d'attente moyen</div>
+                                <div class="flex items-end space-x-1 mt-1">
+                                    <div class="text-2xl font-semibold">18</div>
+                                    <div class="text-sm text-gray-500 mb-1">minutes</div>
+                                </div>
+                                <div class="mt-2 text-xs flex items-center text-emerald-600">
+                                    <i class="fas fa-arrow-down mr-1"></i>
+                                    <span>12% de moins que l'objectif</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-sm font-medium text-gray-500">Durée moy. des consultations</div>
+                                <div class="flex items-end space-x-1 mt-1">
+                                    <div class="text-2xl font-semibold">24</div>
+                                    <div class="text-sm text-gray-500 mb-1">minutes</div>
+                                </div>
+                                <div class="mt-2 text-xs flex items-center text-amber-600">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span>5% de plus que l'objectif</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-sm font-medium text-gray-500">Taux d'absence</div>
+                                <div class="flex items-end space-x-1 mt-1">
+                                    <div class="text-2xl font-semibold">8.3</div>
+                                    <div class="text-sm text-gray-500 mb-1">%</div>
+                                </div>
+                                <div class="mt-2 text-xs flex items-center text-emerald-600">
+                                    <i class="fas fa-arrow-down mr-1"></i>
+                                    <span>2.1% de moins que le mois dernier</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="text-sm font-medium text-gray-500">Réservations en ligne</div>
+                                <div class="flex items-end space-x-1 mt-1">
+                                    <div class="text-2xl font-semibold">64</div>
+                                    <div class="text-sm text-gray-500 mb-1">%</div>
+                                </div>
+                                <div class="mt-2 text-xs flex items-center text-emerald-600">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span>8% de plus que le mois dernier</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="demographics" class="tab-content hidden">
+                        <div class="text-center py-10">
+                            <p class="text-gray-500">Contenu de la démographie des patients à venir</p>
+                        </div>
+                    </div>
+
+                    <div id="revenue" class="tab-content hidden">
+                        <div class="text-center py-10">
+                            <p class="text-gray-500">Contenu de l'analyse des revenus à venir</p>
+                        </div>
+                    </div>
+
+                    <div id="performance" class="tab-content hidden">
+                        <div class="text-center py-10">
+                            <p class="text-gray-500">Contenu de la performance du personnel à venir</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments and activities section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Today's Appointments -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 flex justify-between items-center border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-calendar-day text-indigo-500 mr-2"></i>
+                            Rendez-vous d'aujourd'hui
+                            <span
+                                class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">32
+                                Total</span>
+                        </h3>
+                        <div>
+                            <select
+                                class="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                <option>Tous les statuts</option>
+                                <option>Confirmés</option>
+                                <option>En attente</option>
+                                <option>Terminés</option>
+                                <option>Annulés</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="max-h-80 overflow-y-auto">
+                        <ul class="divide-y divide-gray-200">
+                            <li class="appointment-card">
+                                <div class="px-6 py-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full"
+                                                    src="https://ui-avatars.com/api/?name=Mohammed+Alami&background=6366F1&color=ffffff"
+                                                    alt="Patient">
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-indigo-600">Mohammed Alami</p>
+                                                <p class="text-xs text-gray-500">Dr. Ahmed Lahlou • 09:30 AM</p>
+                                                <div class="flex items-center mt-1">
+                                                    <span class="status-indicator status-confirmed"></span>
+                                                    <span class="text-xs font-medium text-green-800">Confirmé</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="appointment-card">
+                                <div class="px-6 py-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full"
+                                                    src="https://ui-avatars.com/api/?name=Fatima+Zahra&background=6366F1&color=ffffff"
+                                                    alt="Patient">
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-indigo-600">Fatima Zahra</p>
+                                                <p class="text-xs text-gray-500">Dr. Leila Bouzidi • 11:00 AM</p>
+                                                <div class="flex items-center mt-1">
+                                                    <span class="status-indicator status-confirmed"></span>
+                                                    <span class="text-xs font-medium text-green-800">Confirmé</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="appointment-card">
+                                <div class="px-6 py-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full"
+                                                    src="https://ui-avatars.com/api/?name=Karim+Benali&background=6366F1&color=ffffff"
+                                                    alt="Patient">
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-indigo-600">Karim Benali</p>
+                                                <p class="text-xs text-gray-500">Dr. Omar Tazi • 02:15 PM</p>
+                                                <div class="flex items-center mt-1">
+                                                    <span class="status-indicator status-pending"></span>
+                                                    <span class="text-xs font-medium text-amber-800">En attente</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="appointment-card">
+                                <div class="px-6 py-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full"
+                                                    src="https://ui-avatars.com/api/?name=Souad+Moussaoui&background=6366F1&color=ffffff"
+                                                    alt="Patient">
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-indigo-600">Souad Moussaoui</p>
+                                                <p class="text-xs text-gray-500">Dr. Samira Chennaoui • 04:45 PM</p>
+                                                <div class="flex items-center mt-1">
+                                                    <span class="status-indicator status-pending"></span>
+                                                    <span class="text-xs font-medium text-amber-800">En attente</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button
+                                                class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button
+                                                class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
+                        <span class="text-sm text-gray-700">Affichage de 4 rendez-vous sur 32</span>
+                        <button class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
+                            Voir tous les rendez-vous
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Activity tabs -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex space-x-6">
+                            <button id="tab-activity" class="tab-button active">
+                                Activités
+                            </button>
+                            <button id="tab-tasks" class="tab-button">
+                                Tâches <span
+                                    class="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs">5</span>
+                            </button>
+                            <button id="tab-messages" class="tab-button">
+                                Messages <span
+                                    class="ml-1 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs">7</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Activity tab -->
+                    <div id="panel-activity" class="panel max-h-80 overflow-y-auto">
+                        <div class="px-6 py-4">
+                            <div class="flow-root">
+                                <ul class="relative">
+                                    <li class="ml-6 mb-4 relative">
+                                        <div
+                                            class="absolute top-2.5 left-0 -ml-6 flex items-center justify-center w-5 h-5 bg-red-600 rounded-full">
+                                            <i class="fas fa-exclamation-triangle text-white text-xs"></i>
+                                        </div>
+                                        <div class="ml-2 relative bg-gray-50 p-3 rounded-lg shadow-sm">
+                                            <div class="text-sm font-medium text-gray-900">Résultats de laboratoire
+                                                urgents reçus</div>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                <span class="font-medium text-red-600">Valeurs sanguines
+                                                    critiques</span> détectées pour le patient #12345. Nécessite une
+                                                attention immédiate.
+                                            </p>
+                                            <span class="text-xs text-gray-500 mt-1 block">Il y a 10 minutes</span>
+                                        </div>
+                                    </li>
+                                    <li class="ml-6 mb-4 relative">
+                                        <div
+                                            class="absolute top-2.5 left-0 -ml-6 flex items-center justify-center w-5 h-5 bg-emerald-600 rounded-full">
+                                            <i class="fas fa-user-plus text-white text-xs"></i>
+                                        </div>
+                                        <div class="ml-2 relative bg-gray-50 p-3 rounded-lg shadow-sm">
+                                            <div class="text-sm font-medium text-gray-900">Nouveau patient enregistré
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                <span class="font-medium text-emerald-600">Rachid Benjelloun</span>
+                                                enregistré comme nouveau patient.
+                                            </p>
+                                            <span class="text-xs text-gray-500 mt-1 block">Il y a 45 minutes</span>
+                                        </div>
+                                    </li>
+                                    <li class="ml-6 mb-4 relative">
+                                        <div
+                                            class="absolute top-2.5 left-0 -ml-6 flex items-center justify-center w-5 h-5 bg-indigo-600 rounded-full pulse">
+                                            <i class="fas fa-calendar-check text-white text-xs"></i>
+                                        </div>
+                                        <div class="ml-2 relative bg-gray-50 p-3 rounded-lg shadow-sm">
+                                            <div class="text-sm font-medium text-gray-900">Rendez-vous reprogrammé</div>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                <span class="font-medium text-indigo-600">Mohammed Alami</span> a
+                                                reprogrammé son rendez-vous avec Dr. Ahmed Lahlou.
+                                            </p>
+                                            <span class="text-xs text-gray-500 mt-1 block">Il y a 1 heure</span>
+                                        </div>
+                                    </li>
+                                    <li class="ml-6 relative">
+                                        <div
+                                            class="absolute top-2.5 left-0 -ml-6 flex items-center justify-center w-5 h-5 bg-amber-500 rounded-full">
+                                            <i class="fas fa-file-prescription text-white text-xs"></i>
+                                        </div>
+                                        <div class="ml-2 relative bg-gray-50 p-3 rounded-lg shadow-sm">
+                                            <div class="text-sm font-medium text-gray-900">Ordonnance mise à jour</div>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                <span class="font-medium text-amber-600">Dr. Leila Bouzidi</span> a mis
+                                                à jour l'ordonnance pour la patiente Fatima Zahra.
+                                            </p>
+                                            <span class="text-xs text-gray-500 mt-1 block">Il y a 2 heures</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tasks tab -->
+                    <div id="panel-tasks" class="panel max-h-80 overflow-y-auto hidden">
+                        <div class="px-6 py-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-medium text-gray-700">Tâches prioritaires</h4>
+                                <button class="text-indigo-600 text-sm hover:text-indigo-500">
+                                    <i class="fas fa-plus mr-1"></i> Ajouter
                                 </button>
                             </div>
 
-                            <hr>
-
-                            <div class="form-group">
-                                <label>Notes additionnelles</label>
-                                <textarea class="form-control" rows="3"
-                                    placeholder="Notes ou recommandations supplémentaires"></textarea>
+                            <div class="space-y-2">
+                                <div class="task-item">
+                                    <div class="flex items-start">
+                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                        <div class="flex-grow">
+                                            <div class="task-text">Examiner les résultats de laboratoire urgents pour le
+                                                patient #12345</div>
+                                            <div class="text-xs text-red-500 mt-1 flex items-center">
+                                                <i class="fas fa-fire-alt mr-1"></i>
+                                                Haute priorité • Dû aujourd'hui à 10:00
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="flex items-start">
+                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                        <div class="flex-grow">
+                                            <div class="task-text">Préparer le rapport mensuel du département</div>
+                                            <div class="text-xs text-amber-500 mt-1 flex items-center">
+                                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                                Priorité moyenne • Dû demain
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="flex items-start">
+                                        <div class="task-checkbox checked flex-shrink-0 mr-3"></div>
+                                        <div class="flex-grow">
+                                            <div class="task-text checked">Appeler le fournisseur concernant la commande
+                                                d'équipement retardée</div>
+                                            <div class="text-xs text-gray-400 mt-1 flex items-center">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Terminé à 08:15
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="flex items-start">
+                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                        <div class="flex-grow">
+                                            <div class="task-text">Mettre à jour le planning du personnel pour la
+                                                semaine prochaine</div>
+                                            <div class="text-xs text-amber-500 mt-1 flex items-center">
+                                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                                Priorité moyenne • Dû dans 2 jours
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item">
+                                    <div class="flex items-start">
+                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                        <div class="flex-grow">
+                                            <div class="task-text">Approuver les demandes de congés</div>
+                                            <div class="text-xs text-green-500 mt-1 flex items-center">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                Faible priorité • Dû dans 3 jours
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-outline-primary mr-2">
-                            <i class="fas fa-save mr-1"></i> Enregistrer brouillon
-                        </button>
-                        <button type="button" class="btn btn-primary">
-                            <i class="fas fa-paper-plane mr-1"></i> Valider et envoyer
+
+                    <!-- Messages tab -->
+                    <div id="panel-messages" class="panel max-h-80 overflow-y-auto hidden">
+                        <div class="divide-y divide-gray-200">
+                            <div class="message-item p-4 cursor-pointer">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex">
+                                        <img class="h-10 w-10 rounded-full"
+                                            src="https://ui-avatars.com/api/?name=Omar+Tazi&background=4f46e5&color=ffffff"
+                                            alt="Dr. Omar Tazi">
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">Dr. Omar Tazi</p>
+                                            <p class="text-sm text-gray-500 line-clamp-1">À propos du patient Karim
+                                                Benali: Merci de consulter les derniers résultats de laboratoire...</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-xs text-gray-500">09:42</span>
+                                        <span
+                                            class="w-5 h-5 bg-indigo-600 rounded-full text-white text-xs flex items-center justify-center mt-1">1</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message-item p-4 cursor-pointer">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex">
+                                        <img class="h-10 w-10 rounded-full"
+                                            src="https://ui-avatars.com/api/?name=Leila+Bouzidi&background=4f46e5&color=ffffff"
+                                            alt="Dr. Leila Bouzidi">
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">Dr. Leila Bouzidi</p>
+                                            <p class="text-sm text-gray-500 line-clamp-1">Avez-vous vu le protocole mis
+                                                à jour pour les vaccinations pédiatriques?</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-xs text-gray-500">Hier</span>
+                                        <span
+                                            class="w-5 h-5 bg-indigo-600 rounded-full text-white text-xs flex items-center justify-center mt-1">3</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message-item p-4 cursor-pointer">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex">
+                                        <img class="h-10 w-10 rounded-full"
+                                            src="https://ui-avatars.com/api/?name=Fatima+Zahra&background=6366F1&color=ffffff"
+                                            alt="Fatima Zahra">
+                                        <div class="ml-3">
+                                            <p class="text-sm font-medium text-gray-900">Fatima Zahra</p>
+                                            <p class="text-sm text-gray-500 line-clamp-1">Message du patient: J'ai
+                                                besoin de reprogrammer mon rendez-vous...</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-xs text-gray-500">Hier</span>
+                                        <span
+                                            class="w-5 h-5 bg-indigo-600 rounded-full text-white text-xs flex items-center justify-center mt-1">2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-center">
+                            <button class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
+                                <i class="fas fa-envelope mr-2"></i>
+                                Ouvrir la boîte de réception
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 px-6 py-3 border-t border-gray-200">
+                        <button
+                            class="inline-flex w-full items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm">
+                            <i class="fas fa-history mr-2"></i>
+                            Voir toute l'activité
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Modal Configuration Disponibilités -->
-        <div class="modal fade" id="availabilityModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Configurer mes disponibilités</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+        <!-- Patients section -->
+        <section id="patients-section" class="p-4 md:p-8 dashboard-section hidden">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Gestion des Patients</h1>
+                <p class="text-gray-600">Consultez et gérez vos patients, accédez aux dossiers médicaux et suivez les
+                    traitements.</p>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="bg-white rounded-xl shadow-sm mb-6">
+                <div class="p-4 md:p-6">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div class="relative flex-grow">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text"
+                                class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="Rechercher par nom, ID, numéro de téléphone...">
+                        </div>
+                        <button
+                            class="inline-flex items-center px-4 py-2 sm:py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                            <i class="fas fa-search mr-2"></i>
+                            Rechercher
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <div class="d-flex justify-content-center mb-3">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-outline-primary">Lun</button>
-                                <button type="button" class="btn btn-outline-primary">Mar</button>
-                                <button type="button" class="btn btn-outline-primary">Mer</button>
-                                <button type="button" class="btn btn-outline-primary">Jeu</button>
-                                <button type="button" class="btn btn-outline-primary">Ven</button>
-                                <button type="button" class="btn btn-outline-primary">Sam</button>
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="font-weight-bold">Heures de travail</label>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label>De</label>
-                                    <input type="time" class="form-control" value="09:00">
-                                </div>
-                                <div class="col-md-6">
-                                    <label>À</label>
-                                    <input type="time" class="form-control" value="18:00">
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <span
+                            class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200">
+                            <span>Tous les patients</span>
+                            <button class="ml-1 text-indigo-600 hover:text-indigo-900">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        </span>
 
-                        <div class="form-group">
-                            <label class="font-weight-bold">Pause déjeuner</label>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label>De</label>
-                                    <input type="time" class="form-control" value="12:00">
-                                </div>
-                                <div class="col-md-6">
-                                    <label>À</label>
-                                    <input type="time" class="form-control" value="14:00">
-                                </div>
-                            </div>
-                        </div>
+                        <button
+                            class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200">
+                            <i class="fas fa-filter mr-1 text-gray-500"></i>
+                            Filtres avancés
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="form-group">
-                            <label class="font-weight-bold">Durée des rendez-vous</label>
-                            <select class="form-control">
-                                <option>15 minutes</option>
-                                <option selected>30 minutes</option>
-                                <option>45 minutes</option>
-                                <option>60 minutes</option>
+            <!-- Patients stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="stats-card-gradient-1 rounded-xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Total Patients</h3>
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-users text-white"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1">154</div>
+                    <div class="text-sm text-indigo-100">8 nouveaux ce mois</div>
+                </div>
+
+                <div class="stats-card-gradient-2 rounded-xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Actifs</h3>
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-check text-white"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1">124</div>
+                    <div class="text-sm text-emerald-100">80% du total</div>
+                </div>
+
+                <div class="stats-card-gradient-3 rounded-xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Cette semaine</h3>
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-calendar-week text-white"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1">42</div>
+                    <div class="text-sm text-orange-100">+12% vs sem. dernière</div>
+                </div>
+
+                <div class="stats-card-gradient-4 rounded-xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Contrôles à faire</h3>
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clipboard-check text-white"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold mb-1">18</div>
+                    <div class="text-sm text-red-100">5 urgents</div>
+                </div>
+            </div>
+
+            <!-- Patient listing -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 flex flex-wrap justify-between items-center">
+                    <h3 class="text-lg font-medium text-gray-900">Liste des Patients</h3>
+                    <div class="flex items-center space-x-2 mt-2 sm:mt-0">
+                        <button
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                            <i class="fas fa-user-plus mr-2"></i>
+                            Ajouter un patient
+                        </button>
+                        <div class="relative">
+                            <select
+                                class="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:border-indigo-500">
+                                <option>Récents</option>
+                                <option>Alphabétique</option>
+                                <option>Dernière visite</option>
                             </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="font-weight-bold">Options avancées</label>
-                            <div class="custom-control custom-switch mb-2">
-                                <input type="checkbox" class="custom-control-input" id="allowOnlineBooking" checked>
-                                <label class="custom-control-label" for="allowOnlineBooking">Autoriser les rendez-vous en
-                                    ligne</label>
-                            </div>
-                            <div class="custom-control custom-switch mb-2">
-                                <input type="checkbox" class="custom-control-input" id="allowEmergencySlots">
-                                <label class="custom-control-label" for="allowEmergencySlots">Réserver des créneaux
-                                    d'urgence</label>
-                            </div>
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="notifyNewAppointments" checked>
-                                <label class="custom-control-label" for="notifyNewAppointments">Notification des nouveaux
-                                    rendez-vous</label>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fas fa-chevron-down text-xs"></i>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary">Enregistrer</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+                    <!-- Patient card 1 -->
+                    <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="px-4 py-4 sm:px-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
+                                    <img src="https://ui-avatars.com/api/?name=Mohammed+Alami&background=6366F1&color=ffffff"
+                                        alt="Mohammed Alami">
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-medium text-indigo-600">Mohammed Alami</h3>
+                                            <p class="text-sm text-gray-500">ID: #MED-12345</p>
+                                        </div>
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                                            Actif
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 px-4 py-4 sm:px-6 bg-gray-50">
+                            <div class="grid grid-cols-3 gap-2 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Âge</p>
+                                    <p class="font-medium">42 ans</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Genre</p>
+                                    <p class="font-medium">Homme</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Téléphone</p>
+                                    <p class="font-medium">+212 661-234567</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Dernière visite</p>
+                                    <p class="font-medium">12 Mars 2025</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Prochain RDV</p>
+                                    <p class="font-medium text-indigo-600">Aujourd'hui 09:30</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-4 py-3 sm:px-6 flex justify-between border-t border-gray-200">
+                            <div class="patient-actions flex space-x-2">
+                                <button class="text-sm text-indigo-600 hover:text-indigo-500">
+                                    <i class="fas fa-file-medical"></i>
+                                </button>
+                                <button class="text-sm text-emerald-600 hover:text-emerald-500">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </button>
+                                <button class="text-sm text-blue-600 hover:text-blue-500">
+                                    <i class="fas fa-comments"></i>
+                                </button>
+                            </div>
+                            <button class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                                Voir détails
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Patient card 2 -->
+                    <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="px-4 py-4 sm:px-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
+                                    <img src="https://ui-avatars.com/api/?name=Fatima+Zahra&background=6366F1&color=ffffff"
+                                        alt="Fatima Zahra">
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-medium text-indigo-600">Fatima Zahra</h3>
+                                            <p class="text-sm text-gray-500">ID: #MED-12346</p>
+                                        </div>
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                                            Active
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 px-4 py-4 sm:px-6 bg-gray-50">
+                            <div class="grid grid-cols-3 gap-2 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Âge</p>
+                                    <p class="font-medium">35 ans</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Genre</p>
+                                    <p class="font-medium">Femme</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Téléphone</p>
+                                    <p class="font-medium">+212 661-345678</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Dernière visite</p>
+                                    <p class="font-medium">28 Mars 2025</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Prochain RDV</p>
+                                    <p class="font-medium text-indigo-600">Aujourd'hui 11:00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-4 py-3 sm:px-6 flex justify-between border-t border-gray-200">
+                            <div class="patient-actions flex space-x-2">
+                                <button class="text-sm text-indigo-600 hover:text-indigo-500">
+                                    <i class="fas fa-file-medical"></i>
+                                </button>
+                                <button class="text-sm text-emerald-600 hover:text-emerald-500">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </button>
+                                <button class="text-sm text-blue-600 hover:text-blue-500">
+                                    <i class="fas fa-comments"></i>
+                                </button>
+                            </div>
+                            <button class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                                Voir détails
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Patient card 3 -->
+                    <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="px-4 py-4 sm:px-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
+                                    <img src="https://ui-avatars.com/api/?name=Karim+Benali&background=6366F1&color=ffffff"
+                                        alt="Karim Benali">
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-medium text-indigo-600">Karim Benali</h3>
+                                            <p class="text-sm text-gray-500">ID: #MED-12347</p>
+                                        </div>
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5"></span>
+                                            Suivi requis
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 px-4 py-4 sm:px-6 bg-gray-50">
+                            <div class="grid grid-cols-3 gap-2 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Âge</p>
+                                    <p class="font-medium">57 ans</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Genre</p>
+                                    <p class="font-medium">Homme</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Téléphone</p>
+                                    <p class="font-medium">+212 661-456789</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Dernière visite</p>
+                                    <p class="font-medium">1 Avril 2025</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Prochain RDV</p>
+                                    <p class="font-medium text-indigo-600">Aujourd'hui 14:15</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-4 py-3 sm:px-6 flex justify-between border-t border-gray-200">
+                            <div class="patient-actions flex space-x-2">
+                                <button class="text-sm text-indigo-600 hover:text-indigo-500">
+                                    <i class="fas fa-file-medical"></i>
+                                </button>
+                                <button class="text-sm text-emerald-600 hover:text-emerald-500">
+                                    <i class="fas fa-calendar-plus"></i>
+                                </button>
+                                <button class="text-sm text-blue-600 hover:text-blue-500">
+                                    <i class="fas fa-comments"></i>
+                                </button>
+                            </div>
+                            <button class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                                Voir détails
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-4 bg-gray-50 flex items-center justify-between border-t border-gray-200">
+                    <p class="text-sm text-gray-700">
+                        Affichage de 3 patients sur 154
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <button class="px-2 py-1 border border-gray-300 rounded text-indigo-600 hover:bg-gray-100">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button
+                                class="px-3 py-1 border border-gray-300 rounded-md bg-indigo-600 text-white">1</button>
+                            <button
+                                class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-gray-600">2</button>
+                            <button
+                                class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-gray-600">3</button>
+                            <button class="px-2 py-1 border border-gray-300 rounded text-indigo-600 hover:bg-gray-100">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Other sections placeholder (hidden by default) -->
+        <section id="appointments-section" class="p-4 md:p-8 dashboard-section hidden">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Gestion des Rendez-vous</h1>
+            <!-- Appointments content would go here -->
+            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+                <p class="text-gray-500">Section en cours de développement</p>
+            </div>
+        </section>
+
+        <section id="medical-records-section" class="p-4 md:p-8 dashboard-section hidden">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Dossiers Médicaux</h1>
+            <!-- Medical records content would go here -->
+            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+                <p class="text-gray-500">Section en cours de développement</p>
+            </div>
+        </section>
+
+        <section id="analytics-section" class="p-4 md:p-8 dashboard-section hidden">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Analyses et Statistiques</h1>
+            <!-- Analytics content would go here -->
+            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+                <p class="text-gray-500">Section en cours de développement</p>
+            </div>
+        </section>
+
+        <section id="communications-section" class="p-4 md:p-8 dashboard-section hidden">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Communications</h1>
+            <!-- Communications content would go here -->
+            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+                <p class="text-gray-500">Section en cours de développement</p>
+            </div>
+        </section>
+
+        <section id="tasks-section" class="p-4 md:p-8 dashboard-section hidden">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Gestion des Tâches</h1>
+            <!-- Tasks content would go here -->
+            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+                <p class="text-gray-500">Section en cours de développement</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-white p-4 border-t border-gray-200 text-center md:text-left text-sm text-gray-600">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row md:justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        &copy; 2025 MediDash. Tous droits réservés.
+                    </div>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-500 hover:text-indigo-600">Confidentialité</a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600">Conditions</a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600">Aide</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
-@endsection
 
-@section('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        $(document).ready(function () {
-            // Initialisation des tooltips
-            $('[data-toggle="tooltip"]').tooltip();
+        document.addEventListener('DOMContentLoaded', function () {
+            // Toggle sidebar on mobile
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const mainContent = document.getElementById('main-content');
 
-            // Configuration du graphique des tendances de rendez-vous
-            const appointmentsTrendCtx = document.getElementById('appointmentsTrend').getContext('2d');
-            const appointmentsTrendChart = new Chart(appointmentsTrendCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Fév', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil'],
-                    datasets: [{
-                        label: 'Consultations',
-                        data: [65, 72, 78, 84, 82, 95, 92],
-                        borderColor: '#4e73df',
-                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Évolution des consultations'
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function () {
+                    sidebar.classList.toggle('open');
+                    if (sidebar.classList.contains('open')) {
+                        sidebar.style.left = '0';
+                        overlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        sidebar.style.left = '-260px';
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', function () {
+                    sidebar.classList.remove('open');
+                    sidebar.style.left = '-260px';
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+
+            // Update current date and time
+            function updateDateTime() {
+                const now = new Date();
+                const dateTimeElement = document.getElementById('current-date-time');
+
+                if (dateTimeElement) {
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    const dateString = now.toLocaleDateString('fr-FR', options);
+                    const timeString = now.toLocaleTimeString('fr-FR');
+                    dateTimeElement.textContent = dateString + ' | ' + timeString;
+                }
+            }
+
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+
+            // Counter animation effect
+            function animateCounters() {
+                const counters = document.querySelectorAll('#patient-counter, #appointment-counter');
+
+                counters.forEach(counter => {
+                    const target = parseInt(counter.innerText);
+                    let count = 0;
+                    const duration = 2000; // ms
+                    const interval = 50; // ms
+                    const step = Math.ceil(target / (duration / interval));
+
+                    const timer = setInterval(() => {
+                        count += step;
+                        if (count >= target) {
+                            counter.innerText = target;
+                            clearInterval(timer);
+                        } else {
+                            counter.innerText = count;
                         }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                borderDash: [2],
-                                drawBorder: false
-                            }
+                    }, interval);
+                });
+            }
+
+            // Start counter animation
+            animateCounters();
+
+            // Toggle active class on sidebar items
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const sections = document.querySelectorAll('.dashboard-section');
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const targetSection = this.getAttribute('data-section');
+
+                    // Update active sidebar item
+                    sidebarItems.forEach(sideItem => sideItem.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show the selected section
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                        section.classList.add('hidden');
+                    });
+
+                    const activeSection = document.getElementById(`${targetSection}-section`);
+                    if (activeSection) {
+                        activeSection.classList.remove('hidden');
+                        setTimeout(() => {
+                            activeSection.classList.add('active');
+                        }, 10);
+                    }
+
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.remove('open');
+                        sidebar.style.left = '-260px';
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+
+            // Tab handling
+            const tabButtons = document.querySelectorAll('.tab-button');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const tabContainer = this.closest('div').parentNode;
+                    const tabId = this.getAttribute('data-tab');
+
+                    // Update active tab
+                    tabContainer.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Show the selected tab content
+                    tabContainer.parentNode.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+
+                    document.getElementById(tabId).classList.remove('hidden');
+                });
+            });
+
+            // Task panel tabs
+            const activityTab = document.getElementById('tab-activity');
+            const tasksTab = document.getElementById('tab-tasks');
+            const messagesTab = document.getElementById('tab-messages');
+
+            if (activityTab && tasksTab && messagesTab) {
+                activityTab.addEventListener('click', function () {
+                    this.classList.add('active');
+                    tasksTab.classList.remove('active');
+                    messagesTab.classList.remove('active');
+
+                    document.getElementById('panel-activity').classList.remove('hidden');
+                    document.getElementById('panel-tasks').classList.add('hidden');
+                    document.getElementById('panel-messages').classList.add('hidden');
+                });
+
+                tasksTab.addEventListener('click', function () {
+                    this.classList.add('active');
+                    activityTab.classList.remove('active');
+                    messagesTab.classList.remove('active');
+
+                    document.getElementById('panel-tasks').classList.remove('hidden');
+                    document.getElementById('panel-activity').classList.add('hidden');
+                    document.getElementById('panel-messages').classList.add('hidden');
+                });
+
+                messagesTab.addEventListener('click', function () {
+                    this.classList.add('active');
+                    activityTab.classList.remove('active');
+                    tasksTab.classList.remove('active');
+
+                    document.getElementById('panel-messages').classList.remove('hidden');
+                    document.getElementById('panel-activity').classList.add('hidden');
+                    document.getElementById('panel-tasks').classList.add('hidden');
+                });
+            }
+
+            // Task checkboxes
+            const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+
+            taskCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('click', function () {
+                    const taskItem = this.closest('.task-item');
+                    const taskText = taskItem.querySelector('.task-text');
+
+                    this.classList.toggle('checked');
+                    taskText.classList.toggle('checked');
+                });
+            });
+
+            // Initialize charts if they exist
+            if (typeof Chart !== 'undefined') {
+                // Patient visits chart
+                const visitsCtx = document.getElementById('patientVisitsChart');
+                if (visitsCtx) {
+                    new Chart(visitsCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                            datasets: [{
+                                label: 'Visites patients',
+                                data: [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95],
+                                fill: true,
+                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                borderColor: 'rgba(99, 102, 241, 0.8)',
+                                tension: 0.4,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: 'rgba(99, 102, 241, 1)',
+                                pointBorderWidth: 2
+                            }]
                         },
-                        x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    titleColor: '#1e293b',
+                                    bodyColor: '#1e293b',
+                                    borderColor: 'rgba(99, 102, 241, 0.5)',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    cornerRadius: 8,
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        drawBorder: false,
+                                        color: 'rgba(226, 232, 240, 0.5)'
+                                    },
+                                    ticks: {
+                                        color: '#94a3b8'
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        color: '#94a3b8'
+                                    }
+                                }
                             }
                         }
-                    }
+                    });
                 }
-            });
 
-            // Configuration du graphique des types de consultation
-            const consultationTypesCtx = document.getElementById('consultationTypes').getContext('2d');
-            const consultationTypesChart = new Chart(consultationTypesCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Check-up', 'Suivi', 'Urgence', 'Spécialité'],
-                    datasets: [{
-                        data: [35, 45, 10, 10],
-                        backgroundColor: ['#4e73df', '#1cc88a', '#e74a3b', '#f6c23e'],
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right'
+                // Revenue chart
+                const revenueCtx = document.getElementById('revenueChart');
+                if (revenueCtx) {
+                    new Chart(revenueCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'],
+                            datasets: [{
+                                data: [35, 25, 20, 15, 5],
+                                backgroundColor: [
+                                    'rgba(99, 102, 241, 0.8)',
+                                    'rgba(16, 185, 129, 0.8)',
+                                    'rgba(249, 115, 22, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)',
+                                    'rgba(148, 163, 184, 0.8)'
+                                ],
+                                borderColor: 'white',
+                                borderWidth: 2,
+                                hoverOffset: 15
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '70%',
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    labels: {
+                                        boxWidth: 12,
+                                        padding: 20,
+                                        font: {
+                                            size: 12
+                                        },
+                                        color: '#4b5563'
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    titleColor: '#1e293b',
+                                    bodyColor: '#1e293b',
+                                    borderColor: 'rgba(148, 163, 184, 0.5)',
+                                    borderWidth: 1,
+                                    padding: 10,
+                                    cornerRadius: 8,
+                                    displayColors: false
+                                }
+                            }
                         }
-                    }
+                    });
                 }
-            });
+            }
 
-            // Configuration du graphique de satisfaction des patients
-            const patientSatisfactionCtx = document.getElementById('patientSatisfaction').getContext('2d');
-            const patientSatisfactionChart = new Chart(patientSatisfactionCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Très satisfait', 'Satisfait', 'Neutre', 'Insatisfait'],
-                    datasets: [{
-                        label: 'Niveau de satisfaction',
-                        data: [75, 20, 4, 1],
-                        backgroundColor: [
-                            'rgba(28, 200, 138, 0.8)',
-                            'rgba(54, 185, 204, 0.8)',
-                            'rgba(246, 194, 62, 0.8)',
-                            'rgba(231, 74, 59, 0.8)'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+            // Countdown timer for next appointment
+            const countdownEl = document.getElementById('appointment-countdown');
+            if (countdownEl) {
+                const targetTime = new Date();
+                targetTime.setHours(9, 30, 0, 0);
+
+                function updateCountdown() {
+                    const now = new Date();
+                    if (now > targetTime) {
+                        countdownEl.textContent = 'En cours';
+                        countdownEl.parentNode.classList.remove('bg-red-100', 'text-red-800');
+                        countdownEl.parentNode.classList.add('bg-green-100', 'text-green-800');
+                        countdownEl.previousElementSibling.classList.remove('fa-clock');
+                        countdownEl.previousElementSibling.classList.add('fa-check-circle');
+                        return;
                     }
+
+                    const diff = targetTime - now;
+                    const minutes = Math.floor(diff / 1000 / 60);
+                    const seconds = Math.floor((diff / 1000) % 60);
+
+                    countdownEl.textContent = `Dans ${minutes}m ${seconds}s`;
                 }
+
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            }
+
+            // Progress bar animation on load
+            const progressBars = document.querySelectorAll('.progress-bar-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 300);
             });
         });
-
-
     </script>
-@endsection
+</body>
+
+</html>
