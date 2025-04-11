@@ -108,6 +108,12 @@ class DashboardService
     public function getAppointmentById($id){
         return $this->appointmentRepository->getById($id);
     }
+    public function getAppointmentsByDoctorId($doctorId){
+        return $this->appointmentRepository->getByDoctorId($doctorId);
+    }
+    public function getAppointmentsByPatientId($patientId){
+        return $this->appointmentRepository->getByPatientId($patientId);
+    }
     public function createAppointment(array $data){
         return $this->appointmentRepository->create($data);
     }

@@ -31,8 +31,6 @@ Route::prefix('auth')->group(function(){
 
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::get('/register', [AuthController::class, 'register'])->name('register');
-    Route::get('/profile', [ProfileController::class, 'showProfile'])->name('auth.profile');
-    Route::post('/profile', [ProfileController::class, 'storeProfile'])->name('auth.profile');
     Route::post('/register', [AuthController::class, 'store']);
     Route::post('/login', [AuthController::class, 'authenticate']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -40,13 +38,19 @@ Route::prefix('auth')->group(function(){
 });
 
 
-Route::prefix('admin')->middleware('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index']);
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::post('/dashboard', [AdminController::class, 'storeAppointment']);
-    
-    Route::put('/dashboard/appointments/{id}', [AdminController::class, 'updateAppointment'])->name('admin.appointment.update');
+    Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/patients', [AdminController::class, 'showPatients'])->name('patients');
+    Route::get('/patients/{id}', [AdminController::class, 'showPatient'])->name('patients.show');
+    Route::put('/patients/{id}', [AdminController::class, 'updatePatient'])->name('patients.edit');
+    Route::delete('/patients/{id}', [AdminController::class, 'deletePatient'])->name('patients.delete');
+    Route::get('/settings', [ProfileController::class, 'showSettings'])->name('settings');
+    Route::put('/dashboard/appointments/{id}', [AdminController::class, 'updateAppointment'])->name('appointment.update');
 
-    Route::get('/doctors/show', [AdminController::class, 'showDoctor'])->name('admin.doctor.show');
+    Route::get('/doctors/show', [AdminController::class, 'showDoctor'])->name('doctor.show');
     Route::get('/dashboard/doctors/{id}', [AdminController::class, 'showDoctor']);
     Route::get('/dashboard/patients', [AdminController::class, 'showpatients']);
     Route::post('/dashboard/doctors', [AdminController::class, 'storeDoctor']);
@@ -57,13 +61,13 @@ Route::prefix('admin')->middleware('admin')->group(function () {
 Route::prefix('doctor')->middleware('doctor')->group(function () {
     Route::get('/dashboard', [DoctorController::class, 'index'])->middleware('doctor')->middleware('auth')->name('doctor.dashboard');
 });
-Route::get('/doctor/pending', function () {
-    return view('doctor.pending');
-})->name('doctor.pending')->middleware('auth');
+// Route::get('/doctor/pending', function () {
+//     return view('doctor.pending');
+// })->name('doctor.pending')->middleware('auth');
             
-Route::get('/admin/pending', function () {
-    return view('admin.pending');
-})->name('admin.pending')->middleware('auth');
+// Route::get('/admin/pending', function () {
+//     return view('admin.pending');
+// })->name('admin.pending')->middleware('auth');
 
 Route::get('/home', function () {
     return view('home');

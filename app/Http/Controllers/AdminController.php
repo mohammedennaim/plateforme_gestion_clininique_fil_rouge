@@ -45,6 +45,12 @@ class AdminController extends Controller
 
     public function updateDoctor(Request $request, $id)
     {
+        $doctorData= [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'role' => $request->input('role'),
+        ];
         return response()->json($this->dashboardService->updateDoctor($id, $request->all()));
     }
 
@@ -72,4 +78,24 @@ class AdminController extends Controller
         return response()->json($this->dashboardService->deleteAppointment($id));
     }
 
+    
+    public function showPatient($id)
+    {
+        $patient = $this->dashboardService->getPatientById($id);
+        $doctors = $this->dashboardService->getAllDoctors();
+        $appointments = $this->dashboardService->getAppointmentsByPatientId($id);
+
+        return view('admin.patients.show', compact('patient', 'doctors', 'appointments'));
+    }
+    
+    public function editPatient($id)
+    {
+        $patient = $this->dashboardService->getPatientById($id);
+        return view('admin.patients.edit', compact('patient'));
+    }
+
+    public function deletePatient($id)
+    {
+        return view('admin.patients.delete', compact('id'));
+    }
 }

@@ -47,4 +47,33 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         }
         return false;
     }
+
+    public function getAppointmentsByDate($date)
+    {
+        return $this->model->whereDate('date', $date)->get();
+    }
+    public function getTodayAppointments()
+    {
+        return $this->model->whereDate('date', now()->format('Y-m-d'))->get();
+    }
+    public function getPendingRequests()
+    {
+        return $this->model->where('status', 'pending')->get();
+    }
+    public function getTotalAppointments()
+    {
+        return $this->model->count();
+    }
+    public function getTotalRevenue()
+    {
+        return $this->model->sum('price');
+    }
+    public function getAppointmentsByDoctorId($doctorId)
+    {
+        return $this->model->where('doctor_id', $doctorId)->get();
+    }
+    public function getByPatientId($patientId)
+    {
+        return $this->model->where('patient_id', $patientId)->get();
+    }
 }

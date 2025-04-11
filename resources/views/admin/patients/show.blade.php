@@ -1,177 +1,207 @@
 @extends('layouts.admin')
 
+@section('title', 'Détails du Patient')
+
 @section('content')
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Détails du Patient</h1>
-        <a href="{{ route('admin.patients.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
-            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Retour à la liste
-        </a>
+        <div>
+            <a href="" class="btn btn-sm btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm text-white-50 mr-1"></i> Retour
+            </a>
+            <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-sm btn-primary shadow-sm ml-2">
+                <i class="fas fa-edit fa-sm text-white-50 mr-1"></i> Modifier
+            </a>
+            <button type="button" class="btn btn-sm btn-danger shadow-sm ml-2" data-bs-toggle="modal" data-bs-target="#deletePatientModal">
+                <i class="fas fa-trash fa-sm text-white-50 mr-1"></i> Supprimer
+            </button>
+        </div>
     </div>
 
     <div class="row">
-        <div class="col-lg-4">
-            <!-- Profile Card -->
+        <!-- Patient Information Card -->
+        <div class="col-xl-4 col-lg-5">
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Profil</h6>
+                <div class="card-header py-3 d-flex align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Informations personnelles</h6>
+                    <span class="badge {{ $patient->user->active ? 'badge-success' : 'badge-danger' }}">
+                        {{ $patient->user->active ? 'Actif' : 'Inactif' }}
+                    </span>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4">
-                        <img class="img-profile rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;"
-                            src="{{ $patient->user->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($patient->user->name).'&color=7F9CF5&background=EBF4FF' }}" 
-                            alt="Photo de profil">
-                        <h5 class="font-weight-bold">{{ $patient->user->name }}</h5>
-                        <div class="text-gray-500">Patient ID: {{ $patient->id }}</div>
-                        <div class="mt-3 d-flex justify-content-center">
-                            <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-primary btn-sm mr-2">
-                                <i class="fas fa-edit"></i> Modifier
-                            </a>
-                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deletePatientModal">
-                                <i class="fas fa-trash"></i> Supprimer
-                            </button>
-                        </div>
+                        <img class="img-profile rounded-circle mb-3" src="{{ $patient->user->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($patient->user->name) . '&color=7F9CF5&background=EBF4FF' }}" alt="{{ $patient->user->name }}" style="width: 120px; height: 120px; border: 4px solid #eaecf4;">
+                        <h5 class="font-weight-bold text-gray-800">{{ $patient->user->name }}</h5>
+                        <p class="text-gray-600">{{ $patient->blood_type ? 'Groupe sanguin: ' . $patient->blood_type : '' }}</p>
                     </div>
-                    <div class="patient-info">
-                        <h6 class="font-weight-bold">Informations personnelles</h6>
-                        <div class="mb-3">
-                            <p class="mb-1"><i class="fas fa-envelope mr-2 text-gray-500"></i> <strong>Email:</strong></p>
-                            <p>{{ $patient->user->email }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="mb-1"><i class="fas fa-phone mr-2 text-gray-500"></i> <strong>Téléphone:</strong></p>
-                            <p>{{ $patient->user->phone ?? 'Non renseigné' }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="mb-1"><i class="fas fa-map-marker-alt mr-2 text-gray-500"></i> <strong>Adresse:</strong></p>
-                            <p>{{ $patient->address ?? 'Non renseignée' }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="mb-1"><i class="fas fa-tint mr-2 text-danger"></i> <strong>Groupe sanguin:</strong></p>
-                            <p>{{ $patient->blood_type ?? 'Non renseigné' }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="mb-1"><i class="fas fa-shield-alt mr-2 text-gray-500"></i> <strong>Assurance:</strong></p>
-                            <p>{{ $patient->name_assurance ?? 'Non renseignée' }}</p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="mb-1"><i class="fas fa-id-card mr-2 text-gray-500"></i> <strong>Numéro d'assurance:</strong></p>
-                            <p>{{ $patient->assurance_number ?? 'Non renseigné' }}</p>
-                        </div>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Date de naissance</div>
+                        <div class="col-6 text-gray-800">{{ $patient->birth_date ? $patient->birth_date->format('d/m/Y') : 'Non renseigné' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Âge</div>
+                        <div class="col-6 text-gray-800">{{ $patient->birth_date ? $patient->birth_date->age . ' ans' : 'Non renseigné' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Sexe</div>
+                        <div class="col-6 text-gray-800">{{ $patient->gender ?? 'Non renseigné' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Email</div>
+                        <div class="col-6 text-gray-800">{{ $patient->user->email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Téléphone</div>
+                        <div class="col-6 text-gray-800">{{ $patient->user->phone ?? 'Non renseigné' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Adresse</div>
+                        <div class="col-6 text-gray-800">{{ $patient->address ?? 'Non renseigné' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Dernière visite</div>
+                        <div class="col-6 text-gray-800">{{ $patient->derniere_visite ? $patient->derniere_visite->format('d/m/Y') : 'Jamais' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insurance Information Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Informations d'assurance</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Compagnie</div>
+                        <div class="col-6 text-gray-800">{{ $patient->name_assurance ?? 'Non renseigné' }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6 text-gray-600">Numéro</div>
+                        <div class="col-6 text-gray-800">{{ $patient->assurance_number ?? 'Non renseigné' }}</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-8">
-            <!-- Appointments Card -->
+        <div class="col-xl-8 col-lg-7">
+            <!-- Patient History -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Historique médical</h6>
+                </div>
+                <div class="card-body">
+                    @if($patient->medicalRecords && $patient->medicalRecords->count() > 0)
+                        <div class="timeline-body">
+                            @foreach($patient->medicalRecords->sortByDesc('date') as $record)
+                                <div class="timeline-item pb-4 mb-4 border-bottom">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <h6 class="font-weight-bold text-primary">{{ $record->title }}</h6>
+                                        <span class="text-gray-500">{{ $record->date->format('d/m/Y') }}</span>
+                                    </div>
+                                    <p class="mb-2">{{ $record->description }}</p>
+                                    <p class="mb-1 text-gray-600"><strong>Médecin:</strong> Dr. {{ $record->doctor->user->name }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="fas fa-notes-medical fa-3x text-gray-300 mb-3"></i>
+                            <p class="text-gray-500">Aucun dossier médical disponible</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Appointments History -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">Historique des Rendez-vous</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Historique des rendez-vous</h6>
                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
                         <i class="fas fa-plus fa-sm"></i> Nouveau rendez-vous
                     </button>
                 </div>
                 <div class="card-body">
-                    @if($patient->appointments->count() > 0)
+                    @if($patient->appointments && $patient->appointments->count() > 0)
                         <div class="table-responsive">
                             <table class="table table-bordered" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
                                         <th>Médecin</th>
-                                        <th>Spécialité</th>
+                                        <th>Motif</th>
                                         <th>Statut</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($patient->appointments as $appointment)
-                                    <tr>
-                                        <td>{{ $appointment->date->format('d/m/Y') }} à {{ $appointment->time }}</td>
-                                        <td>Dr. {{ $appointment->doctor->user->name }}</td>
-                                        <td>{{ $appointment->doctor->speciality }}</td>
-                                        <td>
-                                            @if($appointment->status == 'confirmed')
-                                                <span class="badge badge-success">Confirmé</span>
-                                            @elseif($appointment->status == 'pending')
-                                                <span class="badge badge-warning">En attente</span>
-                                            @elseif($appointment->status == 'canceled')
-                                                <span class="badge badge-danger">Annulé</span>
-                                            @elseif($appointment->status == 'completed')
-                                                <span class="badge badge-info">Terminé</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="action-menu">
-                                                <a href="{{ route('admin.appointments.show', $appointment->id) }}" class="btn btn-info btn-sm">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('admin.appointments.edit', $appointment->id) }}" class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    @foreach($patient->appointments->sortByDesc('date') as $appointment)
+                                        <tr>
+                                            <td>
+                                                {{ $appointment->date->format('d/m/Y') }}<br>
+                                                <span class="text-primary">{{ $appointment->time }}</span>
+                                            </td>
+                                            <td>Dr. {{ $appointment->doctor->user->name }}</td>
+                                            <td>{{ $appointment->reason }}</td>
+                                            <td>
+                                                @if($appointment->status == 'confirmed')
+                                                    <span class="badge badge-success">Confirmé</span>
+                                                @elseif($appointment->status == 'pending')
+                                                    <span class="badge badge-warning">En attente</span>
+                                                @elseif($appointment->status == 'canceled')
+                                                    <span class="badge badge-danger">Annulé</span>
+                                                @elseif($appointment->status == 'completed')
+                                                    <span class="badge badge-info">Terminé</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="action-menu">
+                                                    <a href="{{ route('admin.appointments.show', $appointment->id) }}" class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ route('admin.appointments.edit', $appointment->id) }}" class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
                     @else
                         <div class="text-center py-5">
-                            <i class="fas fa-calendar-times fa-4x text-gray-300 mb-3"></i>
-                            <p class="text-gray-500">Aucun rendez-vous trouvé pour ce patient.</p>
-                            <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
-                                <i class="fas fa-plus fa-sm"></i> Programmer un rendez-vous
-                            </button>
+                            <i class="fas fa-calendar-times fa-3x text-gray-300 mb-3"></i>
+                            <p class="text-gray-500">Aucun rendez-vous enregistré</p>
                         </div>
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <!-- Medical Records Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 font-weight-bold text-primary">Dossier Médical</h6>
-                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addMedicalRecordModal">
-                        <i class="fas fa-plus fa-sm"></i> Ajouter
-                    </button>
-                </div>
-                <div class="card-body">
-                    @if($patient->medicalRecords && $patient->medicalRecords->count() > 0)
-                        <div class="timeline">
-                            @foreach($patient->medicalRecords->sortByDesc('created_at') as $record)
-                                <div class="timeline-item">
-                                    <div class="timeline-icon bg-primary">
-                                        <i class="fas fa-file-medical text-white"></i>
-                                    </div>
-                                    <div class="timeline-content">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="font-weight-bold">{{ $record->title }}</h6>
-                                            <span class="text-gray-500">{{ $record->created_at->format('d/m/Y') }}</span>
-                                        </div>
-                                        <p>{{ $record->description }}</p>
-                                        <div class="mt-2">
-                                            <a href="{{ route('admin.medical-records.show', $record->id) }}" class="btn btn-info btn-sm">
-                                                <i class="fas fa-eye"></i> Voir
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="text-center py-5">
-                            <i class="fas fa-file-medical-alt fa-4x text-gray-300 mb-3"></i>
-                            <p class="text-gray-500">Aucun dossier médical trouvé pour ce patient.</p>
-                            <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addMedicalRecordModal">
-                                <i class="fas fa-plus fa-sm"></i> Créer un dossier médical
-                            </button>
-                        </div>
-                    @endif
-                </div>
+<!-- Delete Patient Modal -->
+<div class="modal fade" id="deletePatientModal" tabindex="-1" role="dialog" aria-labelledby="deletePatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePatientModalLabel">Supprimer ce patient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form action="{{ route('admin.patients.delete', $patient->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer ce patient? Cette action est irréversible et supprimera également tous les rendez-vous associés.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -181,15 +211,16 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addAppointmentModalLabel">Nouveau Rendez-vous</h5>
+                <h5 class="modal-title" id="addAppointmentModalLabel">Nouveau rendez-vous</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('admin.appointments.store') }}" method="POST">
+            <form action="" method="POST">
                 @csrf
-                <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                 <div class="modal-body">
+                    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+                    
                     <div class="mb-3">
-                        <label for="doctor_id" class="form-label">Médecin</label>
+                        <label for="doctor_id">Médecin</label>
                         <select class="form-control" id="doctor_id" name="doctor_id" required>
                             <option value="">Sélectionner un médecin</option>
                             @foreach($doctors as $doctor)
@@ -197,18 +228,28 @@
                             @endforeach
                         </select>
                     </div>
+                    
                     <div class="mb-3">
-                        <label for="date" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" required min="{{ date('Y-m-d') }}">
+                        <label for="date">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
                     </div>
+                    
                     <div class="mb-3">
-                        <label for="time" class="form-label">Heure</label>
+                        <label for="time">Heure</label>
                         <input type="time" class="form-control" id="time" name="time" required>
-                        <div id="availability_message" class="mt-2"></div>
                     </div>
+                    
                     <div class="mb-3">
-                        <label for="reason" class="form-label">Motif</label>
-                        <textarea class="form-control" id="reason" name="reason" rows="3"></textarea>
+                        <label for="reason">Motif de consultation</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="status">Statut</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="pending">En attente</option>
+                            <option value="confirmed">Confirmé</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -219,101 +260,55 @@
         </div>
     </div>
 </div>
+@endsection
 
-<!-- Delete Patient Modal -->
-<div class="modal fade" id="deletePatientModal" tabindex="-1" aria-labelledby="deletePatientModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deletePatientModalLabel">Confirmer la suppression</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer ce patient ? Cette action est irréversible et supprimera également tous les rendez-vous associés.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <form action="{{ route('admin.patients.destroy', $patient->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Supprimer</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Medical Record Modal -->
-<div class="modal fade" id="addMedicalRecordModal" tabindex="-1" aria-labelledby="addMedicalRecordModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addMedicalRecordModalLabel">Ajouter un dossier médical</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="{{ route('admin.medical-records.store') }}" method="POST">
-                @csrf
-                <input type="hidden" name="patient_id" value="{{ $patient->id }}">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Titre</label>
-                        <input type="text" class="form-control" id="title" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="diagnostics" class="form-label">Diagnostic</label>
-                        <textarea class="form-control" id="diagnostics" name="diagnostics" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">Enregistrer</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<style>
-    .timeline {
-        position: relative;
-        padding: 1rem 0;
-    }
-    
-    .timeline::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 1.5rem;
-        height: 100%;
-        width: 2px;
-        background: #e3e6f0;
-    }
-    
-    .timeline-item {
-        position: relative;
-        margin-bottom: 1.5rem;
-        margin-left: 3.5rem;
-    }
-    
-    .timeline-icon {
-        position: absolute;
-        left: -3.5rem;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 2.5rem;
-    }
-    
-    .timeline-content {
-        background: white;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-</style>
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Vérification de la disponibilité du médecin lors de la prise de rendez-vous
+        const doctorId = document.getElementById('doctor_id');
+        const dateInput = document.getElementById('date');
+        const timeInput = document.getElementById('time');
+        
+        // Fonction pour vérifier la disponibilité
+        function checkDoctorAvailability() {
+            if (doctorId.value && dateInput.value && timeInput.value) {
+                // Ici, vous pourriez faire une requête AJAX pour vérifier la disponibilité
+                // Pour l'exemple, nous allons simplement simuler une vérification
+                
+                // Créer un élément pour le message d'information s'il n'existe pas déjà
+                let infoMessage = document.getElementById('availability_message');
+                if (!infoMessage) {
+                    infoMessage = document.createElement('div');
+                    infoMessage.id = 'availability_message';
+                    timeInput.parentNode.appendChild(infoMessage);
+                }
+                
+                infoMessage.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification de la disponibilité...';
+                infoMessage.className = 'text-info mt-2';
+                
+                // Simulation d'une vérification asynchrone
+                setTimeout(() => {
+                    // Dans un cas réel, vous récupéreriez cette information du serveur
+                    const isAvailable = Math.random() > 0.3; // 70% de chance d'être disponible
+                    
+                    if (isAvailable) {
+                        infoMessage.innerHTML = '<i class="fas fa-check-circle"></i> Ce créneau est disponible!';
+                        infoMessage.className = 'text-success mt-2';
+                    } else {
+                        infoMessage.innerHTML = '<i class="fas fa-times-circle"></i> Ce médecin n\'est pas disponible à cette date/heure. Veuillez choisir un autre moment.';
+                        infoMessage.className = 'text-danger mt-2';
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Ajouter des écouteurs d'événements pour déclencher la vérification
+        if (doctorId && dateInput && timeInput) {
+            doctorId.addEventListener('change', checkDoctorAvailability);
+            dateInput.addEventListener('change', checkDoctorAvailability);
+            timeInput.addEventListener('change', checkDoctorAvailability);
+        }
+    });
+</script>
 @endsection

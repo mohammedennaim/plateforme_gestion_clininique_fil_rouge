@@ -531,7 +531,7 @@
                 <div class="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center mb-2">
                     <i class="fas fa-user-md text-indigo-600 text-3xl"></i>
                 </div>
-                <h2 class="text-lg font-semibold">Dr. Mohammed Ennaim</h2>
+                <h2 class="text-lg font-semibold">Dr. {{ $doctor->name }}</h2>
                 <p class="text-sm text-gray-500">Cardiologue</p>
                 <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
@@ -656,7 +656,7 @@
 
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between relative z-10">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold">Bienvenue, Dr. Mohammed Ennaim!</h1>
+                        <h1 class="text-2xl md:text-3xl font-bold">Bienvenue, Dr. {{ $doctor->name }}!</h1>
                         <p class="mt-2 flex items-center text-indigo-100">
                             <i class="fas fa-calendar-day mr-2"></i>
                             <span id="current-date-time">Samedi, 5 Avril 2025 | 08:49:54</span>
@@ -1698,22 +1698,6 @@
                             class="inline-flex items-center px-4 py-2 sm:py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
                             <i class="fas fa-search mr-2"></i>
                             Rechercher
-                        </button>
-                    </div>
-
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <span
-                            class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 border border-indigo-200">
-                            <span>Tous les patients</span>
-                            <button class="ml-1 text-indigo-600 hover:text-indigo-900">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
-                        </span>
-
-                        <button
-                            class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200">
-                            <i class="fas fa-filter mr-1 text-gray-500"></i>
-                            Filtres avancés
                         </button>
                     </div>
                 </div>
