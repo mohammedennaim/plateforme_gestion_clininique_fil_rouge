@@ -11,8 +11,508 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <style>
+    <!-- <style>
         /* Base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366F1;
+        }
+
+        /* Sidebar animation */
+        #sidebar {
+            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        .sidebar-item {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin: 5px 10px;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .sidebar-item.active {
+            background-color: #6366F1;
+            color: white;
+        }
+
+        .sidebar-item.active i {
+            color: white;
+        }
+
+        .logout-item {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin: 5px 10px;
+            width: 92%;
+        }
+
+        .logout-item:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .logout-item.active {
+            background-color: #6366F1;
+            color: white;
+        }
+
+        .logout-item.active i {
+            color: white;
+        }
+
+        /* Card animations */
+        .stats-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-card-gradient-1 {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+        }
+
+        .stats-card-gradient-2 {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        }
+
+        .stats-card-gradient-3 {
+            background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+        }
+
+        .stats-card-gradient-4 {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+
+        /* Appointments and patient cards */
+        .appointment-card {
+            transition: all 0.3s ease;
+        }
+
+        .appointment-card:hover {
+            transform: translateX(5px);
+            background-color: #f9fafb;
+        }
+
+        .patient-card {
+            transition: all 0.3s ease;
+        }
+
+        .patient-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .status-confirmed {
+            background-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .status-pending {
+            background-color: #F97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+        }
+
+        .status-cancelled {
+            background-color: #EF4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
+
+        .status-completed {
+            background-color: #6366F1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Pulse animation */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Calendar day styles */
+        .calendar-day {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-day:hover {
+            background-color: #e0e7ff;
+        }
+
+        .calendar-day.active {
+            background-color: #6366F1;
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.has-appointments::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #6366F1;
+        }
+
+        .calendar-day.active.has-appointments::after {
+            background-color: white;
+        }
+
+        /* Patient vitals card */
+        .vital-card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .vital-card:hover {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Tab styles */
+        .tab-button {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #6366F1;
+            font-weight: 500;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -8px;
+            left: 0;
+            background-color: #6366F1;
+        }
+
+        /* Analytics card styles */
+        .analytics-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Task item styles */
+        .task-item {
+            position: relative;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #d1d5db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-checkbox.checked {
+            background-color: #6366F1;
+            border-color: #6366F1;
+        }
+
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            left: 19px;
+            top: 14px;
+        }
+
+        .task-text {
+            transition: all 0.3s ease;
+        }
+
+        .task-text.checked {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        /* Message styles */
+        .message-item {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .message-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Section transitions */
+        .dashboard-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .dashboard-section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #EF4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pills */
+        .pill {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .pill:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        /* Custom toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e7eb;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: #6366F1;
+        }
+
+        input:focus+.toggle-slider {
+            box-shadow: 0 0 1px #6366F1;
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e5e7eb;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            height: 100%;
+            transition: width 1s ease;
+            border-radius: 3px;
+        }
+
+        /* Collapses for mobile */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                left: -260px;
+                z-index: 40;
+            }
+
+            #sidebar.open {
+                left: 0;
+            }
+
+            #overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 30;
+            }
+
+            #overlay.active {
+                display: block;
+            }
+
+            #main-content {
+                width: 100%;
+                padding-left: 0;
+            }
+        }
+
+        /* Print and PDF optimizations */
+        @media print {
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                background-color: white;
+            }
+
+            #sidebar,
+            .no-print,
+            button[data-section] {
+                display: none !important;
+            }
+
+            #main-content {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                width: 100% !important;
+            }
+
+            .dashboard-section {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+            }
+
+            .dashboard-section:not(.active) {
+                display: block !important;
+            }
+
+            /* Expand all charts to ensure they render properly */
+            .chart-container {
+                height: 300px !important;
+                max-width: 100% !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style> -->
+    <style>
+              /* Base styles */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
@@ -553,12 +1053,13 @@
                 <i class="fas fa-users text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Patients</span>
                 <span
-                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">154</span>
+                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ $patients_count }}</span>
             </a>
             <a href="#" class="sidebar-item flex items-center p-3" data-section="appointments">
                 <i class="fas fa-calendar-alt text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Rendez-vous</span>
-                <span class="ml-auto bg-amber-100 text-amber-600 rounded-full px-2 py-0.5 text-xs font-medium">8</span>
+                <span
+                    class="ml-auto bg-amber-100 text-amber-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ $appointments_count }}</span>
             </a>
             <a href="#" class="sidebar-item flex items-center p-3" data-section="medical-records">
                 <i class="fas fa-file-medical text-lg text-gray-500 w-6"></i>
@@ -580,7 +1081,8 @@
                     <span class="notification-badge">7</span>
                 </div>
             </a>
-            <a href="#" class="sidebar-item flex items-center p-3" data-section="tasks">
+
+            <a href="#tab-tasks" class="sidebar-item flex items-center p-3" data-section="tasks">
                 <i class="fas fa-tasks text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Tâches</span>
                 <span class="ml-auto bg-red-100 text-red-600 rounded-full px-2 py-0.5 text-xs font-medium">5</span>
@@ -601,7 +1103,7 @@
                 <i class="fas fa-question-circle text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Aide</span>
             </a>
-            <form action="{{ route('logout') }}" method="POST" >
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="logout-item flex items-center p-3 w-full text-left">
                     <i class="fas fa-sign-out-alt text-lg text-gray-500 w-6"></i>
@@ -609,7 +1111,7 @@
                 </button>
             </form>
 
-            
+
             <!-- <form action="/logout" method="post" >
                 @csrf
                 <button type="submit" class="sidebar-item flex items-center p-3 mb-10 w-full text-left">
@@ -622,7 +1124,7 @@
 
     <!-- Main content -->
     <div id="main-content" class="ml-0 md:ml-64 min-h-screen transition-all duration-300">
-        
+
         <!-- Mobile header -->
         <header class="bg-white shadow-sm py-4 px-4 md:hidden">
             <div class="flex items-center justify-between">
@@ -673,7 +1175,7 @@
                 <div class="mt-6 flex flex-wrap gap-2">
                     <div class="bg-white/20 backdrop-blur-sm rounded-full py-1.5 px-4 flex items-center">
                         <div class="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
-                        <span>8 rendez-vous aujourd'hui</span>
+                        <span>{{ $appointments_count }} rendez-vous aujourd'hui</span>
                     </div>
                     <div class="bg-white/20 backdrop-blur-sm rounded-full py-1.5 px-4 flex items-center">
                         <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
@@ -744,7 +1246,8 @@
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Total Patients</dt>
                                     <dd class="flex items-center">
-                                        <div class="text-2xl font-semibold text-gray-900" id="patient-counter">154</div>
+                                        <div class="text-2xl font-semibold text-gray-900" id="patient-counter">
+                                            {{ $patients_count }}</div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
                                             <span>8 ce mois</span>
@@ -817,7 +1320,7 @@
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Revenu Mensuel</dt>
                                     <dd class="flex items-center">
-                                        <div class="text-2xl font-semibold text-gray-900">28 350 MAD</div>
+                                        <div class="text-2xl font-semibold text-gray-900">28 MAD</div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
                                             <span>12%</span>
@@ -839,7 +1342,7 @@
                                 <i class="fas fa-arrow-right ml-1"></i>
                             </a>
                         </div>
-                        <span class="text-xs text-gray-500">Mis à jour aujourd'hui à 07:30</span>
+                        <span class="text-xs text-gray-500">Mis à jour aujourd'hui</span>
                     </div>
                 </div>
 
@@ -939,7 +1442,7 @@
                                             <p class="text-gray-500">Médecin</p>
                                             <p class="font-medium flex items-center mt-1">
                                                 <i class="fas fa-user-md text-indigo-500 mr-2"></i>
-                                                Dr. Ahmed Lahlou
+                                                Dr. {{ $doctor->name }}
                                             </p>
                                         </div>
                                         <div>
@@ -1516,82 +2019,7 @@
                     </div>
 
                     <!-- Tasks tab -->
-                    <div id="panel-tasks" class="panel max-h-80 overflow-y-auto hidden">
-                        <div class="px-6 py-4">
-                            <div class="flex justify-between items-center mb-4">
-                                <h4 class="text-sm font-medium text-gray-700">Tâches prioritaires</h4>
-                                <button class="text-indigo-600 text-sm hover:text-indigo-500">
-                                    <i class="fas fa-plus mr-1"></i> Ajouter
-                                </button>
-                            </div>
 
-                            <div class="space-y-2">
-                                <div class="task-item">
-                                    <div class="flex items-start">
-                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
-                                        <div class="flex-grow">
-                                            <div class="task-text">Examiner les résultats de laboratoire urgents pour le
-                                                patient #12345</div>
-                                            <div class="text-xs text-red-500 mt-1 flex items-center">
-                                                <i class="fas fa-fire-alt mr-1"></i>
-                                                Haute priorité • Dû aujourd'hui à 10:00
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="flex items-start">
-                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
-                                        <div class="flex-grow">
-                                            <div class="task-text">Préparer le rapport mensuel du département</div>
-                                            <div class="text-xs text-amber-500 mt-1 flex items-center">
-                                                <i class="fas fa-exclamation-circle mr-1"></i>
-                                                Priorité moyenne • Dû demain
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="flex items-start">
-                                        <div class="task-checkbox checked flex-shrink-0 mr-3"></div>
-                                        <div class="flex-grow">
-                                            <div class="task-text checked">Appeler le fournisseur concernant la commande
-                                                d'équipement retardée</div>
-                                            <div class="text-xs text-gray-400 mt-1 flex items-center">
-                                                <i class="fas fa-check-circle mr-1"></i>
-                                                Terminé à 08:15
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="flex items-start">
-                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
-                                        <div class="flex-grow">
-                                            <div class="task-text">Mettre à jour le planning du personnel pour la
-                                                semaine prochaine</div>
-                                            <div class="text-xs text-amber-500 mt-1 flex items-center">
-                                                <i class="fas fa-exclamation-circle mr-1"></i>
-                                                Priorité moyenne • Dû dans 2 jours
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="flex items-start">
-                                        <div class="task-checkbox flex-shrink-0 mr-3"></div>
-                                        <div class="flex-grow">
-                                            <div class="task-text">Approuver les demandes de congés</div>
-                                            <div class="text-xs text-green-500 mt-1 flex items-center">
-                                                <i class="fas fa-info-circle mr-1"></i>
-                                                Faible priorité • Dû dans 3 jours
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Messages tab -->
                     <div id="panel-messages" class="panel max-h-80 overflow-y-auto hidden">
@@ -1712,7 +2140,7 @@
                             <i class="fas fa-users text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">154</div>
+                    <div class="text-3xl font-bold mb-1">{{ $patients_count }}</div>
                     <div class="text-sm text-indigo-100">8 nouveaux ce mois</div>
                 </div>
 
@@ -1755,11 +2183,6 @@
                 <div class="px-6 py-4 border-b border-gray-200 flex flex-wrap justify-between items-center">
                     <h3 class="text-lg font-medium text-gray-900">Liste des Patients</h3>
                     <div class="flex items-center space-x-2 mt-2 sm:mt-0">
-                        <button
-                            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
-                            <i class="fas fa-user-plus mr-2"></i>
-                            Ajouter un patient
-                        </button>
                         <div class="relative">
                             <select
                                 class="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:border-indigo-500">
@@ -2045,7 +2468,82 @@
             <h1 class="text-2xl font-bold text-gray-900 mb-6">Gestion des Tâches</h1>
             <!-- Tasks content would go here -->
             <div class="bg-white p-10 rounded-xl shadow-sm text-center">
-                <p class="text-gray-500">Section en cours de développement</p>
+                <div id="panel-tasks" class="panel max-h-80 overflow-y-auto hidden">
+                    <div class="px-6 py-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-sm font-medium text-gray-700">Tâches prioritaires</h4>
+                            <button class="text-indigo-600 text-sm hover:text-indigo-500">
+                                <i class="fas fa-plus mr-1"></i> Ajouter
+                            </button>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="task-item">
+                                <div class="flex items-start">
+                                    <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                    <div class="flex-grow">
+                                        <div class="task-text">Examiner les résultats de laboratoire urgents pour le
+                                            patient #12345</div>
+                                        <div class="text-xs text-red-500 mt-1 flex items-center">
+                                            <i class="fas fa-fire-alt mr-1"></i>
+                                            Haute priorité • Dû aujourd'hui à 10:00
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="flex items-start">
+                                    <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                    <div class="flex-grow">
+                                        <div class="task-text">Préparer le rapport mensuel du département</div>
+                                        <div class="text-xs text-amber-500 mt-1 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            Priorité moyenne • Dû demain
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="flex items-start">
+                                    <div class="task-checkbox checked flex-shrink-0 mr-3"></div>
+                                    <div class="flex-grow">
+                                        <div class="task-text checked">Appeler le fournisseur concernant la commande
+                                            d'équipement retardée</div>
+                                        <div class="text-xs text-gray-400 mt-1 flex items-center">
+                                            <i class="fas fa-check-circle mr-1"></i>
+                                            Terminé à 08:15
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="flex items-start">
+                                    <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                    <div class="flex-grow">
+                                        <div class="task-text">Mettre à jour le planning du personnel pour la
+                                            semaine prochaine</div>
+                                        <div class="text-xs text-amber-500 mt-1 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            Priorité moyenne • Dû dans 2 jours
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-item">
+                                <div class="flex items-start">
+                                    <div class="task-checkbox flex-shrink-0 mr-3"></div>
+                                    <div class="flex-grow">
+                                        <div class="task-text">Approuver les demandes de congés</div>
+                                        <div class="text-xs text-green-500 mt-1 flex items-center">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Faible priorité • Dû dans 3 jours
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -2065,348 +2563,5 @@
             </div>
         </footer>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Toggle sidebar on mobile
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const mainContent = document.getElementById('main-content');
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function () {
-                    sidebar.classList.toggle('open');
-                    if (sidebar.classList.contains('open')) {
-                        sidebar.style.left = '0';
-                        overlay.classList.add('active');
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        sidebar.style.left = '-260px';
-                        overlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                });
-            }
-
-            if (overlay) {
-                overlay.addEventListener('click', function () {
-                    sidebar.classList.remove('open');
-                    sidebar.style.left = '-260px';
-                    overlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                });
-            }
-
-            // Update current date and time
-            function updateDateTime() {
-                const now = new Date();
-                const dateTimeElement = document.getElementById('current-date-time');
-
-                if (dateTimeElement) {
-                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                    const dateString = now.toLocaleDateString('fr-FR', options);
-                    const timeString = now.toLocaleTimeString('fr-FR');
-                    dateTimeElement.textContent = dateString + ' | ' + timeString;
-                }
-            }
-
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
-
-            // Counter animation effect
-            function animateCounters() {
-                const counters = document.querySelectorAll('#patient-counter, #appointment-counter');
-
-                counters.forEach(counter => {
-                    const target = parseInt(counter.innerText);
-                    let count = 0;
-                    const duration = 2000; // ms
-                    const interval = 50; // ms
-                    const step = Math.ceil(target / (duration / interval));
-
-                    const timer = setInterval(() => {
-                        count += step;
-                        if (count >= target) {
-                            counter.innerText = target;
-                            clearInterval(timer);
-                        } else {
-                            counter.innerText = count;
-                        }
-                    }, interval);
-                });
-            }
-
-            // Start counter animation
-            animateCounters();
-
-            // Toggle active class on sidebar items
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            const sections = document.querySelectorAll('.dashboard-section');
-
-            sidebarItems.forEach(item => {
-                item.addEventListener('click', function (e) {
-                    e.preventDefault();
-
-                    const targetSection = this.getAttribute('data-section');
-
-                    // Update active sidebar item
-                    sidebarItems.forEach(sideItem => sideItem.classList.remove('active'));
-                    this.classList.add('active');
-
-                    // Show the selected section
-                    sections.forEach(section => {
-                        section.classList.remove('active');
-                        section.classList.add('hidden');
-                    });
-
-                    const activeSection = document.getElementById(`${targetSection}-section`);
-                    if (activeSection) {
-                        activeSection.classList.remove('hidden');
-                        setTimeout(() => {
-                            activeSection.classList.add('active');
-                        }, 10);
-                    }
-
-                    // Close sidebar on mobile after selection
-                    if (window.innerWidth < 768) {
-                        sidebar.classList.remove('open');
-                        sidebar.style.left = '-260px';
-                        overlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                    }
-                });
-            });
-
-            // Tab handling
-            const tabButtons = document.querySelectorAll('.tab-button');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const tabContainer = this.closest('div').parentNode;
-                    const tabId = this.getAttribute('data-tab');
-
-                    // Update active tab
-                    tabContainer.querySelectorAll('.tab-button').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    this.classList.add('active');
-
-                    // Show the selected tab content
-                    tabContainer.parentNode.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.add('hidden');
-                    });
-
-                    document.getElementById(tabId).classList.remove('hidden');
-                });
-            });
-
-            // Task panel tabs
-            const activityTab = document.getElementById('tab-activity');
-            const tasksTab = document.getElementById('tab-tasks');
-            const messagesTab = document.getElementById('tab-messages');
-
-            if (activityTab && tasksTab && messagesTab) {
-                activityTab.addEventListener('click', function () {
-                    this.classList.add('active');
-                    tasksTab.classList.remove('active');
-                    messagesTab.classList.remove('active');
-
-                    document.getElementById('panel-activity').classList.remove('hidden');
-                    document.getElementById('panel-tasks').classList.add('hidden');
-                    document.getElementById('panel-messages').classList.add('hidden');
-                });
-
-                tasksTab.addEventListener('click', function () {
-                    this.classList.add('active');
-                    activityTab.classList.remove('active');
-                    messagesTab.classList.remove('active');
-
-                    document.getElementById('panel-tasks').classList.remove('hidden');
-                    document.getElementById('panel-activity').classList.add('hidden');
-                    document.getElementById('panel-messages').classList.add('hidden');
-                });
-
-                messagesTab.addEventListener('click', function () {
-                    this.classList.add('active');
-                    activityTab.classList.remove('active');
-                    tasksTab.classList.remove('active');
-
-                    document.getElementById('panel-messages').classList.remove('hidden');
-                    document.getElementById('panel-activity').classList.add('hidden');
-                    document.getElementById('panel-tasks').classList.add('hidden');
-                });
-            }
-
-            // Task checkboxes
-            const taskCheckboxes = document.querySelectorAll('.task-checkbox');
-
-            taskCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('click', function () {
-                    const taskItem = this.closest('.task-item');
-                    const taskText = taskItem.querySelector('.task-text');
-
-                    this.classList.toggle('checked');
-                    taskText.classList.toggle('checked');
-                });
-            });
-
-            // Initialize charts if they exist
-            if (typeof Chart !== 'undefined') {
-                // Patient visits chart
-                const visitsCtx = document.getElementById('patientVisitsChart');
-                if (visitsCtx) {
-                    new Chart(visitsCtx, {
-                        type: 'line',
-                        data: {
-                            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
-                            datasets: [{
-                                label: 'Visites patients',
-                                data: [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95],
-                                fill: true,
-                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                                borderColor: 'rgba(99, 102, 241, 0.8)',
-                                tension: 0.4,
-                                pointRadius: 4,
-                                pointBackgroundColor: '#ffffff',
-                                pointBorderColor: 'rgba(99, 102, 241, 1)',
-                                pointBorderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                    titleColor: '#1e293b',
-                                    bodyColor: '#1e293b',
-                                    borderColor: 'rgba(99, 102, 241, 0.5)',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    cornerRadius: 8,
-                                    displayColors: false
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    grid: {
-                                        drawBorder: false,
-                                        color: 'rgba(226, 232, 240, 0.5)'
-                                    },
-                                    ticks: {
-                                        color: '#94a3b8'
-                                    }
-                                },
-                                x: {
-                                    grid: {
-                                        display: false
-                                    },
-                                    ticks: {
-                                        color: '#94a3b8'
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-
-                // Revenue chart
-                const revenueCtx = document.getElementById('revenueChart');
-                if (revenueCtx) {
-                    new Chart(revenueCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'],
-                            datasets: [{
-                                data: [35, 25, 20, 15, 5],
-                                backgroundColor: [
-                                    'rgba(99, 102, 241, 0.8)',
-                                    'rgba(16, 185, 129, 0.8)',
-                                    'rgba(249, 115, 22, 0.8)',
-                                    'rgba(239, 68, 68, 0.8)',
-                                    'rgba(148, 163, 184, 0.8)'
-                                ],
-                                borderColor: 'white',
-                                borderWidth: 2,
-                                hoverOffset: 15
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            cutout: '70%',
-                            plugins: {
-                                legend: {
-                                    position: 'right',
-                                    labels: {
-                                        boxWidth: 12,
-                                        padding: 20,
-                                        font: {
-                                            size: 12
-                                        },
-                                        color: '#4b5563'
-                                    }
-                                },
-                                tooltip: {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                    titleColor: '#1e293b',
-                                    bodyColor: '#1e293b',
-                                    borderColor: 'rgba(148, 163, 184, 0.5)',
-                                    borderWidth: 1,
-                                    padding: 10,
-                                    cornerRadius: 8,
-                                    displayColors: false
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Countdown timer for next appointment
-            const countdownEl = document.getElementById('appointment-countdown');
-            if (countdownEl) {
-                const targetTime = new Date();
-                targetTime.setHours(9, 30, 0, 0);
-
-                function updateCountdown() {
-                    const now = new Date();
-                    if (now > targetTime) {
-                        countdownEl.textContent = 'En cours';
-                        countdownEl.parentNode.classList.remove('bg-red-100', 'text-red-800');
-                        countdownEl.parentNode.classList.add('bg-green-100', 'text-green-800');
-                        countdownEl.previousElementSibling.classList.remove('fa-clock');
-                        countdownEl.previousElementSibling.classList.add('fa-check-circle');
-                        return;
-                    }
-
-                    const diff = targetTime - now;
-                    const minutes = Math.floor(diff / 1000 / 60);
-                    const seconds = Math.floor((diff / 1000) % 60);
-
-                    countdownEl.textContent = `Dans ${minutes}m ${seconds}s`;
-                }
-
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            }
-
-            // Progress bar animation on load
-            const progressBars = document.querySelectorAll('.progress-bar-fill');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 300);
-            });
-        });
-    </script>
 </body>
-
 </html>

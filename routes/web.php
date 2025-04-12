@@ -56,6 +56,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/dashboard/doctors', [AdminController::class, 'storeDoctor']);
     Route::put('/dashboard/doctors/{id}', [AdminController::class, 'updateDoctor']);
     Route::delete('/dashboard/doctors/{id}', [AdminController::class, 'destroyDoctor']);
+
+    // Patient routes
+    Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
+    Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create');
+    Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
+    Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
+    Route::get('/patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
+    Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
+    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patients.destroy');
+    Route::get('/patients/stats', [PatientController::class, 'stats'])->name('patients.stats');
 })->middleware('auth');
 
 Route::prefix('doctor')->middleware('doctor')->group(function () {

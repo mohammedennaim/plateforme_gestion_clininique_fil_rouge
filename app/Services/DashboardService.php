@@ -87,7 +87,7 @@ class DashboardService
     }
     public function getTodayAppointments()
     {
-        return $this->appointmentRepository->getAll()->where('date', now()->format('Y-m-d'));
+        return $this->appointmentRepository->getAll();
     }
     public function getPendingRequests()
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use App\Models\Patient;
+use App\Models\User;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,15 @@ class DoctorController extends Controller
         // $rondez_vous_count = $this->dashboardService->getRendezVousCount($doctor->id);
         // $patients = $this->dashboardService->getPatientsByDoctorId($doctor->id);
         // $patients_count = $patients->count();
-        $doctor = auth()->user();
-        return view('doctor.dashboard', compact('doctor'));
+        // $doctorAuth = User::auth();
+        // dd($auth);
+        $details =  $this->dashboardService->getAllDoctors();
+        $doctor = $details['doctor'];
+        
+        $appointments_count = $details['appointments_count'];
+        $patients_count = $details['patients_count'];
+        $todayAppointments = $this->dashboardService->getTodayAppointments()->where('doctor_id', 4);
+        // dd($todayAppointments);
+        return view('doctor.dashboard', compact('doctor', 'appointments_count', 'patients_count', 'todayAppointments'));
     }
 }

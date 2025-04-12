@@ -1490,36 +1490,35 @@
                                                             <td>
                                                                 <span class="badge"
                                                                     style="background-color: rgba(78, 115, 223, 0.1); color: #4e73df; border-radius: 1rem; padding: 0.4rem 0.8rem; font-weight: 500;">
-                                                                    {{ $patient["patient_details"]->name_assurance }}
+                                                                    {{ $patient["patient_details"]["name_assurance"] ?? 'N/A' }}
                                                                 </span>
                                                             </td>
-                                                            <td>{{ $patient['patient_details']->assurance_number }}</td>
+                                                            <td>{{ $patient["patient_details"]["assurance_number"] ?? 'N/A' }}</td>
                                                             <td>
                                                                 <span class="badge badge-pill"
                                                                     style="background-color: rgba(231, 74, 59, 0.1); color: #e74a3b; border-radius: 1rem; padding: 0.4rem 0.8rem; font-weight: 500;">
-                                                                    {{ $patient['patient_details']->name_assurance }}
+                                                                    {{ $patient["patient_details"]["blood_type"] ?? 'N/A' }}
                                                                 </span>
                                                             </td>
                                                             <td>
                                                                 <span class="badge"
                                                                     style="background-color: rgba(28, 200, 138, 0.1); color: #1cc88a; border-radius: 1rem; padding: 0.4rem 0.8rem; font-weight: 500;">
-                                                                    {{ $patient['patient_details']->derniere_visite ? $patient['patient_details']->derniere_visite->format('d/m/Y') : 'Jamais' }}
                                                                 </span>
                                                             </td>
                                                             <td>
                                                                 <div class="action-menu d-flex gap-1">
-                                                                    <a href="{{ route('admin.patients.show', $patient['patient_details']->id) }}"
+                                                                    <a href="{{ route('admin.patients.show', $patient['patient_details']->id ??  'N/A') }}"
                                                                         class="btn btn-sm d-flex align-items-center justify-content-center"
                                                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(78, 115, 223, 0.1); color: #4e73df; transition: all 0.2s ease;">
                                                                         <i class="fas fa-eye"></i>
                                                                     </a>
-                                                                    <a href="{{ route('admin.patients.edit', $patient['patient_details']->id) }}"
+                                                                    <a href="{{ route('admin.patients.edit', $patient['patient_details']->id ??  'N/A') }}"
                                                                         class="btn btn-sm d-flex align-items-center justify-content-center"
                                                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(28, 200, 138, 0.1); color: #1cc88a; transition: all 0.2s ease;">
                                                                         <i class="fas fa-edit"></i>
                                                                     </a>
 
-                                                                    <a href="{{ route('admin.patients.delete', $patient['patient_details']->id) }}"
+                                                                    <a href="{{ route('admin.patients.delete', $patient['patient_details']->id ??  'N/A') }}"
                                                                         class="btn btn-sm d-flex align-items-center justify-content-center"
                                                                         style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(28, 200, 138, 0.1); color: #e74a3b; transition: all 0.2s ease;">
                                                                         <i class="fas fa-trash"></i>
@@ -1527,7 +1526,7 @@
                                                                     <!-- <button
                                                                                 class="btn btn-sm d-flex align-items-center justify-content-center deletePatientBtn"
                                                                                 style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(231, 74, 59, 0.1); color: #e74a3b; transition: all 0.2s ease;"
-                                                                                data-id="{{ $patient['patient_details']->id }}" data-bs-toggle="modal"
+                                                                                data-id="{{ $patient['patient_details']->id ??  'N/A' }}" data-bs-toggle="modal"
                                                                                 data-bs-target="#deletePatientModal">
                                                                                 <i class="fas fa-trash"></i>
                                                                             </button> -->
@@ -1594,17 +1593,17 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <div>{{ $doctor['doctor_details']->speciality }}</div>
+                                                <div>{{ $doctor['doctor_details']->speciality ??  'N/A' }}</div>
                                                 <div>{{ $doctor['phone'] }}</div>
                                             </td>
                                             <td>
-                                                @if($doctor['doctor_details']->is_available)
+                                                @if($doctor['doctor_details']->is_available ??  'N/A')
                                                     <span class="badge badge-success">Disponible</span>
                                                 @else
                                                     <span class="badge badge-warning">Non disponible</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $doctor['doctor_details']->nombre_cabinet }}</td>
+                                            <td>{{ $doctor['doctor_details']->nombre_cabinet  ??  'N/A'}}</td>
                                             <td>
                                                 <div class="action-menu">
                                                     <a href=""
@@ -1612,19 +1611,19 @@
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                     <button class="btn btn-primary btn-sm edit-doctor-btn"
-                                                        data-id="{{ $doctor['doctor_details']->id }}"
+                                                        data-id="{{ $doctor['doctor_details']->id  ??  'N/A'}}"
                                                         data-name="{{ $doctor['name'] }}"
                                                         data-email="{{ $doctor['email'] }}"
                                                         data-phone="{{ $doctor['phone'] }}"
-                                                        data-speciality="{{ $doctor['doctor_details']->speciality }}"
-                                                        data-nombre-cabinet="{{ $doctor['doctor_details']->nombre_cabinet }}"
-                                                        data-qualification="{{ $doctor['doctor_details']->qualification }}"
-                                                        data-is-available="{{ $doctor['doctor_details']->is_available }}"
+                                                        data-speciality="{{ $doctor['doctor_details']->speciality  ??  'N/A'}}"
+                                                        data-nombre-cabinet="{{ $doctor['doctor_details']->nombre_cabinet  ??  'N/A'}}"
+                                                        data-qualification="{{ $doctor['doctor_details']->qualification  ??  'N/A'}}"
+                                                        data-is-available="{{ $doctor['doctor_details']->is_available  ??  'N/A'}}"
                                                         data-bs-toggle="modal" data-bs-target="#editDoctorModal">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
                                                     <button class="btn btn-danger btn-sm deleteDoctorBtn"
-                                                        data-id="{{ $doctor['doctor_details']->id }}" data-bs-toggle="modal"
+                                                        data-id="{{ $doctor['doctor_details']->id  ??  'N/A'}}" data-bs-toggle="modal"
                                                         data-bs-target="#deleteDoctorModal">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
@@ -2124,7 +2123,7 @@
                             <select class="form-control" id="patient_id" name="patient_id" required>
                                 <option value="">Sélectionner un patient</option>
                                 @foreach($patients as $patient)
-                                    <option value="{{ $patient['patient_details']->id }}">{{ $patient['name'] }}</option>
+                                    <option value="{{ $patient['patient_details']->id  ??  'N/A'}}">{{ $patient['name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
