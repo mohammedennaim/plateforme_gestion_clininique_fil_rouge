@@ -83,4 +83,19 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     {
         return Appointment::all()->count();
     }
+
+    public function searchPatients($query)
+    {
+        // Search in joined patient table
+        return $this->model->join('patients', 'appointments.patient_id', '=', 'patients.id')
+            ->where('doctor_id', auth()->user()->id)
+            ->where(function($q) use ($query) {
+                $q->where('patients.name', 'like', "%{$query}%")
+                  ->orWhere('patients.email', 'like', "%{$query}%")
+                  ->orWhere('patients.phone', 'like', "%{$query}%");
+            })
+            ->select('appointments.*', 'patients.name as patient_name')
+            ->get()
+            ->unique('patient_id');
+    }
 }

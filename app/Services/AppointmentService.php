@@ -76,4 +76,19 @@ class AppointmentService{
     {
         return $this->appointmentRepository->getCountStats();
     }
+
+    public function searchPatients($query)
+    {
+        return $this->appointmentRepository->searchPatients($query);
+    }
+
+    public function updateAppointment($id, $data)
+    {
+        return $this->appointmentRepository->update($id, $data);
+    }
+
+    public function deleteAppointment($id)
+    {
+        return $this->appointmentRepository->delete($id);
+    }
 }

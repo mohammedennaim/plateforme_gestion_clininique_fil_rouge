@@ -1245,7 +1245,7 @@
                                             </div>
                                             <div class="ml-3">
                                                 <p class="text-sm font-medium text-indigo-600">{{ $appointment->patient->name }}</p>
-                                                <p class="text-xs text-gray-500">Dr. {{ $appointment->details->name }} • {{ $appointment->formatted_time }}</p>
+                                                <p class="text-xs text-gray-500">Dr. {{ $appointment->doctor->name }} • {{ $appointment->formatted_time }}</p>
                                                 <div class="flex items-center mt-1">
                                                     <span class="status-indicator status-{{ $appointment->status_class }}"></span>
                                                     <span class="text-xs font-medium text-{{ $appointment->status_color }}-800">{{ $appointment->status_label }}</span>
@@ -1575,7 +1575,9 @@
                 </div>
 
                 <div class="px-6 py-4 bg-gray-50 flex items-center justify-between border-t border-gray-200">
-                    {{ $patients->links() }}
+                    @if(method_exists($patients, 'links'))
+                        {{ $patients->links() }}
+                    @endif
                 </div>
             </div>
         </section>

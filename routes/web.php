@@ -89,17 +89,29 @@ Route::prefix('doctor')->middleware(['auth', 'doctor'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('doctor.profile');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('doctor.profile.update');
     
+    // Added missing routes needed for the doctor dashboard
+    Route::get('/appointments/index', [DoctorController::class, 'appointments'])->name('appointments.index');
+    Route::get('/appointments/show/{id}', [DoctorController::class, 'showAppointment'])->name('appointments.show');
+    Route::get('/appointments/check-in/{id}', [DoctorController::class, 'checkInAppointment'])->name('appointments.check-in');
+    Route::get('/patients/show/{id}', [DoctorController::class, 'showPatient'])->name('patients.show');
+    Route::get('/patients/history/{id}', [DoctorController::class, 'patientHistory'])->name('patients.history');
+    Route::get('/patients/search', [DoctorController::class, 'searchPatients'])->name('patients.search');
+    Route::get('/patients/index', [DoctorController::class, 'patients'])->name('patients.index');
+    Route::get('/calendar/index', [DoctorController::class, 'calendar'])->name('calendar.index');
+    Route::get('/messages/index', [DoctorController::class, 'messages'])->name('messages.index');
+    Route::get('/messages/create', [DoctorController::class, 'createMessage'])->name('messages.create');
+    Route::get('/activities/index', [DoctorController::class, 'activities'])->name('activities.index');
+    Route::get('/analytics/export-revenue', [DoctorController::class, 'exportRevenue'])->name('analytics.export-revenue');
+    Route::get('/appointments/create', [DoctorController::class, 'createAppointment'])->name('appointments.create');
+    
+    // Ajouter les routes manquantes référencées dans le dashboard
+    Route::get('/medical-records/show/{id}', [DoctorController::class, 'showMedicalRecord'])->name('medical-records.show');
+    Route::get('/medical-records/index/{id}', [DoctorController::class, 'medicalRecords'])->name('medical-records.index');
+    
     Route::get('/pending', function () {
         return view('doctor.pending');
     })->name('doctor.pending');
 });
-// Route::get('/doctor/pending', function () {
-//     return view('doctor.pending');
-// })->name('doctor.pending')->middleware('auth');
-            
-// Route::get('/admin/pending', function () {
-//     return view('admin.pending');
-// })->name('admin.pending')->middleware('auth');
 
 Route::get('/home', function () {
     return view('home');
