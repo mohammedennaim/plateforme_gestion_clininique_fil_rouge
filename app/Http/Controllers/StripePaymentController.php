@@ -255,7 +255,16 @@ class StripePaymentController extends Controller
                 ->with('error', 'Nous n\'avons pas pu trouver les détails de votre rendez-vous.');
         }
         
-        // Passer à la vue les informations nécessaires
+        // Mettre à jour le statut du rendez-vous si le paiement est réussi
+        if ($payment->status === 'succeeded') {
+            app(RendezVousController::class)->processAfterPayment($appointment->id);
+            
+            // Redirection vers la page de détails avec un message de succès
+            return redirect()->route('patient.appointment.details', ['appointment_id' => $appointment->id])
+                ->with('success', 'true');
+        }
+        
+        // Passer à la vue les informations nécessaires dans le cas où le processAfterPayment ne gère pas la redirection
         return view('patient.appointment-details', [
             'payment' => $payment,
             'appointment' => $appointment

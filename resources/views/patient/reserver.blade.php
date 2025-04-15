@@ -913,9 +913,6 @@
 
             // Gérer la soumission du formulaire
             form.addEventListener('submit', function (e) {
-                // Ne pas empêcher la soumission du formulaire par défaut
-                // e.preventDefault();
-
                 // Vérifier si tous les champs requis sont remplis
                 if (validateForm()) {
                     // Remplir les champs cachés avec les données du rendez-vous

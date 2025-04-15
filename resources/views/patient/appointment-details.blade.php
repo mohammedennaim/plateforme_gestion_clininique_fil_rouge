@@ -328,7 +328,7 @@
                                 Annuler le rendez-vous
                             </button>
                             <div class="flex space-x-3">
-                                <a href="{{ route('patient.reserver') }}" class="flex items-center justify-center px-4 py-2 border border-secondary-300 text-secondary-700 bg-white hover:bg-secondary-50 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500">
+                                <a href="{{ route('patient.reserverSansAuth') }}" class="flex items-center justify-center px-4 py-2 border border-secondary-300 text-secondary-700 bg-white hover:bg-secondary-50 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500">
                                     <i class="fas fa-calendar-plus mr-2"></i>
                                     Nouveau rendez-vous
                                 </a>
@@ -339,38 +339,11 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- QR Code -->
-                    <div class="mt-8 text-center no-print">
-                        <p class="text-secondary-500 text-sm mb-3">Scanner ce QR code pour accéder rapidement à votre rendez-vous</p>
-                        <div class="inline-block bg-white p-2 rounded-lg shadow-sm">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(route('appointment.details', ['appointment_id' => $appointment->id])) }}" alt="QR Code" class="w-32 h-32 mx-auto">
-                        </div>
-                    </div>
                 </div>
                 
                 <!-- Card Footer -->
                 <div class="bg-secondary-50 py-4 px-6 text-center text-sm text-secondary-500">
                     <p>Pour toute question ou modification, veuillez nous contacter au <span class="font-medium">01 23 45 67 89</span></p>
-                </div>
-            </div>
-            
-            <!-- Reminder -->
-            <div class="mt-6 bg-primary-50 rounded-lg p-6 border border-primary-100 animate-fade-in no-print">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-bell text-primary-500 text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-lg font-medium text-primary-800">Rappel automatique</h3>
-                        <p class="mt-1 text-primary-600">Nous vous enverrons un rappel 24 heures avant votre rendez-vous par email et SMS.</p>
-                        <div class="mt-3">
-                            <button class="inline-flex items-center px-3 py-1.5 text-sm border border-primary-300 text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                <i class="fas fa-cog mr-2"></i>
-                                Gérer mes notifications
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

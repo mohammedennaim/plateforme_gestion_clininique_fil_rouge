@@ -284,31 +284,13 @@
                 </div>
                 
                 <!-- Form -->
-                <form method="POST" action="{{ route('patient.payment') }}" id="appointment-form" class="space-y-6">
+                <form method="POST" action="{{ route('patient.reserver.store') }}" id="appointment-form" class="space-y-6">
                     @csrf
-                    <input type="hidden" id="appointment-specialty" name="specialty">
-                    <input type="hidden" id="appointment-date" name="date">
-                    <input type="hidden" id="appointment-time" name="time">
-                    <input type="hidden" id="appointment-reason" name="reason">
+                    <input type="hidden" name="doctor_id" id="doctor_id" value="1">
                     
                     <!-- Step 1: Personal Information -->
                     <div id="step-1" class="space-y-6">
                         <h2 class="text-xl font-semibold text-secondary-800 mb-4">Informations personnelles</h2>
-                        
-                        <!-- Patient Type -->
-                        <div class="bg-secondary-50 p-4 rounded-lg mb-6">
-                            <label class="block text-sm font-medium text-secondary-700 mb-3">Type de patient</label>
-                            <div class="flex space-x-4">
-                                <div class="flex items-center">
-                                    <input type="radio" id="new-patient" name="patient-type" value="new" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300" checked>
-                                    <label for="new-patient" class="ml-2 text-sm text-secondary-700">Nouveau patient</label>
-                                </div>
-                                <div class="flex items-center">
-                                    <input type="radio" id="returning-patient" name="patient-type" value="returning" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
-                                    <label for="returning-patient" class="ml-2 text-sm text-secondary-700">Patient existant</label>
-                                </div>
-                            </div>
-                        </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Full Name -->
@@ -318,7 +300,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-user text-secondary-400"></i>
                                     </div>
-                                    <input type="text" id="fullname" name="fullname" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Jean Dupont" required>
+                                    <input type="text" id="fullname" name="patient_info[name]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Jean Dupont" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -333,7 +315,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-birthday-cake text-secondary-400"></i>
                                     </div>
-                                    <input type="date" id="birth-date" name="birth-date" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required>
+                                    <input type="date" id="birth-date" name="patient_info[birthdate]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -348,7 +330,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-envelope text-secondary-400"></i>
                                     </div>
-                                    <input type="email" id="email" name="email" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="exemple@email.com" required>
+                                    <input type="email" id="email" name="patient_info[email]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="exemple@email.com" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -363,7 +345,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-phone text-secondary-400"></i>
                                     </div>
-                                    <input type="tel" id="phone" name="phone" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="06 12 34 56 78" pattern="[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{2}" required>
+                                    <input type="tel" id="phone" name="patient_info[phone]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="06 12 34 56 78" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
