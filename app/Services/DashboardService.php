@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\Eloquent\AppointmentRepository;
 use App\Repositories\Eloquent\DoctorRepository;
 use App\Repositories\Eloquent\PatientRepository;
+use App\Models\Doctor;
 // use App\Repositories\Interfaces\DoctorRepositoryInterface;
 
 class DashboardService
@@ -26,7 +27,7 @@ class DashboardService
 
     public function getAllDoctors()
     {
-        return $this->doctorRepository->getAll();
+        return Doctor::with('user')->get();
     }
 
     public function getDoctorById($id)
@@ -75,7 +76,7 @@ class DashboardService
     }
     public function getTotalDoctors()
     {
-        return $this->doctorRepository->getAll()->count();
+        return $this->doctorRepository->getAll();
     }
     public function getTotalAppointments()
     {
@@ -87,11 +88,11 @@ class DashboardService
     }
     public function getTodayAppointments()
     {
-        return $this->appointmentRepository->getAll();
+        return $this->appointmentRepository->getTodayAppointments();
     }
     public function getPendingRequests()
     {
-        return $this->appointmentRepository->getAll()->where('status', 'pending')->count();
+        return $this->appointmentRepository->getPendingRequests();
     }
     // public function getMonthlyRevenue()
     // {
@@ -122,6 +123,21 @@ class DashboardService
     }
     public function deleteAppointment($id){
         return $this->appointmentRepository->delete($id);
+    }
+
+    public function getDoctorDetails($doctorId)
+    {
+        $doctor = $this->doctorRepository->getById($doctorId);
+        $appointments_count = $this->appointmentRepository->getCountByDoctorId($doctorId);
+        $patients_count = $this->appointmentRepository->getCountByPatientId($doctorId);
+        $todayAppointments = $this->appointmentRepository->getTodayAppointments()->where('doctor_id', $doctorId);
+
+        return [
+            'doctor' => $doctor,
+            'appointments_count' => $appointments_count,
+            'patients_count' => $patients_count,
+            'todayAppointments' => $todayAppointments
+        ];
     }
 
 }

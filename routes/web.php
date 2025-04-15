@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StripePaymentController;
 use App\Jobs\SendMessage;
 use Illuminate\Support\Facades\Route;
 
@@ -43,18 +44,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/dashboard', [AdminController::class, 'storeAppointment']);
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/patients', [AdminController::class, 'showPatients'])->name('patients');
-    Route::get('/patients/{id}', [AdminController::class, 'showPatient'])->name('patients.show');
-    Route::put('/patients/{id}', [AdminController::class, 'updatePatient'])->name('patients.edit');
-    Route::delete('/patients/{id}', [AdminController::class, 'deletePatient'])->name('patients.delete');
     Route::get('/settings', [ProfileController::class, 'showSettings'])->name('settings');
     Route::put('/dashboard/appointments/{id}', [AdminController::class, 'updateAppointment'])->name('appointment.update');
-
+    
     Route::get('/doctors/show', [AdminController::class, 'showDoctor'])->name('doctor.show');
+    // Route::get('/patients/{id}', [AdminController::class, 'showpatient'])->name('patients.show');
+    // Route::put('/patients/{id}', [AdminController::class, 'updatePatient'])->name('patients.edit');
+    // Route::delete('/patients/{id}', [AdminController::class, 'deletePatient'])->name('patients.delete');
+    
     Route::get('/dashboard/doctors/{id}', [AdminController::class, 'showDoctor']);
-    Route::get('/dashboard/patients', [AdminController::class, 'showpatients']);
-    Route::post('/dashboard/doctors', [AdminController::class, 'storeDoctor']);
     Route::put('/dashboard/doctors/{id}', [AdminController::class, 'updateDoctor']);
+    Route::post('/dashboard/doctors', [AdminController::class, 'storeDoctor']);
     Route::delete('/dashboard/doctors/{id}', [AdminController::class, 'destroyDoctor']);
 
     // Patient routes
@@ -64,12 +64,34 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('patients.show');
     Route::get('/patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
     Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
-    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patients.destroy');
+    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('admin.patients.destroy');
     Route::get('/patients/stats', [PatientController::class, 'stats'])->name('patients.stats');
-})->middleware('auth');
 
-Route::prefix('doctor')->middleware('doctor')->group(function () {
-    Route::get('/dashboard', [DoctorController::class, 'index'])->middleware('doctor')->middleware('auth')->name('doctor.dashboard');
+    // Routes pour les médecins
+    Route::post('/doctors', [DoctorController::class, 'store'])->name('admin.doctors.store');
+    Route::put('/doctors/{doctor}', [DoctorController::class, 'update'])->name('admin.doctors.update');
+    Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('admin.doctors.destroy');
+    
+    // Routes pour les patients
+    Route::post('/patients', [PatientController::class, 'store'])->name('admin.patients.store');
+    Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('admin.patients.update');
+});
+
+Route::prefix('doctor')->middleware(['auth', 'doctor'])->group(function () {
+    Route::get('/dashboard', [DoctorController::class, 'index'])->name('doctor.dashboard');
+    Route::get('/dashboard/patients/{id}', [DoctorController::class, 'showPatient'])->name('doctor.showPatient');
+    Route::put('/dashboard/patients/{id}', [DoctorController::class, 'updatePatient'])->name('doctor.updatePatient');
+    Route::get('/dashboard/appointments/{id}', [DoctorController::class, 'showAppointment'])->name('doctor.showAppointment');
+    Route::put('/dashboard/appointments/{id}', [DoctorController::class, 'updateAppointment'])->name('doctor.updateAppointment');
+    Route::delete('/dashboard/appointments/{id}', [DoctorController::class, 'destroyAppointment'])->name('doctor.destroyAppointment');
+    Route::get('/appointments', [DoctorController::class, 'appointments'])->name('doctor.appointments');
+    Route::get('/patients', [DoctorController::class, 'patients'])->name('doctor.patients');
+    Route::get('/profile', [ProfileController::class, 'showProfile'])->name('doctor.profile');
+    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('doctor.profile.update');
+    
+    Route::get('/pending', function () {
+        return view('doctor.pending');
+    })->name('doctor.pending');
 });
 // Route::get('/doctor/pending', function () {
 //     return view('doctor.pending');
@@ -83,7 +105,41 @@ Route::get('/home', function () {
     return view('home');
 })->name('home')->middleware('auth');
 
+// Route::get('/patient/reserver', fn() => view('patient.reserver'));
+Route::prefix('patient')->group(function ()  {
+    
+Route::get('/reserver', [RendezVousController::class, 'create'])->name('patient.reserver');
+Route::get('/reserver', [RendezVousController::class, 'create'])->name('patient.reserverSansAuth');
+Route::post('/reserver', [RendezVousController::class, 'store'])->name('patient.reserver.store');
+Route::get('/payment', [RendezVousController::class, 'payment'])->name('patient.payment');
+Route::get('/appointment/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('patient.appointment.details');
+Route::post('/appointment/{appointment_id}/cancel', [RendezVousController::class, 'cancelAppointment'])->name('patient.appointment.cancel');
+
+Route::get('/dossiers', [DossierMedicalController::class, 'index'])->name('dossiers.index');
+Route::get('/dossiers/{id}', [DossierMedicalController::class, 'show'])->name('dossiers.show');
+Route::get('/dossiers/create', [DossierMedicalController::class, 'create'])->name('dossiers.create');
+Route::post('/dossiers', [DossierMedicalController::class, 'store'])->name('dossiers.store');
+Route::get('/dossiers/{id}/edit', [DossierMedicalController::class, 'edit'])->name('dossiers.edit');
+Route::put('/dossiers/{id}', [DossierMedicalController::class, 'update'])->name('dossiers.update');
+Route::delete('/dossiers/{id}', [DossierMedicalController::class, 'destroy'])->name('dossiers.destroy');
+});
+
+// Stripe Payment Routes
+Route::get('/payment', [StripePaymentController::class, 'showPaymentPage'])->name('payment.show');
+Route::post('/payment/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
+Route::post('/payment/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
+Route::post('/payment/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
+
+// Appointment Details after payment
+Route::get('/appointment/details/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('appointment.details');
+Route::put('/appointment/cancel/{appointment_id}', [RendezVousController::class, 'cancelAppointment'])->name('appointment.cancel');
+
 SendMessage::dispatch('Hello, this is a test message!')->delay(now()->addMinutes(1));
+
+// Route::prefix('patient')->middleware(['auth', 'check.role:patient'])->group(function () {
+//     Route::get('/dashboard', [PatientController::class, 'index'])->name('patient.dashboard');
+//     // ... autres routes patient ...
+// });
 
 
 

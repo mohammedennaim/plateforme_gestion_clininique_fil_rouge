@@ -11,6 +11,7 @@ class PatientRepository implements PatientRepositoryInterface
     public function getAll()
     {
         $patients = User::where('role', 'patient')->with('patient')->get();
+
         return $patients->map(function ($user) {
             return [
                 'id' => $user->id,
@@ -18,6 +19,11 @@ class PatientRepository implements PatientRepositoryInterface
                 'email' => $user->email,
                 'phone' => $user->phone,
                 'role' => $user->role,
+                'status' => $user->status,
+                'date_of_birth' => $user->date_of_birth,
+                'gender' => $user->gender,
+                'addresse' => $user->addresse,
+                'country' => $user->country,
                 'patient_details' => $user->patient,
             ];
         });
@@ -45,4 +51,11 @@ class PatientRepository implements PatientRepositoryInterface
     {
         return Patient::destroy($id);
     }
+    public function getByDoctorId($doctorId)
+    {
+        return Patient::where('doctor_id', $doctorId)->get();
+    }
+
+
+    
 }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" cont</div>ent="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Système de Gestion de Clinique - Dashboard Administrateur">
     <meta name="author" content="Votre Nom">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -785,6 +785,19 @@
             font-size: 0.8rem;
             color: #858796;
         }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
     </style>
 
 </head>
@@ -798,9 +811,9 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
                 <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-clinic-medical"></i>
+                    <i class="fas fa-clinic-medical" style="color:rgb(106, 220, 197);"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">Clinique <sup>Admin</sup></div>
+                <div class="sidebar-brand-text mx-3">Midi<span style="color:rgb(106, 220, 178);">Dash</span></div>
             </a>
 
             <!-- Divider -->
@@ -918,31 +931,6 @@
                         style="color: #4e73df; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0.125rem 0.25rem rgba(78, 115, 223, 0.2);">
                         <i class="fa fa-bars fa-lg"></i>
                     </button>
-
-
-
-                    <!-- Topbar Search - Enhanced with better styling -->
-                    <!-- <form
-                        class="d-none d-lg-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 navbar-search position-relative">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-transparent border-0"
-                                    style="position: absolute; z-index: 10; left: 0; top: 0; height: 100%; display: flex; align-items: center; padding-left: 1rem;">
-                                    <i class="fas fa-search fa-sm text-primary"></i>
-                                </span>
-                            </div>
-                            <input type="text" class="form-control bg-light small border-0 shadow-sm"
-                                placeholder="Rechercher patients, médecins, rendez-vous..." aria-label="Rechercher"
-                                aria-describedby="searchButton"
-                                style="border-radius: 2rem; padding: 1.2rem 1.2rem 1.2rem 2.5rem; min-width: 300px; font-size: 0.85rem; transition: all 0.3s ease;">
-                            <div class="search-dropdown position-absolute d-none"
-                                style="width: 100%; top: 100%; left: 0; margin-top: 0.5rem; z-index: 1000; background: white; border-radius: 0.5rem; box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1); padding: 1rem; max-height: 300px; overflow-y: auto;">
-                                <h6 class="dropdown-header">Résultats récents</h6>
-                                <div class="quick-search-results">
-                                </div>
-                            </div>
-                        </div>
-                    </form> -->
 
                     <!-- Date & Time Display -->
                     <div class="d-none d-xl-flex align-items-center mr-4">
@@ -1264,9 +1252,6 @@
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Tableau de bord administrateur</h1>
                         <div>
-                            <a href="" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm mr-2">
-                                <i class="fas fa-download fa-sm text-white-50"></i> Générer un rapport
-                            </a>
                             <button id="refreshDashboard"
                                 class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
                                 <i class="fas fa-sync-alt fa-sm text-white-50"></i> Actualiser
@@ -1309,7 +1294,8 @@
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 Total Médecins</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalDoctors }}
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ $totalDoctors['doctor']->count() }}
                                             </div>
                                             <div class="text-xs text-success mt-2">
                                                 <i class="fas fa-arrow-up"></i> {{ rand(1, 5) }}% depuis le mois dernier
@@ -1405,234 +1391,340 @@
                     <!-- Tab content -->
                     <div class="tab-content" id="dashboardContent">
                         <!-- Patients Tab -->
-                        <div class="tab-content" id="dashboardContent">
-                            <div class="tab-pane fade show active fade-in-up delay-400" id="patients" role="tabpanel">
-                                <div class="card shadow mb-4"
-                                    style="border-radius: 0.75rem; overflow: hidden; border: none;">
-                                    <div class="card-header py-3 d-flex justify-content-between align-items-center"
-                                        style="background-color: white; border-bottom: 1px solid rgba(0, 0, 0, 0.05);">
-                                        <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center">
-                                            <i class="fas fa-users mr-2"
-                                                style="font-size: 1rem; background-color: rgba(78, 115, 223, 0.1); color: #4e73df; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%;"></i>
-                                            Gestion des patients
-                                        </h6>
+                        <div class="tab-pane fade show active" id="patients" role="tabpanel">
+                            <div class="card shadow mb-4"
+                                style="border-radius: 0.75rem; overflow: hidden; border: none;">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center"
+                                    style="background-color: white; border-bottom: 1px solid rgba(0, 0, 0, 0.05);">
+                                    <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center">
+                                        <i class="fas fa-users mr-2"
+                                            style="font-size: 1rem; background-color: rgba(78, 115, 223, 0.1); color: #4e73df; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%;"></i>
+                                        Gestion des patients
+                                    </h6>
 
-                                        <div class="d-flex align-items-center">
-                                            <div class="input-group input-group-sm mr-3" style="width: 250px;">
-                                                <input type="text" class="form-control border-0 bg-light"
-                                                    placeholder="Rechercher un patient..."
-                                                    style="border-radius: 1.5rem 0 0 1.5rem; padding-left: 1rem;">
-                                                <div class="input-group-append">
-                                                    <button class="btn btn-primary" type="button"
-                                                        style="border-radius: 0 1.5rem 1.5rem 0; padding: 0.4rem 1rem;">
-                                                        <i class="fas fa-search fa-sm"></i>
-                                                    </button>
+                                    <div class="d-flex align-items-center">
+                                        <div class="input-group input-group-sm mr-3" style="width: 250px;">
+                                            <input type="text" class="form-control border-0 bg-light" id="patientSearch"
+                                                placeholder="Rechercher un patient..."
+                                                style="border-radius: 1.5rem 0 0 1.5rem; padding-left: 1rem;">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="button" id="searchPatientBtn"
+                                                    style="border-radius: 0 1.5rem 1.5rem 0;">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#addPatientModal">
+                                            <i class="fas fa-plus mr-2"></i> Nouveau patient
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="patientsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nom</th>
+                                                    <th>gender</th>
+                                                    <th>Age</th>
+                                                    <th>Date de naissance</th>
+                                                    <th>blood</th>
+                                                    <th>Assurance</th>
+                                                    <th>Number_Assurance</th>
+                                                    <th>Statut</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($patients as $patient)
+                                                    <tr>
+                                                        <td>{{ $patient['name'] }}</td>
+                                                        <td>{{ $patient['gender'] ?? 'N/A' }}</td>
+                                                        <td>{{ $patient['age'] ?? 'N/A' }}</td>
+                                                        <td>{{ $patient["date_of_birth"] ?? 'N/A' }}</td>
+                                                        <td>{{ $patient['patient_details']->blood_type ?? 'N/A' }}</td>
+                                                        <td>
+                                                            <span class="badge bg-info">
+                                                                {{ $patient['patient_details']->name_assurance ?? 'N/A' }}
+                                                            </span>
+                                                        </td>
+                                                        <td>{{ $patient['patient_details']->assurance_number ?? 'N/A' }}
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-success">Actif</span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <a href="{{ Route('admin.patients.show', $patient['id']) }}" class="btn btn-sm btn-info">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-primary edit-patient-btn"
+                                                                    data-id="{{ $patient['id'] }}"
+                                                                    data-patient='{"name": "{{ $patient["name"] }}", "email": "{{ $patient["email"] }}", "phone": "{{ $patient["phone"]}}", 
+                                                                                                    "birth_date": "{{ $patient["patient_details"]->date_of_birth ?? "N/A"}}", "has_insurance": {{ $patient["patient_details"]->name_assurance ?? "N/A" ? 'true' : 'false' }}}'>
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-danger delete-patient-btn"
+                                                                    data-id="{{ $patient['id'] }}"
+                                                                    data-name="{{ $patient['name'] }}">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Patient Modal -->
+                        <div class="modal fade" id="addPatientModal" tabindex="-1"
+                            aria-labelledby="addPatientModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addPatientModalLabel">Ajouter un nouveau patient
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <form id="addPatientForm" action="" method="POST">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="name" class="form-label">Nom complet</label>
+                                                    <input type="text" class="form-control" id="name" name="name"
+                                                        required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="email" class="form-label">Email</label>
+                                                    <input type="email" class="form-control" id="email" name="email"
+                                                        required>
                                                 </div>
                                             </div>
-
-                                            <button
-                                                class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center"
-                                                style="padding: 0.4rem 1rem;">
-                                                <i class="fas fa-plus-circle mr-1"></i>
-                                                Ajouter un patient
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="card-body">
-                                        <div class="table-responsive" style="border-radius: 0.5rem; overflow: hidden;">
-                                            <table class="table table-hover" id="patientsTable" width="100%"
-                                                cellspacing="0">
-                                                <thead class="bg-light">
-                                                    <tr>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">Nom
-                                                            complet</th>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">
-                                                            Email</th>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">
-                                                            Téléphone</th>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">
-                                                            Assurance</th>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">
-                                                            Numéro d'assurance</th>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">
-                                                            Groupe sanguin</th>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">
-                                                            Dernière visite</th>
-                                                        <th style="padding: 1rem; font-weight: 600; color: #4e73df;">
-                                                            Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <!-- Exemple de ligne de patient améliorée -->
-                                                    @foreach($patients as $patient)
-                                                        <tr style="transition: all 0.2s ease;">
-                                                            <td>
-                                                                <div class="patient-profile"
-                                                                    style="display: flex; align-items: center; gap: 0.75rem;">
-                                                                    <div class="patient-avatar" style="position: relative;">
-                                                                        <img src="{{ $patient->user->profile_photo_url ?? asset('img/default-avatar.png') }}"
-                                                                            alt="patient"
-                                                                            style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                                                        <span class="status-indicator bg-success"
-                                                                            style="width: 10px; height: 10px; border-radius: 50%; position: absolute; bottom: 0; right: 0; border: 2px solid #fff;"></span>
-                                                                    </div>
-                                                                    <div class="patient-info">
-                                                                        <h6 class="mb-0 font-weight-bold"
-                                                                            style="font-size: 0.9rem;">
-                                                                            {{ $patient['name'] }}
-                                                                        </h6>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>{{ $patient['email']  }}</td>
-                                                            <td>{{ $patient['phone']  }}</td>
-                                                            <td>
-                                                                <span class="badge"
-                                                                    style="background-color: rgba(78, 115, 223, 0.1); color: #4e73df; border-radius: 1rem; padding: 0.4rem 0.8rem; font-weight: 500;">
-                                                                    {{ $patient["patient_details"]["name_assurance"] ?? 'N/A' }}
-                                                                </span>
-                                                            </td>
-                                                            <td>{{ $patient["patient_details"]["assurance_number"] ?? 'N/A' }}</td>
-                                                            <td>
-                                                                <span class="badge badge-pill"
-                                                                    style="background-color: rgba(231, 74, 59, 0.1); color: #e74a3b; border-radius: 1rem; padding: 0.4rem 0.8rem; font-weight: 500;">
-                                                                    {{ $patient["patient_details"]["blood_type"] ?? 'N/A' }}
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <span class="badge"
-                                                                    style="background-color: rgba(28, 200, 138, 0.1); color: #1cc88a; border-radius: 1rem; padding: 0.4rem 0.8rem; font-weight: 500;">
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div class="action-menu d-flex gap-1">
-                                                                    <a href="{{ route('admin.patients.show', $patient['patient_details']->id ??  'N/A') }}"
-                                                                        class="btn btn-sm d-flex align-items-center justify-content-center"
-                                                                        style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(78, 115, 223, 0.1); color: #4e73df; transition: all 0.2s ease;">
-                                                                        <i class="fas fa-eye"></i>
-                                                                    </a>
-                                                                    <a href="{{ route('admin.patients.edit', $patient['patient_details']->id ??  'N/A') }}"
-                                                                        class="btn btn-sm d-flex align-items-center justify-content-center"
-                                                                        style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(28, 200, 138, 0.1); color: #1cc88a; transition: all 0.2s ease;">
-                                                                        <i class="fas fa-edit"></i>
-                                                                    </a>
-
-                                                                    <a href="{{ route('admin.patients.delete', $patient['patient_details']->id ??  'N/A') }}"
-                                                                        class="btn btn-sm d-flex align-items-center justify-content-center"
-                                                                        style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(28, 200, 138, 0.1); color: #e74a3b; transition: all 0.2s ease;">
-                                                                        <i class="fas fa-trash"></i>
-                                                                    </a>
-                                                                    <!-- <button
-                                                                                class="btn btn-sm d-flex align-items-center justify-content-center deletePatientBtn"
-                                                                                style="width: 32px; height: 32px; border-radius: 50%; background-color: rgba(231, 74, 59, 0.1); color: #e74a3b; transition: all 0.2s ease;"
-                                                                                data-id="{{ $patient['patient_details']->id ??  'N/A' }}" data-bs-toggle="modal"
-                                                                                data-bs-target="#deletePatientModal">
-                                                                                <i class="fas fa-trash"></i>
-                                                                            </button> -->
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                        <!-- Pagination améliorée -->
-                                        <div class="d-flex justify-content-between align-items-center mt-4">
-                                            <div class="text-muted small">
-                                                Affichage de <span class="font-weight-bold">1</span> à <span
-                                                    class="font-weight-bold">10</span> sur <span
-                                                    class="font-weight-bold">{{ $totalPatients }}</span> patients
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="phone" class="form-label">Téléphone</label>
+                                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                                        required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="birth_date" class="form-label">Date de naissance</label>
+                                                    <input type="date" class="form-control" id="birth_date"
+                                                        name="birth_date" required>
+                                                </div>
                                             </div>
-                                            <nav aria-label="Page navigation">
-                                                <ul class="pagination pagination-sm">
-                                                    <li class="page-item disabled">
-                                                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true"
-                                                            style="border-radius: 0.5rem 0 0 0.5rem;">Précédent</a>
-                                                    </li>
-                                                    <li class="page-item active"><a class="page-link" href="#">1</a>
-                                                    </li>
-                                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="#"
-                                                            style="border-radius: 0 0.5rem 0.5rem 0;">Suivant</a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="password" class="form-label">Mot de passe</label>
+                                                    <input type="password" class="form-control" id="password"
+                                                        name="password" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="password_confirmation" class="form-label">Confirmer le
+                                                        mot de passe</label>
+                                                    <input type="password" class="form-control"
+                                                        id="password_confirmation" name="password_confirmation"
+                                                        required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="has_insurance"
+                                                        name="has_insurance">
+                                                    <label class="form-check-label" for="has_insurance">
+                                                        Le patient a une assurance
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Patient Modal -->
+                        <div class="modal fade" id="editPatientModal" tabindex="-1"
+                            aria-labelledby="editPatientModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editPatientModalLabel">Modifier le patient</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <form id="editPatientForm" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="edit_name" class="form-label">Nom complet</label>
+                                                    <input type="text" class="form-control" id="edit_name" name="name"
+                                                        required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="edit_email" class="form-label">Email</label>
+                                                    <input type="email" class="form-control" id="edit_email"
+                                                        name="email" required>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="edit_phone" class="form-label">Téléphone</label>
+                                                    <input type="tel" class="form-control" id="edit_phone" name="phone"
+                                                        required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="edit_birth_date" class="form-label">Date de
+                                                        naissance</label>
+                                                    <input type="date" class="form-control" id="edit_birth_date"
+                                                        name="birth_date" required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="edit_has_insurance" name="has_insurance">
+                                                    <label class="form-check-label" for="edit_has_insurance">
+                                                        Le patient a une assurance
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Enregistrer les
+                                                modifications</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Patient Modal -->
+                        <div class="modal fade" id="deletePatientModal" tabindex="-1"
+                            aria-labelledby="deletePatientModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deletePatientModalLabel">Confirmer la suppression
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Êtes-vous sûr de vouloir supprimer le patient <span
+                                            id="patientNameToDelete"></span> ?
+                                        Cette action est irréversible.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Annuler</button>
+                                        <form id="deletePatientForm" method="POST" style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Doctors Tab -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="doctorsTable" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Médecin</th>
-                                        <th>Spécialité</th>
-                                        <th>Disponibilité</th>
-                                        <th>Nombre de Cabinet</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($doctors as $doctor)
-                                        <tr>
-                                            <td>
-                                                <div class="doctor-profile">
-                                                    <img src="{{ $doctor['profile_photo_url'] ?? 'https://ui-avatars.com/api/?name=' . urlencode($doctor['name']) . '&color=7F9CF5&background=EBF4FF' }}"
-                                                        alt="Doctor Photo">
-                                                    <div class="doctor-info">
-                                                        <h6>Dr. {{ $doctor['name'] }}</h6>
-                                                        <span>{{ $doctor['email'] }}</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div>{{ $doctor['doctor_details']->speciality ??  'N/A' }}</div>
-                                                <div>{{ $doctor['phone'] }}</div>
-                                            </td>
-                                            <td>
-                                                @if($doctor['doctor_details']->is_available ??  'N/A')
-                                                    <span class="badge badge-success">Disponible</span>
-                                                @else
-                                                    <span class="badge badge-warning">Non disponible</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $doctor['doctor_details']->nombre_cabinet  ??  'N/A'}}</td>
-                                            <td>
-                                                <div class="action-menu">
-                                                    <a href=""
-                                                        class="btn btn-info btn-sm">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <button class="btn btn-primary btn-sm edit-doctor-btn"
-                                                        data-id="{{ $doctor['doctor_details']->id  ??  'N/A'}}"
-                                                        data-name="{{ $doctor['name'] }}"
-                                                        data-email="{{ $doctor['email'] }}"
-                                                        data-phone="{{ $doctor['phone'] }}"
-                                                        data-speciality="{{ $doctor['doctor_details']->speciality  ??  'N/A'}}"
-                                                        data-nombre-cabinet="{{ $doctor['doctor_details']->nombre_cabinet  ??  'N/A'}}"
-                                                        data-qualification="{{ $doctor['doctor_details']->qualification  ??  'N/A'}}"
-                                                        data-is-available="{{ $doctor['doctor_details']->is_available  ??  'N/A'}}"
-                                                        data-bs-toggle="modal" data-bs-target="#editDoctorModal">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm deleteDoctorBtn"
-                                                        data-id="{{ $doctor['doctor_details']->id  ??  'N/A'}}" data-bs-toggle="modal"
-                                                        data-bs-target="#deleteDoctorModal">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        <div class="tab-pane fade" id="doctors" role="tabpanel">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                                    <h6 class="m-0 font-weight-bold text-primary">Gestion des médecins</h6>
+                                    <button class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#addDoctorModal">
+                                        <i class="fas fa-plus me-1"></i> Nouveau médecin
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="doctorsTable" width="100%"
+                                            cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Médecin</th>
+                                                    <th>Spécialité</th>
+                                                    <th>Disponibilité</th>
+                                                    <th>Nombre de Cabinet</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($doctors as $doctor)
+                                                    <tr>
+                                                        <td>
+                                                            <div class="doctor-profile">
+                                                                <img src="{{ $doctor['profile_photo_url'] ?? 'https://ui-avatars.com/api/?name=' . urlencode($doctor['name']) . '&color=7F9CF5&background=EBF4FF' }}"
+                                                                    alt="Doctor Photo">
+                                                                <div class="doctor-info">
+                                                                    <h6>Dr. {{ $doctor['name'] }}</h6>
+                                                                    <span>{{ $doctor['email'] }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div>{{ $doctor['speciality'] ?? 'N/A' }}</div>
+                                                            <div>{{ $doctor['phone'] ?? 'N/A' }}</div>
+                                                        </td>
+                                                        <td>
+                                                            @if($doctor['is_available'])
+                                                                <span class="badge badge-success">Disponible</span>
+                                                            @else
+                                                                <span class="badge badge-warning">Non disponible</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $doctor['nombre_cabinet'] ?? 'N/A' }}</td>
+                                                        <td>
+                                                            <div class="action-menu">
+                                                                <a href="{{ route('admin.doctor.show', $doctor['id']) }}"
+                                                                    class="btn btn-info btn-sm">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                                <button class="btn btn-primary btn-sm edit-doctor-btn"
+                                                                    data-id="{{ $doctor['id'] }}"
+                                                                    data-name="{{ $doctor['name'] }}"
+                                                                    data-email="{{ $doctor['email'] }}"
+                                                                    data-phone="{{ $doctor['phone'] }}"
+                                                                    data-speciality="{{ $doctor['speciality'] ?? 'N/A' }}"
+                                                                    data-nombre-cabinet="{{ $doctor['nombre_cabinet'] ?? 'N/A' }}"
+                                                                    data-qualification="{{ $doctor['qualification'] ?? 'N/A' }}"
+                                                                    data-is-available="{{ $doctor['is_available'] ? '1' : '0' }}"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#editDoctorModal">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                                <button class="btn btn-danger btn-sm deleteDoctorBtn"
+                                                                    data-id="{{ $doctor['id'] }}" data-bs-toggle="modal"
+                                                                    data-bs-target="#deleteDoctorModal">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Appointments Tab -->
@@ -1663,11 +1755,22 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($appointments as $appointment)
-
                                                     <tr>
                                                         <td>{{ $appointment->id }}</td>
-                                                        <td>{{ $appointment->patient->user->name }}</td>
-                                                        <td>Dr. {{ $appointment->doctor->user->name }}</td>
+                                                        <td>
+                                                            @if($appointment->patient && $appointment->patient->user)
+                                                                {{ $appointment->patient->user->name }}
+                                                            @else
+                                                                <span class="text-danger">Patient supprimé</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if($appointment->doctor && $appointment->doctor->user)
+                                                                Dr. {{ $appointment->doctor->user->name }}
+                                                            @else
+                                                                <span class="text-danger">Médecin supprimé</span>
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $appointment->date }}, {{ $appointment->time }}</td>
                                                         <td>
                                                             @if($appointment->statut == 'confirmed')
@@ -1885,7 +1988,15 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="speciality">Spécialité</label>
-                                    <input type="text">
+                                    <select class="form-control" id="speciality" name="speciality" required>
+                                        <option value="">Sélectionnez une spécialité</option>
+                                        <option value="Cardiologue">Cardiologue</option>
+                                        <option value="Dermatologue">Dermatologue</option>
+                                        <option value="Généraliste">Généraliste</option>
+                                        <option value="Gynécologue">Gynécologue</option>
+                                        <option value="Ophtalmologue">Ophtalmologue</option>
+                                        <option value="Pédiatre">Pédiatre</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -1952,8 +2063,16 @@
                                         required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="edit_speciality">Spécialité</label>
-                                    <input type="text">
+                                    <label for="speciality">Spécialité</label>
+                                    <select class="form-control" id="speciality" name="speciality" required>
+                                        <option value="">Sélectionnez une spécialité</option>
+                                        <option value="Cardiologue">Cardiologue</option>
+                                        <option value="Dermatologue">Dermatologue</option>
+                                        <option value="Généraliste">Généraliste</option>
+                                        <option value="Gynécologue">Gynécologue</option>
+                                        <option value="Ophtalmologue">Ophtalmologue</option>
+                                        <option value="Pédiatre">Pédiatre</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -2035,17 +2154,16 @@
                     <h5 class="modal-title" id="editScheduleModalLabel">Modifier le rendez-vous</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('admin.appointment.update', $appointment->id) }}" method="POST">
+                <form id="editAppointmentForm" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="doctor_id" class="form-label">Doctor</label>
-                                <select class="form-select " id="doctor_id" name="doctor_id" required>
+                                <select class="form-select" id="doctor_id" name="doctor_id" required>
                                     @foreach($doctors as $doctor)
-                                        <option value="{{ $doctor['doctor_details']->id }}" {{ $appointment->doctor_id == $doctor['doctor_details']->id ? 'selected' : '' }}
-                                            class="color-primary">
+                                        <option value="{{ $doctor['id'] }}" class="color-primary">
                                             {{ $doctor['name'] }}
                                         </option>
                                     @endforeach
@@ -2056,47 +2174,19 @@
                             <div class="col-md-6 mb-3">
                                 <label for="doctor_speciality" class="form-label">speciality</label>
                                 <input type="text" class="form-control" id="doctor_speciality" name="doctor_speciality"
-                                    value="{{ $appointment->doctor->speciality }}" readonly>
+                                    readonly>
                             </div>
 
                             <!-- Date Input -->
                             <div class="col-md-6 mb-3">
                                 <label for="date" class="form-label">Date</label>
-                                <input type="date" class="form-control" id="date" name="date"
-                                    value="{{ $appointment->date }}" required>
-                            </div>
-
-                            <!-- Time Input -->
-                            <div class="col-md-6 mb-3">
-                                <label for="time" class="form-label">Heure</label>
-                                <input type="time" class="form-control" id="time" name="time"
-                                    value="{{ $appointment->date }}" required>
-                            </div>
-
-                            <!-- Status Selection -->
-                            <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label">Statut</label>
-                                <select class="form-select" id="status" name="status" required>
-                                    <option value="planned" {{ $appointment->status == 'planned' ? 'selected' : '' }}>
-                                        Planifié</option>
-                                    <option value="completed" {{ $appointment->status == 'completed' ? 'selected' : '' }}>
-                                        Terminé</option>
-                                    <option value="canceled" {{ $appointment->status == 'canceled' ? 'selected' : '' }}>
-                                        Annulé</option>
-                                </select>
-                            </div>
-
-                            <!-- Reason Textarea -->
-                            <div class="col-12 mb-3">
-                                <label for="reason" class="form-label">Motif de consultation</label>
-                                <textarea class="form-control" id="reason" name="reason" rows="3"
-                                    required>{{ $appointment->reason }}</textarea>
+                                <input type="date" class="form-control" id="date" name="date" required>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
                     </div>
                 </form>
             </div>
@@ -2123,7 +2213,8 @@
                             <select class="form-control" id="patient_id" name="patient_id" required>
                                 <option value="">Sélectionner un patient</option>
                                 @foreach($patients as $patient)
-                                    <option value="{{ $patient['patient_details']->id  ??  'N/A'}}">{{ $patient['name'] }}</option>
+                                    <option value="{{ $patient['patient_details']->id ?? 'N/A'}}">{{ $patient['name'] }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -2132,8 +2223,8 @@
                             <select class="form-control" id="doctor_id" name="doctor_id" required>
                                 <option value="">Sélectionner un médecin</option>
                                 @foreach($doctors as $doctor)
-                                    <option value="{{ $doctor['doctor_details']->id }}">Dr.
-                                        {{ $doctor['doctor_details']->name }}
+                                    <option value="{{ $doctor['id'] }}">Dr.
+                                        {{ $doctor['name'] }}
                                     </option>
                                 @endforeach
                             </select>
@@ -2267,7 +2358,8 @@
             document.querySelectorAll('.deleteDoctorBtn').forEach(button => {
                 button.addEventListener('click', function () {
                     const id = this.getAttribute('data-id');
-                    document.getElementById('deleteDoctorForm').setAttribute('action', `/admin/medecins/${id}`);
+                    document.getElementById('delete_doctor_id').value = id;
+                    document.getElementById('deleteDoctorForm').action = `/admin/doctors/${id}`; // Correction ici
                 });
             });
 
@@ -2328,9 +2420,13 @@
             });
 
             document.getElementById('refreshDashboard').addEventListener('click', function () {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin fa-sm text-white-50"></i> Actualisation...';
+                // Ajouter une classe de rotation pour l'icône
+                const icon = this.querySelector('i');
+                icon.classList.add('fa-spin');
                 this.disabled = true;
+                this.querySelector('.text-white-50').textContent = ' Actualisation...';
 
+                // Simuler une actualisation des données
                 setTimeout(() => {
                     Swal.fire({
                         icon: 'success',
@@ -2339,8 +2435,11 @@
                         timer: 2000,
                         showConfirmButton: false
                     });
-                    this.innerHTML = '<i class="fas fa-sync-alt fa-sm text-white-50"></i> Actualiser';
+
+                    // Restaurer l'état du bouton
+                    icon.classList.remove('fa-spin');
                     this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-sync-alt fa-sm text-white-50"></i> Actualiser';
                 }, 1500);
             });
 
@@ -2659,6 +2758,14 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Configuration pour le modal de suppression des médecins
+            document.querySelectorAll('.deleteDoctorBtn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.getAttribute('data-id');
+                    document.getElementById('delete_doctor_id').value = id;
+                    document.getElementById('deleteDoctorForm').action = `/admin/doctors/${id}`;
+                });
+            });
             // Configuration pour le modal d'édition des médecins
             document.querySelectorAll('.edit-doctor-btn').forEach(button => {
                 button.addEventListener('click', function () {
@@ -2701,14 +2808,7 @@
                 });
             });
 
-            // Configuration pour le modal de suppression des médecins
-            document.querySelectorAll('.deleteDoctorBtn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    document.getElementById('delete_doctor_id').value = id;
-                    document.getElementById('deleteDoctorForm').action = `/admin/doctors/${id}`;
-                });
-            });
+
 
             // Validation des formulaires
             function validateForm(formId) {
@@ -2796,10 +2896,134 @@
                 });
             });
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Gérer le clic sur le bouton d'édition
+            document.querySelectorAll('.edit-appointment-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const appointmentId = this.getAttribute('data-id');
+                    const appointmentData = JSON.parse(this.getAttribute('data-appointment'));
+
+                    // Mettre à jour l'action du formulaire
+                    document.getElementById('editAppointmentForm').action = `/admin/appointments/${appointmentId}`;
+
+                    // Remplir les champs du formulaire
+                    document.getElementById('doctor_id').value = appointmentData.doctor_id;
+                    document.getElementById('doctor_speciality').value = appointmentData.doctor_speciality;
+                    document.getElementById('date').value = appointmentData.date;
+
+                    // Afficher la modal
+                    new bootstrap.Modal(document.getElementById('editScheduleModal')).show();
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Gestion de la recherche
+            const patientSearch = document.getElementById('patientSearch');
+            const searchPatientBtn = document.getElementById('searchPatientBtn');
+            const patientsTable = document.getElementById('patientsTable');
+
+            searchPatientBtn.addEventListener('click', function () {
+                const searchTerm = patientSearch.value.toLowerCase();
+                const rows = patientsTable.getElementsByTagName('tr');
+
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    const cells = row.getElementsByTagName('td');
+                    let found = false;
+
+                    for (let j = 0; j < cells.length; j++) {
+                        const cell = cells[j];
+                        if (cell.textContent.toLowerCase().indexOf(searchTerm) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    row.style.display = found ? '' : 'none';
+                }
+            });
+
+            // Gestion des boutons d'édition
+            document.querySelectorAll('.edit-patient-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const patientData = JSON.parse(this.getAttribute('data-patient'));
+                    const patientId = this.getAttribute('data-id');
+
+                    // Remplir le formulaire d'édition
+                    document.getElementById('edit_name').value = patientData.name;
+                    document.getElementById('edit_email').value = patientData.email;
+                    document.getElementById('edit_phone').value = patientData.phone;
+                    document.getElementById('edit_birth_date').value = patientData.birth_date;
+                    document.getElementById('edit_has_insurance').checked = patientData.has_insurance;
+
+                    // Mettre à jour l'action du formulaire
+                    document.getElementById('editPatientForm').action = `/admin/patients/${patientId}`;
+
+                    // Afficher la modal
+                    new bootstrap.Modal(document.getElementById('editPatientModal')).show();
+                });
+            });
+
+            // Gestion des boutons de suppression
+            document.querySelectorAll('.delete-patient-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const patientId = this.getAttribute('data-id');
+                    const patientName = this.getAttribute('data-name');
+
+                    document.getElementById('patientNameToDelete').textContent = patientName;
+                    document.getElementById('deletePatientForm').action = `/admin/patients/${patientId}`;
+
+                    new bootstrap.Modal(document.getElementById('deletePatientModal')).show();
+                });
+            });
+
+            // Validation du formulaire d'ajout
+            document.getElementById('addPatientForm').addEventListener('submit', function (e) {
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('password_confirmation').value;
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Les mots de passe ne correspondent pas');
+                }
+            });
+        });
+        function showLoading(element) {
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'loading-overlay';
+            loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>';
+            element.style.position = 'relative';
+            element.appendChild(loadingOverlay);
+            return loadingOverlay;
+        }
+
+        function hideLoading(overlay) {
+            overlay.remove();
+        }
+        // Ajouter ce code au sein de votre document.addEventListener('DOMContentLoaded', function() {...})
+        // Pour que les onglets fonctionnent correctement
+        const tabLinks = document.querySelectorAll('#dashboardTabs a[data-bs-toggle="tab"]');
+        tabLinks.forEach(tabLink => {
+            tabLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                const tabContent = document.querySelector(this.getAttribute('href'));
+
+                // Cacher tous les contenus d'onglets
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+
+                // Afficher le contenu de l'onglet sélectionné
+                tabContent.classList.add('show', 'active');
+
+                // Marquer l'onglet comme actif
+                tabLinks.forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
     </script>
-
-
-
 </body>
 
 </html>

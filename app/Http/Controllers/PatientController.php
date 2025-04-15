@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Services\DashboardService;
 use App\Services\PatientService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -10,9 +11,11 @@ use Illuminate\Http\JsonResponse;
 class PatientController extends Controller
 {
     protected $patientService;
+    protected $dashboardService;
 
-    public function __construct(PatientService $patientService)
+    public function __construct(PatientService $patientService, DashboardService $dashboardService)
     {
+        $this->dashboardService = $dashboardService;
         $this->patientService = $patientService;
     }
 
@@ -59,7 +62,10 @@ class PatientController extends Controller
 
     public function show(Patient $patient)
     {
-        $patient->load('user', 'appointments.doctor.user');
+        $visitor = $this->dashboardService->getPatientById($patient->id);
+        $appointments = $this->dashboardService->getAppointmentsByPatientId($patient->id);
+dd($patient);
+        
         return view('admin.patients.show', compact('patient'));
     }
 

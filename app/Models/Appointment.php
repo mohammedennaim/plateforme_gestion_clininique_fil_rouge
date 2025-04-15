@@ -15,8 +15,16 @@ class Appointment extends Model
         'date',
         'time',
         'status',
-        'price',
         'reason',
+        'notes',
+        'price',
+        'payment_status'
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'time' => 'datetime',
+        'price' => 'decimal:2'
     ];
 
     public function doctor()
@@ -27,5 +35,25 @@ class Appointment extends Model
     public function patient()
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    public function scopeToday($query)
+    {
+        return $query->whereDate('date', today());
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeConfirmed($query)
+    {
+        return $query->where('status', 'confirmed');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled');
     }
 }

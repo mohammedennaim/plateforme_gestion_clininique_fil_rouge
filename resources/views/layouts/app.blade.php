@@ -29,7 +29,39 @@
     </style>
 </head>
 <body class="font-sans antialiased text-gray-800 bg-gray-100">
-    @yield('content')
+    <div class="min-h-screen bg-gray-100">
+        @include('layouts.navigation')
+
+        <!-- Page Heading -->
+        @if (isset($header))
+            <header class="bg-white shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    {{ $header }}
+                </div>
+            </header>
+        @endif
+
+        <!-- Page Content -->
+        <main>
+            @if(session('error'))
+                <x-alert type="error" :message="session('error')" />
+            @endif
+
+            @if(session('success'))
+                <x-alert type="success" :message="session('success')" />
+            @endif
+
+            @if(session('warning'))
+                <x-alert type="warning" :message="session('warning')" />
+            @endif
+
+            @if(session('info'))
+                <x-alert type="info" :message="session('info')" />
+            @endif
+
+            {{ $slot }}
+        </main>
+    </div>
     
     <!-- Scripts -->
     @yield('scripts')

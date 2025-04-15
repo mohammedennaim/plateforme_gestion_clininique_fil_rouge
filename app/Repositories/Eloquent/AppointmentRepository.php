@@ -47,14 +47,9 @@ class AppointmentRepository implements AppointmentRepositoryInterface
         }
         return false;
     }
-
-    public function getAppointmentsByDate($date)
-    {
-        return $this->model->whereDate('date', $date)->get();
-    }
     public function getTodayAppointments()
     {
-        return $this->model->whereDate('date', now()->format('Y-m-d'))->get();
+        return $this->model->where('doctor_id', auth()->user()->id)->where('date', now()->format('Y-m-d'))->get();
     }
     public function getPendingRequests()
     {
@@ -66,7 +61,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     }
     public function getTotalRevenue()
     {
-        return $this->model->sum('price');
+        return $this->model->where('doctor_id', auth()->user()->id)->sum('price');
     }
     public function getAppointmentsByDoctorId($doctorId)
     {
@@ -74,6 +69,18 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     }
     public function getByPatientId($patientId)
     {
-        return $this->model->where('patient_id', $patientId)->get();
+        return $this->model->where('patient_id', $patientId)->where('doctor_id', auth()->user()->id)->get();
+    }
+    public function getCountByDoctorId($doctorId)
+    {
+        return Appointment::where('doctor_id', $doctorId)->count();
+    }
+    public function getCountByPatientsByDoctorId($doctorId)
+    {
+        return Appointment::where('doctor_id', $doctorId)->count();
+    }
+    public function getCountStats()
+    {
+        return Appointment::all()->count();
     }
 }

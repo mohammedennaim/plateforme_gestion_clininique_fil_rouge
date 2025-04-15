@@ -101,4 +101,9 @@ class PatientService
             ->orWhere('assurance_number', 'like', "%{$query}%")
             ->get();
     }
+
+    public function getPatientById($id)
+    {
+        return Patient::with('user')->findOrFail($id);
+    }
 } 

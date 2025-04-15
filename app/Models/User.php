@@ -21,11 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'status',
         'role',
+        'status',
         'phone',
-        'adresse', 
-        'date_of_birth'
+        'address',
+        'profile_photo_path'
     ];
 
     /**
@@ -68,14 +68,9 @@ class User extends Authenticatable
         return $this->hasOne(Admin::class);
     }
 
-    public function isAdmin()
-    {
-        return $this->role === 'admin';
-    }
-
     public function isDoctor()
     {
-        return $this->role === 'medecin';
+        return $this->role === 'doctor';
     }
 
     public function isPatient()
@@ -83,13 +78,18 @@ class User extends Authenticatable
         return $this->role === 'patient';
     }
 
-    public function isNotActive()
+    public function isAdmin()
     {
-        return $this->status === 'not active';
+        return $this->role === 'admin';
     }
 
     public function isActive()
     {
         return $this->status === 'active';
+    }
+
+    public function isPending()
+    {
+        return $this->status === 'pending';
     }
 }

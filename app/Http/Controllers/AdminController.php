@@ -16,20 +16,47 @@ class AdminController extends Controller
 
     public function index()
     {
-        // return response()->json($this->dashboardService->getAllDoctors());
-        $patients = $this->dashboardService->getAllPatients();
-        $doctors = $this->dashboardService->getAllDoctors();
-        $appointments = $this->dashboardService->getAllAppointments();
-        $totalPatients = $this->dashboardService->getTotalPatients();
-        $totalDoctors = $this->dashboardService->getTotalDoctors();
-        $totalAppointments = $this->dashboardService->getTotalAppointments();
-        $totalRevenue = $this->dashboardService->getTotalRevenue();
-        $todayAppointments = $this->dashboardService->getTodayAppointments();
-        $pendingRequests = $this->dashboardService->getPendingRequests();
-        // $monthlyRevenue = $this->dashboardService->getMonthlyRevenue();
-        $today = now()->format('Y-m-d');
-        // $appointments = $this->dashboardService->getAppointmentsByDate($today);
-        return view('admin.dashboard', compact('patients', 'doctors', 'appointments', 'totalPatients', 'totalDoctors', 'totalAppointments', 'totalRevenue', 'todayAppointments', 'pendingRequests'));
+        try {
+            $patients = $this->dashboardService->getAllPatients();
+            // dd(  $patients);
+            $doctors = $this->dashboardService->getAllDoctors()->map(function ($doctor) {
+                return [
+                    'id' => $doctor->id,
+                    'name' => $doctor->user->name,
+                    'email' => $doctor->user->email,
+                    'phone' => $doctor->user->phone,
+                    'doctor_details' => $doctor,
+                    'status' => $doctor->user->status,
+                    'is_available' => $doctor->is_available,
+                    'speciality' => $doctor->speciality,
+                    'nombre_cabinet' => $doctor->nombre_cabinet,
+                    'qualification' => $doctor->qualification
+                ];
+            });
+            
+
+            $appointments = $this->dashboardService->getAllAppointments();
+            $totalPatients = $this->dashboardService->getTotalPatients();
+            $totalDoctors = $this->dashboardService->getTotalDoctors();
+            $totalAppointments = $this->dashboardService->getTotalAppointments();
+            $totalRevenue = $this->dashboardService->getTotalRevenue();
+            $todayAppointments = $this->dashboardService->getTodayAppointments();
+            $pendingRequests = $this->dashboardService->getPendingRequests();
+
+            return view('admin.dashboard', compact(
+                'patients',
+                'doctors',
+                'appointments',
+                'totalPatients',
+                'totalDoctors',
+                'totalAppointments',
+                'totalRevenue',
+                'todayAppointments',
+                'pendingRequests'
+            ));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Une erreur est survenue lors du chargement du tableau de bord.');
+        }
     }
 
     public function showDoctor($id)
@@ -59,11 +86,6 @@ class AdminController extends Controller
         return response()->json($this->dashboardService->deleteDoctor($id));
     }
 
-    // public function showPatients()
-    // {
-    //     $patients = $this->dashboardService->getAllPatients();
-    //     return view('admin.dashboard', compact('patients'));
-    // }
 
     public function storeAppointment(Request $request)
     {
@@ -76,16 +98,6 @@ class AdminController extends Controller
     public function destroyAppointment($id)
     {
         return response()->json($this->dashboardService->deleteAppointment($id));
-    }
-
-    
-    public function showPatient($id)
-    {
-        $patient = $this->dashboardService->getPatientById($id);
-        $doctors = $this->dashboardService->getAllDoctors();
-        $appointments = $this->dashboardService->getAppointmentsByPatientId($id);
-
-        return view('admin.patients.show', compact('patient', 'doctors', 'appointments'));
     }
     
     public function editPatient($id)

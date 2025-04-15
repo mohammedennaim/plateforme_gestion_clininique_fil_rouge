@@ -18,10 +18,8 @@ class Patient extends Model
         'blood_type',
         'emergency_contact',
         'medical_history',
-        'allergies',
         'height',
         'weight',
-        'last_visit_date',
     ];
 
     protected $casts = [

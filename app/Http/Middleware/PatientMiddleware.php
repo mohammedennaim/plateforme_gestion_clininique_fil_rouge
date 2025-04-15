@@ -15,10 +15,9 @@ class PatientMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && $request->user()->role === 'patient') {
-            return $next($request);
+        if (auth()->user()->role === 'doctor' || auth()->user()->role === 'admin') {
+            return redirect('/login')->withErrors(['access' => 'You do not have access to this page.']);
         }
-
-        return redirect('/login')->withErrors(['access' => 'You do not have access to this page.']);
+        return $next($request);
     }
 }

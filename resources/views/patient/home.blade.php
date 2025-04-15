@@ -9,44 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        },
-                        secondary: {
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            200: '#e2e8f0',
-                            300: '#cbd5e1',
-                            400: '#94a3b8',
-                            500: '#64748b',
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                            900: '#0f172a',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
     <style>
         :root {
             --primary: #1e88e5;
@@ -93,6 +55,11 @@
         .btn-outline-primary-custom:hover {
             background-color: var(--primary);
             color: white;
+        }
+
+        .navbar {
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         /* Enhanced Hero Section Styling */
@@ -692,67 +659,41 @@
 
 <body>
     <!-- Navigation -->
-    <header class="bg-white shadow-sm py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <i class="fas fa-hospital text-primary-600 text-2xl mr-2"></i>
-                <span class="text-xl font-semibold text-primary-700">MediClinic</span>
-            </div>
-            <nav class="hidden md:flex space-x-6">
-                <a href="/" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                <a href="" class="text-primary-600 font-medium">Rendez-vous</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
-            </nav>
-            
-            <!-- User Authentication Section -->
-            <div class="flex items-center space-x-4">
-
-                
-                <!-- Bouton de connexion/profil -->
-                <div id="auth-buttons" class="flex items-center">
-                    <a href="{{ Route('login') }}" id="login-button" class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
-                    <span class="mx-2 text-secondary-300">|</span>
-                    <a href="{{ Route('logout') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
-                </div>
-                
-                <!-- Profil utilisateur (caché par défaut) -->
-                <div id="user-profile" class="hidden items-center">
-                    <div class="relative">
-                        <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
-                            <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
-                                <i class="fas fa-user-circle"></i>
-                            </div>
-                            <span class="text-sm font-medium text-secondary-700">Marie Dupont</span>
-                            <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
-                        </button>
-                        
-                        <!-- Dropdown menu (caché par défaut) -->
-                        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-user mr-2 text-secondary-400"></i>Mon profil
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-calendar-check mr-2 text-secondary-400"></i>Mes rendez-vous
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-cog mr-2 text-secondary-400"></i>Paramètres
-                            </a>
-                            <div class="border-t border-secondary-200 my-1"></div>
-                            <a href="#" id="logout-button" class="block px-4 py-2 text-sm text-red-600 hover:bg-secondary-50">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <button class="md:hidden text-secondary-600 focus:outline-none">
-                <i class="fas fa-bars text-xl"></i>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-heartbeat text-primary me-2"></i>
+                <span class="fw-bold">MediClinic</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ route( 'home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="">Doctors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="{{ route('login') }}" class="btn btn-outline-primary-custom me-3">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary-custom">Register</a>
+                </div>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero-section position-relative">
