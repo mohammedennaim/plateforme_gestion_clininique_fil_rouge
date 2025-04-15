@@ -110,16 +110,16 @@ Route::prefix('patient')->group(function ()  {
 Route::get('/reserver', [RendezVousController::class, 'create'])->name('patient.reserverSansAuth');
 Route::post('/reserver', [RendezVousController::class, 'store'])->name('patient.reserver.store');
 Route::get('/payment', [RendezVousController::class, 'payment'])->name('patient.payment');
+Route::post('/payment/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
+Route::post('/payment/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
+Route::post('/payment/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
+Route::get('/payment/success', [StripePaymentController::class, 'showSuccessPage'])->name('payment.success');
 Route::get('/appointment/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('patient.appointment.details');
 
 Route::get('/dossiers', [DossierMedicalController::class, 'index'])->name('dossiers.index');
 Route::get('/dossiers/{id}', [DossierMedicalController::class, 'show'])->name('dossiers.show');
 Route::get('/dossiers/create', [DossierMedicalController::class, 'create'])->name('dossiers.create');
 Route::post('/dossiers', [DossierMedicalController::class, 'store'])->name('dossiers.store');
-Route::post('/payment/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
-Route::post('/payment/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
-Route::post('/payment/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
-Route::get('/payment/success', [StripePaymentController::class, 'showSuccessPage'])->name('payment.success');
 Route::get('/dossiers/{id}/edit', [DossierMedicalController::class, 'edit'])->name('dossiers.edit');
 Route::put('/dossiers/{id}', [DossierMedicalController::class, 'update'])->name('dossiers.update');
 Route::delete('/dossiers/{id}', [DossierMedicalController::class, 'destroy'])->name('dossiers.destroy');

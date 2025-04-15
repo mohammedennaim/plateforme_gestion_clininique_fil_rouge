@@ -16,6 +16,6 @@ class Authenticate extends Middleware
     {
         // This method is only called for unauthenticated users
         // Simply return the route path as string, not a redirect response
-        return $request->expectsJson() ? null : route('auth/login');
+        return $request->expectsJson() ? null : route('login');
     }
 }

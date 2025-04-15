@@ -32,8 +32,8 @@ class DoctorController extends Controller
         $todayAppointments = $this->appointmentService->getTodayAppointments();
         $patients = $this->appointmentService->getByDoctorId($doctor->id);
         // dd(count($revenue));
-        // dd( $patients);
-        return view('doctor.dashboard', $details,compact('revenue', 'todayAppointments', 'patients'));
+        // dd( $details);
+        return view('doctor.dashboard', compact('revenue', 'todayAppointments', 'patients', 'details'));
         
     }
 

@@ -109,24 +109,20 @@ class RendezVousController extends Controller
         $appointment->date = $validatedData['date'];
         $appointment->time = $validatedData['time'];
         $appointment->reason = $validatedData['reason'] ?? null;
-        $appointment->urgency = $validatedData['urgency'] ?? 'normal';
-        $appointment->notes = $validatedData['notes'] ?? null;
-        $appointment->status = 'pending';
-        $appointment->paiement = false;
+        $appointment->status = 'pending'; // Définir un statut par défaut
+        $appointment->price = 0; // Vous pouvez définir un prix par défaut ou le calculer plus tard
 
         // Si l'utilisateur est authentifié, associer le patient
         if (auth()->check()) {
             $patient = Patient::where('user_id', auth()->id())->first();
             if ($patient) {
                 $appointment->patient_id = $patient->id;
-                $appointment->user_id = auth()->id();
             } else {
                 // Créer un nouveau patient si nécessaire
                 if ($request->has('patient_info')) {
                     $patientInfo = $request->input('patient_info');
                     $patient = $this->createOrUpdatePatient($patientInfo);
                     $appointment->patient_id = $patient->id;
-                    $appointment->user_id = $patient->user_id;
                 } else {
                     return redirect()->back()->with('error', 'Informations du patient manquantes');
                 }
@@ -137,7 +133,6 @@ class RendezVousController extends Controller
                 $patientInfo = $request->input('patient_info');
                 $patient = $this->createOrUpdatePatient($patientInfo);
                 $appointment->patient_id = $patient->id;
-                $appointment->user_id = $patient->user_id;
             } else {
                 return redirect()->back()->with('error', 'Informations du patient manquantes');
             }
@@ -147,7 +142,7 @@ class RendezVousController extends Controller
         $appointment->save();
 
         // Rediriger vers la page de paiement avec l'ID du rendez-vous
-        return redirect()->route('payment.show', ['appointment_id' => $appointment->id])
+        return redirect()->route('patient.payment')
             ->with('success', 'Votre rendez-vous a été enregistré. Procédez au paiement pour confirmer.');
     }
 
@@ -159,16 +154,14 @@ class RendezVousController extends Controller
         // Vérifier si un utilisateur avec cet email existe déjà
         $user = User::where('email', $patientInfo['email'])->first();
         
-        // dd($patientInfo['phone']);
         if (!$user) {
             // Créer un nouvel utilisateur si aucun n'existe
             $user = new User();
             $user->name = $patientInfo['name'];
             $user->email = $patientInfo['email'];
             $user->phone = $patientInfo['phone'] ?? null;
-            $user->adresse = $patientInfo['address'] ?? null;
             $user->date_of_birth = $patientInfo['birthdate'] ?? null;
-            $user->password = bcrypt(123456); // Générer un mot de passe aléatoire
+            $user->password = bcrypt('123456'); // Mot de passe par défaut
             $user->role = 'patient';
             $user->save();
         }
@@ -180,15 +173,12 @@ class RendezVousController extends Controller
             // Créer un nouveau patient
             $patient = new Patient();
             $patient->user_id = $user->id;
+            $patient->name_assurance = $patientInfo['name_assurance'] ?? null;
+            $patient->assurance_number = $patientInfo['assurance_number'] ?? null;
+            $patient->blood_type = $patientInfo['blood_type'] ?? null;
+            $patient->emergency_contact = $patientInfo['emergency_contact'] ?? null;
+            $patient->save();
         }
-
-        dd($patient->address);
-        
-        // Mettre à jour les informations du patient
-        $patient->phone = $patientInfo['phone'] ?? null;
-        $patient->address = $patientInfo['address'] ?? null;
-        $patient->birthdate = $patientInfo['birthdate'] ?? null;
-        $patient->save();
         
         return $patient;
     }

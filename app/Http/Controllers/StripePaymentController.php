@@ -53,7 +53,6 @@ class StripePaymentController extends Controller
                 'currency' => $currency,
                 'description' => $description,
                 'payment_method' => $paymentMethodId,
-                // Seuls les paramètres compatibles ensemble
                 'confirm' => true,
                 'return_url' => $returnUrl
             ]);
@@ -251,8 +250,7 @@ class StripePaymentController extends Controller
         }
         
         if (!$appointment) {
-            return redirect()->route('payment.show')
-                ->with('error', 'Nous n\'avons pas pu trouver les détails de votre rendez-vous.');
+            return redirect()->route('payment.show')->with('error', 'Nous n\'avons pas pu trouver les détails de votre rendez-vous.');
         }
         
         // Mettre à jour le statut du rendez-vous si le paiement est réussi

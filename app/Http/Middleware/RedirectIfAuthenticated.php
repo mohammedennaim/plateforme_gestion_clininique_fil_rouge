@@ -21,7 +21,15 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                $user = Auth::guard($guard)->user();
+                
+                // Cas spécial pour les médecins en attente
+                if ($user->isDoctor() && $user->isPending()) {
+                    return redirect()->route('doctor.pending');
+                }
+                
+                // Pour les autres cas, utiliser la méthode getHomeRoute
+                return redirect(RouteServiceProvider::getHomeRoute($user->role));
             }
         }
 
