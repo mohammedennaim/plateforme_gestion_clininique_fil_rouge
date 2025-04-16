@@ -34,6 +34,7 @@ class AdminController extends Controller
                 ];
             });
             
+            // dd($doctors);
 
             $appointments = $this->dashboardService->getAllAppointments();
             $totalPatients = $this->dashboardService->getTotalPatients();

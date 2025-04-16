@@ -1295,7 +1295,7 @@
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 Total Médecins</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                {{ $totalDoctors['doctor']->count() }}
+                                                {{ count($doctors) }}
                                             </div>
                                             <div class="text-xs text-success mt-2">
                                                 <i class="fas fa-arrow-up"></i> {{ rand(1, 5) }}% depuis le mois dernier

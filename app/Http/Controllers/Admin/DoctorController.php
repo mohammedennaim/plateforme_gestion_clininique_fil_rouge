@@ -13,6 +13,7 @@ class DoctorController extends Controller
     public function index()
     {
         $doctors = Doctor::with('user')->get();
+        dd($doctors);
         return view('admin.dashboard', compact('doctors'));
     }
 
