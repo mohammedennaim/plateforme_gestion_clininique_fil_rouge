@@ -531,8 +531,8 @@
                 <div class="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center mb-2">
                     <i class="fas fa-user-md text-indigo-600 text-3xl"></i>
                 </div>
-                <h2 class="text-lg font-semibold">Dr. {{ $details->name }}</h2>
-                <p class="text-sm text-gray-500">{{ $details->specialty ?? 'Cardiologue' }}</p>
+                <h2 class="text-lg font-semibold">Dr. {{ $details->user->name }}</h2>
+                <p class="text-sm text-gray-500">{{ $speciality->name ?? 'Cardiologue' }}</p>
                 <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
                     <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 pulse"></span>
@@ -649,7 +649,7 @@
 
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between relative z-10">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold">Bienvenue, Dr. {{ $details->name }}!</h1>
+                        <h1 class="text-2xl md:text-3xl font-bold">Bienvenue, Dr. {{ $details->user->name }}!</h1>
                         <p class="mt-2 flex items-center text-indigo-100">
                             <i class="fas fa-calendar-day mr-2"></i>
                             <span id="current-date-time">{{ $currentDateTime ?? 'N/A' }}</span>
@@ -935,7 +935,7 @@
                                             <p class="text-gray-500">Médecin</p>
                                             <p class="font-medium flex items-center mt-1">
                                                 <i class="fas fa-user-md text-indigo-500 mr-2"></i>
-                                                Dr. {{ $details->name }}
+                                                Dr. {{ $details->user->name }}
                                             </p>
                                         </div>
                                         <div>
@@ -1241,11 +1241,11 @@
                                             <div class="flex-shrink-0">
                                                 <img class="h-10 w-10 rounded-full"
                                                     src="{{ $appointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($appointment->patient->name).'&background=6366F1&color=ffffff' }}"
-                                                    alt="{{ $appointment->patient->name }}">
+                                                    alt="{{ $appointment->patient->user->name }}">
                                             </div>
                                             <div class="ml-3">
                                                 <p class="text-sm font-medium text-indigo-600">{{ $appointment->patient->name }}</p>
-                                                <p class="text-xs text-gray-500">Dr. {{ $appointment->doctor->name }} • {{ $appointment->formatted_time }}</p>
+                                                <p class="text-xs text-gray-500">Dr. {{ $appointment->doctor->user->name }} • {{ $appointment->time }}</p>
                                                 <div class="flex items-center mt-1">
                                                     <span class="status-indicator status-{{ $appointment->status_class }}"></span>
                                                     <span class="text-xs font-medium text-{{ $appointment->status_color }}-800">{{ $appointment->status_label }}</span>
@@ -1505,13 +1505,13 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
                                     <img src="{{ $patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($patient->name).'&background=6366F1&color=ffffff' }}"
-                                        alt="{{ $patient->name }}">
+                                        alt="{{ $patient->patient->user->name }}">
                                 </div>
                                 <div class="ml-4 flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <h3 class="text-lg font-medium text-indigo-600">{{ $patient->name }}</h3>
-                                            <p class="text-sm text-gray-500">ID: #{{ $patient->id_number }}</p>
+                                            <h3 class="text-lg font-medium text-indigo-600">{{ $patient->patient->user->name }}</h3>
+                                            <p class="text-sm text-gray-500">ID: #{{ $patient->id }}</p>
                                         </div>
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $patient->status_color }}-100 text-{{ $patient->status_color }}-800">
@@ -1527,21 +1527,21 @@
                             <div class="grid grid-cols-3 gap-2 text-sm">
                                 <div>
                                     <p class="text-gray-500">Âge</p>
-                                    <p class="font-medium">{{ $patient->age }} ans</p>
+                                    <p class="font-medium">{{ $patient->patient->age}} ans</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Genre</p>
-                                    <p class="font-medium">{{ $patient->gender }}</p>
+                                    <p class="font-medium">{{ $patient->patient->gender }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Téléphone</p>
-                                    <p class="font-medium">{{ $patient->phone }}</p>
+                                    <p class="font-medium">{{ $patient->patient->user->phone }}</p>
                                 </div>
                             </div>
                             <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
                                 <div>
                                     <p class="text-gray-500">Dernière visite</p>
-                                    <p class="font-medium">{{ $patient->last_visit_date }}</p>
+                                    <p class="font-medium">{{ $patient->patient->last_visit_date }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Prochain RDV</p>

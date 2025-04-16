@@ -19,13 +19,19 @@ class RendezVousController extends Controller
             $patient = Patient::where('user_id', auth()->user()->id)->first();
             $appointments = Appointment::where('patient_id', $patient->id)->get();
             $doctors = User::where('role', 'doctor')->get();
-            $appointment = $appointments->whereNotNull('date')->sortBy('date')->last();
-            $doctor = Doctor::where('id', $appointment->doctor_id)->first();
-            $medecinDernierVisit = User::where('id', $doctor->user_id)->first();
+
+            $appointment = $appointments->where('patient_id', auth()->user()->id)->whereNotNull('date')->sortBy('date')->last();
+            if ($appointment != null) {
+                $doctor = Doctor::where('id', $appointment->doctor_id)->first();
+                $medecinDernierVisit = User::where('id', $doctor->user_id)->first();
+                
+                return view('patient.reserver' , compact('user', 'patient', 'appointments', 'doctors', 'appointment', 'medecinDernierVisit', 'speciality'));
+            }
+            // dd($appointment);
             $speciality = Speciality::all();
+            return view('patient.reserver' , compact('user', 'patient', 'appointments', 'appointment', 'speciality'));
             // dd($medecinDernierVisit);
             // dd($speciality);
-            return view('/patient/reserver' , compact('user', 'patient', 'appointments', 'doctors', 'appointment', 'medecinDernierVisit', 'speciality'));
         }
         return view('patient.reserverSansAuth');
 

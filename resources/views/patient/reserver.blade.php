@@ -211,6 +211,7 @@
                             personnelles ont été pré-remplies pour faciliter votre réservation.</p>
 
                         <!-- Derniers rendez-vous -->
+                         @if( $appointment != null)
                         <div class="mt-4">
                             <h3 class="text-sm font-medium text-secondary-700 mb-2">Vos derniers rendez-vous :</h3>
                             <div class="bg-white rounded-lg p-3 border border-secondary-200">
@@ -226,6 +227,10 @@
                                 </div>
                             </div>
                         </div>
+                        @else 
+                        <span></span>
+                        @endif
+                        
                     </div>
                 </div>
             </div>

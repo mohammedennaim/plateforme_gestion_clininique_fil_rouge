@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App;
 use App\Models\Message;
 use App\Models\Patient;
+use App\Models\Speciality;
 use App\Models\User;
 use App\Services\DashboardService;
 use App\Services\DoctorService;
@@ -29,9 +30,9 @@ class DoctorController extends Controller
             
             $revenue = $this->appointmentService->getTotalRevenue();
             $todayAppointments = $this->appointmentService->getTodayAppointments();
+            $Appointments = $this->appointmentService->getByDoctorId($doctor->id);
             $patients = $this->appointmentService->getByDoctorId($doctor->id);
-            
-            // Additional variables required by the dashboard
+            $speciality = Speciality::where('id', $details->id_speciality)->first();            // dd($todayAppointments[0]->status);
             $monthlyRevenue = $revenue ?? 0;
             $patientSatisfactionRate = 95; // Default value if not available
             $satisfactionIncreasePercent = 5;
@@ -113,7 +114,7 @@ class DoctorController extends Controller
                 'weather', 'urgentLabResultsCount', 'unreadMessagesCount', 'newPatientsThisMonth',
                 'appointmentIncreasePercent', 'tasks', 'pendingTasksCount', 'recentActivities', 'messages',
                 'activePatientCount', 'activePatientPercent', 'patientsThisWeek',
-                'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount'
+                'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount','Appointments', 'speciality'
             ));
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Une erreur s\'est produite lors du chargement du tableau de bord: ' . $e->getMessage());
