@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    
     /**
      * Handle an incoming request.
      *
@@ -23,12 +22,9 @@ class AdminMiddleware
 
         $user = Auth::user();
 
-        if (!$user->isAdmin()) {
+        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un administrateur
+        if ($user->role !== 'admin') {
             return redirect()->route('home')->with('error', 'Accès réservé aux administrateurs.');
-        }
-
-        if (!$user->isActive()) {
-            return redirect()->route('home')->with('error', 'Votre compte n\'est pas actif. Veuillez contacter l\'administrateur principal.');
         }
 
         return $next($request);

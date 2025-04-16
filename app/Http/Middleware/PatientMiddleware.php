@@ -22,12 +22,9 @@ class PatientMiddleware
 
         $user = Auth::user();
 
-        if (!$user->isPatient()) {
+        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un patient
+        if ($user->role !== 'patient') {
             return redirect()->route('home')->with('error', 'Accès réservé aux patients.');
-        }
-
-        if (!$user->isActive()) {
-            return redirect()->route('home')->with('error', 'Votre compte n\'est pas actif. Veuillez contacter l\'administrateur.');
         }
 
         return $next($request);

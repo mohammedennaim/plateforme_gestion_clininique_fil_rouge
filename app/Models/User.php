@@ -92,4 +92,15 @@ class User extends Authenticatable
     {
         return $this->status === 'pending';
     }
+    
+    /**
+     * Envoie la notification de réinitialisation de mot de passe.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
 }

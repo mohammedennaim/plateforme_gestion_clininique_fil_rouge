@@ -2,23 +2,60 @@
 
 @php
     $classes = [
-        'error' => 'bg-red-100 border-red-400 text-red-700',
-        'success' => 'bg-green-100 border-green-400 text-green-700',
-        'warning' => 'bg-yellow-100 border-yellow-400 text-yellow-700',
-        'info' => 'bg-blue-100 border-blue-400 text-blue-700'
+        'info' => 'bg-blue-100 border-blue-500 text-blue-700',
+        'success' => 'bg-green-100 border-green-500 text-green-700',
+        'warning' => 'bg-yellow-100 border-yellow-500 text-yellow-700',
+        'error' => 'bg-red-100 border-red-500 text-red-700'
+    ];
+    
+    $icons = [
+        'info' => 'info-circle',
+        'success' => 'check-circle',
+        'warning' => 'exclamation-triangle',
+        'error' => 'exclamation-circle'
     ];
 @endphp
 
-@if($message)
-    <div class="fixed top-4 right-4 z-50">
-        <div class="{{ $classes[$type] }} border px-4 py-3 rounded relative" role="alert">
-            <span class="block sm:inline">{{ $message }}</span>
-            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                <svg class="fill-current h-6 w-6" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <title>Close</title>
-                    <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
-                </svg>
-            </span>
+<div class="border-l-4 p-4 mb-4 {{ $classes[$type] }}" role="alert">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <i class="fas fa-{{ $icons[$type] }}"></i>
         </div>
+        <div class="ml-3">
+            <p class="font-medium">{{ $message }}</p>
+        </div>
+        <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 hover:bg-{{ substr($classes[$type], 3, 10) }} inline-flex h-8 w-8" data-dismiss-target="#alert" aria-label="Fermer">
+            <span class="sr-only">Fermer</span>
+            <i class="fas fa-times"></i>
+        </button>
     </div>
-@endif 
+</div>
+
+<script>
+    // Auto-close alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('[role="alert"]');
+        alerts.forEach(alert => {
+            alert.style.opacity = '0';
+            alert.style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 500);
+        });
+    }, 5000);
+    
+    // Close on click
+    document.addEventListener('DOMContentLoaded', function() {
+        const closeButtons = document.querySelectorAll('[data-dismiss-target="#alert"]');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const alert = this.closest('[role="alert"]');
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 500);
+            });
+        });
+    });
+</script>

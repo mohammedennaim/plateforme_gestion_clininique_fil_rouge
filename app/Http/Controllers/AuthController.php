@@ -6,6 +6,10 @@ use App\Repositories\Eloquent\AuthRepository;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
@@ -16,7 +20,11 @@ class AuthController extends Controller
     {
         $this->authRepository = $authRepository;
         // Appliquer le middleware guest uniquement aux méthodes qui doivent être accessibles aux utilisateurs non connectés
-        $this->middleware('guest')->only(['login', 'register', 'authenticate', 'store']);
+        $this->middleware('guest')->only([
+            'login', 'register', 'authenticate', 'store', 
+            'showForgotPasswordForm', 'sendResetLinkEmail',
+            'showResetPasswordForm', 'resetPassword'
+        ]);
     }
 
     /**
@@ -99,6 +107,72 @@ class AuthController extends Controller
         return redirect()->back()
             ->withInput()
             ->withErrors(['error' => 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.']);
+    }
+
+    /**
+     * Afficher le formulaire de demande de réinitialisation de mot de passe
+     */
+    public function showForgotPasswordForm()
+    {
+        return view('auth.passwords.email');
+    }
+
+    /**
+     * Envoyer le lien de réinitialisation du mot de passe
+     */
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        // On utilise le système de réinitialisation de mot de passe intégré à Laravel
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+                    ? back()->with('status', __($status))
+                    : back()->withErrors(['email' => __($status)]);
+    }
+
+    /**
+     * Afficher le formulaire de réinitialisation de mot de passe
+     */
+    public function showResetPasswordForm(Request $request, $token)
+    {
+        return view('auth.passwords.reset', ['token' => $token, 'email' => $request->email]);
+    }
+
+    /**
+     * Réinitialiser le mot de passe
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        // Ici on procède à la réinitialisation du mot de passe
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        // Redirection après la réinitialisation
+        return $status === Password::PASSWORD_RESET
+                    ? redirect()->route('login')->with('status', __($status))
+                    : back()->withErrors(['email' => [__($status)]]);
     }
 
     /**

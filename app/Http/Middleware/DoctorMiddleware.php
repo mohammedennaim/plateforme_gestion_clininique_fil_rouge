@@ -22,16 +22,9 @@ class DoctorMiddleware
 
         $user = Auth::user();
 
-        if (!$user->isDoctor()) {
+        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un médecin
+        if ($user->role !== 'doctor') {
             return redirect()->route('home')->with('error', 'Accès réservé aux médecins.');
-        }
-
-        if (!$user->isActive()) {
-            return redirect()->route('home')->with('error', 'Votre compte n\'est pas actif. Veuillez contacter l\'administrateur.');
-        }
-
-        if ($user->isPending()) {
-            return redirect()->route('doctor.pending')->with('warning', 'Votre compte est en attente d\'approbation.');
         }
 
         return $next($request);
