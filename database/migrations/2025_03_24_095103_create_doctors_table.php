@@ -10,6 +10,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('speciality');
+            $table->text('qualification')->nullable();
+            $table->string('experience')->nullable();
             $table->boolean('is_available')->default(true);
             $table->string('emergency_contact')->nullable();
             $table->timestamps();
@@ -17,6 +19,6 @@ return new class extends Migration {
     }
 
     public function down() {
-        Schema::dropIfExists('medecins');
+        Schema::dropIfExists('doctors');
     }
 };

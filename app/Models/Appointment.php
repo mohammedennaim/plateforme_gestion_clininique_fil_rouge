@@ -16,14 +16,12 @@ class Appointment extends Model
         'time',
         'status',
         'reason',
-        'notes',
-        'price',
-        'payment_status'
+        'price'
     ];
 
     protected $casts = [
         'date' => 'date',
-        'time' => 'datetime',
+        'time' => 'time',
         'price' => 'decimal:2'
     ];
 
@@ -54,6 +52,6 @@ class Appointment extends Model
 
     public function scopeCancelled($query)
     {
-        return $query->where('status', 'cancelled');
+        return $query->where('status', 'canceled');
     }
 }
