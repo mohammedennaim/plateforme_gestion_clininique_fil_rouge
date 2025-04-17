@@ -68,12 +68,14 @@ class AuthController extends Controller
             
             // Utiliser la méthode getHomeRoute pour déterminer la redirection
             return redirect(RouteServiceProvider::getHomeRoute($user->role))
-                ->with('success', 'Connexion réussie. Bienvenue !');
+            ->with('success', 'Connexion réussie. Bienvenue !');
         } else {
+           
             return redirect()->route('login')
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'Ces identifiants ne correspondent pas à nos enregistrements.']);
         }
+    
     }
 
     /**
@@ -92,7 +94,6 @@ class AuthController extends Controller
         $user = $this->authRepository->register($request->all());
 
         if ($user) {
-            // Si l'utilisateur est un médecin, son compte est en attente par défaut
             if ($user->isDoctor()) {
                 return redirect()->route('doctor.pending')
                     ->with('info', 'Votre compte a été créé mais il doit être validé par un administrateur avant que vous puissiez vous connecter.');
@@ -101,9 +102,9 @@ class AuthController extends Controller
             // Pour les autres types d'utilisateurs, connexion automatique
             Auth::login($user);
             return redirect(RouteServiceProvider::getHomeRoute($user->role))
-                ->with('success', 'Votre compte a été créé avec succès.');
+            ->with('success', 'Votre compte a été créé avec succès.');
         }
-        
+    
         return redirect()->back()
             ->withInput()
             ->withErrors(['error' => 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.']);

@@ -61,7 +61,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/dashboard/doctors', [AdminController::class, 'storeDoctor']);
     Route::delete('/dashboard/doctors/{id}', [AdminController::class, 'destroyDoctor']);
 
-    // Patient routes
+ 
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create');
     Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
@@ -71,12 +71,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('admin.patients.destroy');
     Route::get('/patients/stats', [PatientController::class, 'stats'])->name('patients.stats');
 
-    // Routes pour les médecins
     Route::post('/doctors', [DoctorController::class, 'store'])->name('admin.doctors.store');
     Route::put('/doctors/{doctor}', [DoctorController::class, 'update'])->name('admin.doctors.update');
     Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('admin.doctors.destroy');
-    
-    // Routes pour les patients
+
     Route::post('/patients', [PatientController::class, 'store'])->name('admin.patients.store');
     Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('admin.patients.update');
 });
@@ -150,10 +148,7 @@ Route::get('/appointment/process-after-payment/{appointment_id}', [RendezVousCon
 
 SendMessage::dispatch('Hello, this is a test message!')->delay(now()->addMinutes(1));
 
-// Route::prefix('patient')->middleware(['auth', 'check.role:patient'])->group(function () {
-//     Route::get('/dashboard', [PatientController::class, 'index'])->name('patient.dashboard');
-//     // ... autres routes patient ...
-// });
+
 
 
 

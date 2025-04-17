@@ -59,7 +59,7 @@
                 <x-alert type="info" :message="session('info')" />
             @endif
 
-            {{ $slot }}
+            @yield('content')
         </main>
     </div>
     
