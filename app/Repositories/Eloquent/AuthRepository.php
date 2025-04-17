@@ -13,7 +13,6 @@ class AuthRepository implements AuthRepositoryInterface
 {
     public function register($data)
     {
-
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -25,7 +24,6 @@ class AuthRepository implements AuthRepositoryInterface
             'date_of_birth' => $data['date_of_birth'] ?? null,
         ]);
 
-
         if ($data['role'] === "doctor") {
             $doctor = new DoctorRepository()->create([
                 'user_id' => $user->id,
@@ -35,7 +33,6 @@ class AuthRepository implements AuthRepositoryInterface
             ]);
             $doctor->user()->associate($user);
             $doctor->save();
-            return $doctor;
         } else {
             $patient = new PatientRepository()->create([
                 'user_id' => $user->id,
@@ -46,9 +43,10 @@ class AuthRepository implements AuthRepositoryInterface
             ]);
             $patient->user()->associate($user);
             $patient->save();
-
-            return $patient;
         }
+        
+        // Always return the User model instead of Patient or Doctor
+        return $user;
     }
 
     public function login($credentials)

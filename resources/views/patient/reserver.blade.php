@@ -266,7 +266,7 @@
                 </div>
 
                 <!-- Form -->
-                <form method="POST" action="{{ route('patient.payment') }}" id="appointment-form">
+                <form method="POST" action="{{ route('patient.reserver.store') }}" id="appointment-form">
                     @csrf
                     <!-- Step 1: Personal Information -->
                     <div id="step-1" class="space-y-6">
@@ -666,8 +666,7 @@
                                     <i class="fas fa-arrow-right ml-2"></i>
                                 </button>
 
-                                <button type="submit" id="submit-form" 
-                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors hidden">
+                                <button type="submit" id="submit-form" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors hidden">
                                     <span>Confirmer le rendez-vous</span>
                                     <i class="fas fa-check ml-2"></i>
                                 </button>

@@ -115,4 +115,24 @@ class Patient extends Model
             $query->where('status', 'active');
         });
     }
+
+    public function isDoctor()
+    {
+        return $this->user->isDoctor();
+    }
+
+    public function isPatient()
+    {
+        return $this->user->isPatient();
+    }
+
+    public function isAdmin()
+    {
+        return $this->user->isAdmin();
+    }
+
+    public function isPending()
+    {
+        return $this->user->isPending();
+    }
 }

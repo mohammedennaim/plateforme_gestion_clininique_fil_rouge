@@ -702,7 +702,7 @@
                 <a href="/" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
                 <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
                 <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                <a href="" class="text-primary-600 font-medium">Rendez-vous</a>
+                <a href="{{ Route('patient.reserver.store') }}" class="text-primary-600 font-medium">Rendez-vous</a>
                 <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
             </nav>
             
