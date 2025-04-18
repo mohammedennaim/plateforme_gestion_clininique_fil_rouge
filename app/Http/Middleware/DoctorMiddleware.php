@@ -19,14 +19,11 @@ class DoctorMiddleware
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Vous devez être connecté pour accéder à cette page.');
         }
-
-        $user = Auth::user();
-
-        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un médecin
-        if ($user->role !== 'doctor') {
+    
+        if (!Auth::user()->isDoctor()) {
             return redirect()->route('home')->with('error', 'Accès réservé aux médecins.');
         }
-
+    
         return $next($request);
     }
 }

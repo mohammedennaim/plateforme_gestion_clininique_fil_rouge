@@ -37,6 +37,14 @@ class Patient extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+    
+    /**
+     * Get the medical records for the patient
+     */
+    public function medicalRecords(): HasMany
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
 
     public function getFullNameAttribute(): string
     {

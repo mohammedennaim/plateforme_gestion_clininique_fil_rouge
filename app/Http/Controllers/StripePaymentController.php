@@ -90,7 +90,7 @@ class StripePaymentController extends Controller
         } catch (ApiErrorException $e) {
             Log::error('Stripe API Error: ' . $e->getMessage());
             return response()->json([
-                'success' => false,
+                'success' => false, 
                 'message' => $e->getMessage()
             ], 500);
         }
@@ -142,7 +142,7 @@ class StripePaymentController extends Controller
         } catch (ApiErrorException $e) {
             Log::error('Stripe Confirmation Error: ' . $e->getMessage());
             return response()->json([
-                'success' => false,
+                'success' => false, 
                 'message' => $e->getMessage()
             ], 500);
         }
@@ -225,7 +225,7 @@ class StripePaymentController extends Controller
      * Affiche la page de succès après un paiement réussi
      * 
      * @param Request $request
-     * @return \Illuminate\View\View
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
     public function showSuccessPage(Request $request)
     {

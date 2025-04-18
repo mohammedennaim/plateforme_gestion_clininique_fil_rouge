@@ -516,12 +516,9 @@
                 submitButton.innerHTML = '<span>Payer 45,00 €</span><i class="fas fa-lock ml-2"></i>';
             });
             
-            // Fonction pour démarrer la vérification périodique du statut de paiement
             function startPaymentStatusCheck(paymentIntentId) {
-                // Vérifier toutes les 2 secondes pendant 60 secondes maximum (30 tentatives)
                 let attempts = 0;
                 
-                // Arrêter l'intervalle existant s'il y en a un
                 if (paymentCheckInterval) {
                     clearInterval(paymentCheckInterval);
                 }

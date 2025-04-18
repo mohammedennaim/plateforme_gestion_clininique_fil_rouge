@@ -545,21 +545,21 @@
             <div class="px-4 mb-3">
                 <p class="text-xs uppercase tracking-wider text-gray-500 font-semibold">Principal</p>
             </div>
-            <a href="#" class="sidebar-item active flex items-center p-3" data-section="dashboard">
+            <a href="{{ route('doctor.dashboard') }}" class="sidebar-item active flex items-center p-3" data-section="dashboard">
                 <i class="fas fa-home text-lg text-indigo-600 w-6"></i>
                 <span class="ml-3">Tableau de bord</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center p-3" data-section="patients">
+            <a href="{{ route('doctor.patients') }}" class="sidebar-item flex items-center p-3" data-section="patients">
                 <i class="fas fa-users text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Patients</span>
                 <span
-                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($patients) }}</span>
+                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ $stats["patientsCount"] }}</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center p-3" data-section="appointments">
+            <a href="{{ route('doctor.appointments') }}" class="sidebar-item flex items-center p-3" data-section="appointments">
                 <i class="fas fa-calendar-alt text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Rendez-vous</span>
                 <span
-                    class="ml-auto bg-amber-100 text-amber-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($todayAppointments)  }}</span>
+                    class="ml-auto bg-amber-100 text-amber-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ $stats["todayAppointments"] }}</span>
             </a>
             <a href="#" class="sidebar-item flex items-center p-3" data-section="medical-records">
                 <i class="fas fa-file-medical text-lg text-gray-500 w-6"></i>
@@ -666,7 +666,7 @@
                 <div class="mt-6 flex flex-wrap gap-2">
                     <div class="bg-white/20 backdrop-blur-sm rounded-full py-1.5 px-4 flex items-center">
                         <div class="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
-                        <span>{{ count($todayAppointments)  }} rendez-vous aujourd'hui</span>
+                        <span>{{ $stats["todayAppointments"]   }} rendez-vous aujourd'hui</span>
                     </div>
                     <div class="bg-white/20 backdrop-blur-sm rounded-full py-1.5 px-4 flex items-center">
                         <div class="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
@@ -739,7 +739,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">Total Patients</dt>
                                     <dd class="flex items-center">
                                         <div class="text-2xl font-semibold text-gray-900" id="patient-counter">
-                                            {{ count($patients) }}</div>
+                                            {{ $stats["patientsCount"] }}</div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
                                             <span>{{ $newPatientsThisMonth ?? 'N/A'}} ce mois</span>
@@ -776,7 +776,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">RDV Aujourd'hui</dt>
                                     <dd class="flex items-center">
                                         <div class="text-2xl font-semibold text-gray-900" id="appointment-counter">
-                                            {{ count($todayAppointments)  }}
+                                            {{ $stats["todayAppointments"]   }}
                                         </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
@@ -813,10 +813,10 @@
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Revenu Mensuel</dt>
                                     <dd class="flex items-center">
-                                        <div class="text-2xl font-semibold text-gray-900">{{ number_format($monthlyRevenue, 0) }} MAD</div>
+                                        <div class="text-2xl font-semibold text-gray-900">{{ $stats["revenue"] }} MAD</div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
-                                            <span>{{ $revenueIncreasePercent }}%</span>
+                                            <span>15 %</span>
                                         </div>
                                     </dd>
                                 </dl>
@@ -849,16 +849,16 @@
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Satisfaction Patients</dt>
                                     <dd class="flex items-center">
-                                        <div class="text-2xl font-semibold text-gray-900">{{ $patientSatisfactionRate }}%</div>
+                                        <div class="text-2xl font-semibold text-gray-900">5%</div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
-                                            <span>{{ $satisfactionIncreasePercent }}%</span>
+                                            <span>10%</span>
                                         </div>
                                     </dd>
                                 </dl>
                                 <div class="mt-2">
                                     <div class="progress-bar">
-                                        <div class="progress-bar-fill bg-rose-600" style="width: {{ $patientSatisfactionRate }}%"></div>
+                                        <div class="progress-bar-fill bg-rose-600" style="width: 15%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -871,7 +871,7 @@
                                 <i class="fas fa-arrow-right ml-1"></i>
                             </a>
                         </div>
-                        <span class="text-xs text-gray-500">Basé sur {{ $reviewCount }} avis</span>
+                        <span class="text-xs text-gray-500">Basé sur 3 avis</span>
                     </div>
                 </div>
             </div>
@@ -889,7 +889,7 @@
                         <div
                             class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                             <i class="fas fa-clock mr-1.5"></i>
-                            <span id="appointment-countdown">{{ $nextAppointmentCountdown }}</span>
+                            <span id="appointment-countdown">{{ $stats["nextAppointment"] }}</span>
                         </div>
                     </div>
                     <div class="md:flex">
@@ -975,17 +975,17 @@
                                     </div>
 
                                     <div class="mt-6 flex flex-wrap gap-2">
-                                        <a href="{{ route('medical-records.show', $nextAppointment->patient->id ?? 1) }}"
+                                        <a href=""
                                             class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                             <i class="fas fa-file-medical text-indigo-500 mr-2"></i>
                                             Dossier médical
                                         </a>
-                                        <a href="{{ route('patients.history', $nextAppointment->patient->id ?? 1) }}"
+                                        <a href=""
                                             class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                             <i class="fas fa-history text-amber-500 mr-2"></i>
                                             Historique
                                         </a>
-                                        <a href="{{ route('appointments.check-in', $nextAppointment->id ?? 1) }}"
+                                        <a href=""
                                             class="flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
                                             <i class="fas fa-check-circle mr-2"></i>
                                             Enregistrer
@@ -1005,11 +1005,11 @@
                             {{ $currentMonth }} {{ $currentYear }}
                         </h3>
                         <div class="flex items-center space-x-2">
-                            <a href="{{ route('calendar.index', ['month' => $prevMonth, 'year' => $prevYear]) }}" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+                            <a href="" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
                                 <i class="fas fa-chevron-left"></i>
                             </a>
-                            <a href="{{ route('calendar.index') }}" class="text-sm font-medium">Aujourd'hui</a>
-                            <a href="{{ route('calendar.index', ['month' => $nextMonth, 'year' => $nextYear]) }}" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+                            <a href="" class="text-sm font-medium">Aujourd'hui</a>
+                            <a href="" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         </div>
@@ -1036,14 +1036,14 @@
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-indigo-600 rounded-full mr-1"></div>
-                                <span class="text-xs text-gray-600">{{ count($todayAppointments)  }} aujourd'hui</span>
+                                <span class="text-xs text-gray-600">{{ $stats["todayAppointments"]   }} aujourd'hui</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-amber-500 rounded-full mr-1"></div>
                                 <span class="text-xs text-gray-600">{{ $tomorrowAppointmentsCount }} demain</span>
                             </div>
                         </div>
-                        <a href="{{ route('appointments.index') }}" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
+                        <a href="{{ route('doctor.appointments') }}" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
                     </div>
                 </div>
             </div>
@@ -1217,7 +1217,7 @@
                             <i class="fas fa-calendar-day text-indigo-500 mr-2"></i>
                             Rendez-vous d'aujourd'hui
                             <span
-                                class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">{{ count($todayAppointments)  }}
+                                class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">{{ $stats["todayAppointments"]   }}
                                 Total</span>
                         </h3>
                         <div>
@@ -1233,7 +1233,7 @@
                     </div>
                     <div class="max-h-80 overflow-y-auto">
                         <ul class="divide-y divide-gray-200" id="appointments-list">
-                            @forelse($todayAppointments as $appointment)
+                            @forelse($stats["Appointments"] as $appointment)
                             <li class="appointment-card" data-status="{{ $appointment->status }}">
                                 <div class="px-6 py-4">
                                     <div class="flex items-center justify-between">
@@ -1253,11 +1253,11 @@
                                             </div>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <a href="{{ route('appointments.show', $appointment->id) }}"
+                                            <a href=""
                                                 class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('appointments.check-in', $appointment->id) }}"
+                                            <a href=""
                                                 class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
                                                 <i class="fas fa-check"></i>
                                             </a>
@@ -1277,8 +1277,8 @@
                         </ul>
                     </div>
                     <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
-                        <span class="text-sm text-gray-700">Affichage de {{ count($todayAppointments) }} rendez-vous sur {{ count($todayAppointments)  }}</span>
-                        <a href="{{ route('appointments.index') }}" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
+                        <span class="text-sm text-gray-700">Affichage de {{ $stats["todayAppointments"]  }} rendez-vous sur {{ $stats["todayAppointments"]   }}</span>
+                        <a href="{{ route('doctor.appointments') }}" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
                             Voir tous les rendez-vous
                         </a>
                     </div>
@@ -1384,7 +1384,7 @@
                         </div>
 
                         <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-center">
-                            <a href="{{ route('messages.index') }}" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
+                            <a href="" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
                                 <i class="fas fa-envelope mr-2"></i>
                                 Ouvrir la boîte de réception
                             </a>
@@ -1392,7 +1392,7 @@
                     </div>
 
                     <div class="bg-gray-50 px-6 py-3 border-t border-gray-200">
-                        <a href="{{ route('activities.index') }}"
+                        <a href=""
                             class="inline-flex w-full items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm">
                             <i class="fas fa-history mr-2"></i>
                             Voir toute l'activité
@@ -1413,7 +1413,7 @@
             <!-- Search & Filters -->
             <div class="bg-white rounded-xl shadow-sm mb-6">
                 <div class="p-4 md:p-6">
-                    <form action="{{ route('patients.search') }}" method="GET" class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <form action="{{ route('doctor.search.patients') }}" method="GET" class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                         <div class="relative flex-grow">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
@@ -1440,7 +1440,7 @@
                             <i class="fas fa-users text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ count($patients) }}</div>
+                    <div class="text-3xl font-bold mb-1">{{ $stats["patientsCount"] }}</div>
                     <div class="text-sm text-indigo-100">{{ $newPatientsThisMonth }} nouveaux ce mois</div>
                 </div>
 
@@ -1451,8 +1451,8 @@
                             <i class="fas fa-user-check text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ $activePatientCount }}</div>
-                    <div class="text-sm text-emerald-100">{{ $activePatientPercent }}% du total</div>
+                    <div class="text-3xl font-bold mb-1">5</div>
+                    <div class="text-sm text-emerald-100">5% du total</div>
                 </div>
 
                 <div class="stats-card-gradient-3 rounded-xl shadow-lg p-6 text-white">
@@ -1462,8 +1462,8 @@
                             <i class="fas fa-calendar-week text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ $patientsThisWeek }}</div>
-                    <div class="text-sm text-orange-100">{{ $patientsWeeklyChangePercent }}% vs sem. dernière</div>
+                    <div class="text-3xl font-bold mb-1">{{ $stats["patientsCount"] }} </div>
+                    <div class="text-sm text-orange-100">{{ $stats["patientsCount"] }}% vs sem. dernière</div>
                 </div>
 
                 <div class="stats-card-gradient-4 rounded-xl shadow-lg p-6 text-white">
@@ -1473,8 +1473,8 @@
                             <i class="fas fa-clipboard-check text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ $followUpsCount }}</div>
-                    <div class="text-sm text-red-100">{{ $urgentFollowUpsCount }} urgents</div>
+                    <div class="text-3xl font-bold mb-1">5</div>
+                    <div class="text-sm text-red-100">5 urgents</div>
                 </div>
             </div>
 
@@ -1499,19 +1499,19 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                    @forelse($patients as $patient)
+                    @forelse($stats["patients"] as $patient)
                     <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                         <div class="px-4 py-4 sm:px-6">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
-                                    <img src="{{ $patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($patient->name).'&background=6366F1&color=ffffff' }}"
-                                        alt="{{ $patient->patient->user->name }}">
+                                    <img src="{{ $patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($stats['patient']->user->name).'&background=6366F1&color=ffffff' }}"
+                                        alt="{{ $stats['patient']->user->name }}">
                                 </div>
                                 <div class="ml-4 flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <h3 class="text-lg font-medium text-indigo-600">{{ $patient->patient->user->name }}</h3>
-                                            <p class="text-sm text-gray-500">ID: #{{ $patient->id }}</p>
+                                            <h3 class="text-lg font-medium text-indigo-600">{{ $stats['patient']->user->name }}</h3>
+                                            <p class="text-sm text-gray-500">ID: #{{ $stats['patient']->user->id }}</p>
                                         </div>
                                         <span
                                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $patient->status_color }}-100 text-{{ $patient->status_color }}-800">
@@ -1527,21 +1527,21 @@
                             <div class="grid grid-cols-3 gap-2 text-sm">
                                 <div>
                                     <p class="text-gray-500">Âge</p>
-                                    <p class="font-medium">{{ $patient->patient->age}} ans</p>
+                                    <p class="font-medium">{{ $stats['patient']->user->age}} ans</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Genre</p>
-                                    <p class="font-medium">{{ $patient->patient->gender }}</p>
+                                    <p class="font-medium">{{ $stats['patient']->user->gender }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Téléphone</p>
-                                    <p class="font-medium">{{ $patient->patient->user->phone }}</p>
+                                    <p class="font-medium">{{ $stats['patient']->user->phone }}</p>
                                 </div>
                             </div>
                             <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
                                 <div>
                                     <p class="text-gray-500">Dernière visite</p>
-                                    <p class="font-medium">{{ $patient->patient->last_visit_date }}</p>
+                                    <p class="font-medium">{{ $stats['patient']->user->last_visit_date }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Prochain RDV</p>
@@ -1555,14 +1555,14 @@
                                 <a href="{{ route('medical-records.show', $patient->id) }}" class="text-sm text-indigo-600 hover:text-indigo-500">
                                     <i class="fas fa-file-medical"></i>
                                 </a>
-                                <a href="{{ route('appointments.create', ['patient_id' => $patient->id]) }}" class="text-sm text-emerald-600 hover:text-emerald-500">
+                                <a href="" class="text-sm text-emerald-600 hover:text-emerald-500">
                                     <i class="fas fa-calendar-plus"></i>
                                 </a>
-                                <a href="{{ route('messages.create', ['recipient_id' => $patient->id]) }}" class="text-sm text-blue-600 hover:text-blue-500">
+                                <a href="" class="text-sm text-blue-600 hover:text-blue-500">
                                     <i class="fas fa-comments"></i>
                                 </a>
                             </div>
-                            <a href="{{ route('patients.show', $patient->id) }}" class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                            <a href="" class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
                                 Voir détails
                             </a>
                         </div>
@@ -1575,8 +1575,8 @@
                 </div>
 
                 <div class="px-6 py-4 bg-gray-50 flex items-center justify-between border-t border-gray-200">
-                    @if(method_exists($patients, 'links'))
-                        {{ $patients->links() }}
+                    @if(method_exists($stats["patients"] , 'links'))
+                        {{ $stats["patients"] ->links() }}
                     @endif
                 </div>
             </div>
@@ -1752,7 +1752,7 @@
                     taskText.classList.toggle("checked");
                     
                     // Update task status via AJAX
-                    fetch(`/api/tasks/${taskId}/toggle`, {
+                    fetch(`/doctor/api/tasks/${taskId}/toggle`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1792,7 +1792,7 @@
                 button.addEventListener("click", function() {
                     const appointmentId = this.getAttribute("data-id");
                     if (confirm("Êtes-vous sûr de vouloir annuler ce rendez-vous?")) {
-                        fetch(`/api/appointments/${appointmentId}/cancel`, {
+                        fetch(`/doctor/api/appointments/${appointmentId}/cancel`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -1821,7 +1821,7 @@
             if (patientSort) {
                 patientSort.addEventListener("change", function() {
                     const sortBy = this.value;
-                    window.location.href = `{{ route('patients.index') }}?sort=${sortBy}`;
+                    window.location.href = ``;
                 });
             }
 
@@ -1834,7 +1834,7 @@
                 addTaskBtn.addEventListener("click", function() {
                     const taskDescription = prompt("Entrez la description de la tâche:");
                     if (taskDescription) {
-                        fetch('/api/tasks', {
+                        fetch('/doctor/api/tasks', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -1865,7 +1865,7 @@
             const exportRevenueBtn = document.getElementById("export-revenue");
             if (exportRevenueBtn) {
                 exportRevenueBtn.addEventListener("click", function() {
-                    window.location.href = "{{ route('analytics.export-revenue') }}";
+                    window.location.href = "";
                 });
             }
 
@@ -1885,7 +1885,7 @@
                     this.classList.remove("bg-white", "text-gray-700");
                     
                     // Fetch new data and update chart
-                    fetch(`/api/analytics/patient-visits?period=${period}`)
+                    fetch(`/doctor/api/analytics/patient-visits?period=${period}`)
                         .then(response => response.json())
                         .then(data => {
                             updatePatientVisitsChart(data);
@@ -1904,10 +1904,10 @@
                 const patientVisitsChart = new Chart(patientVisitsCtx, {
                     type: 'line',
                     data: {
-                        labels: {!! json_encode($visitsChartLabels) !!},
+                        labels: {!! json_encode($visitsChartLabels ?? ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']) !!},
                         datasets: [{
                             label: 'Visites',
-                            data: {!! json_encode($visitsChartData) !!},
+                            data: {!! json_encode($visitsChartData ?? [10, 15, 12, 18, 20, 15, 8]) !!},
                             backgroundColor: 'rgba(99, 102, 241, 0.2)',
                             borderColor: 'rgba(99, 102, 241, 1)',
                             borderWidth: 2,
@@ -1970,9 +1970,9 @@
                 const revenueChart = new Chart(revenueCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: {!! json_encode($revenueChartLabels) !!},
+                        labels: {!! json_encode($revenueChartLabels ?? ['Consultations', 'Procédures', 'Tests', 'Suivis', 'Autres']) !!},
                         datasets: [{
-                            data: {!! json_encode($revenueChartData) !!},
+                            data: {!! json_encode($revenueChartData ?? [45000, 25000, 15000, 10000, 5000]) !!},
                             backgroundColor: [
                                 'rgba(99, 102, 241, 0.8)',
                                 'rgba(16, 185, 129, 0.8)',

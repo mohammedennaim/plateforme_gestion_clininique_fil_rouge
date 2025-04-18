@@ -114,4 +114,86 @@ class DossierMedicalService
             'updated_at' => now()
         ], $data);
     }
+
+    /**
+     * Récupère tous les dossiers médicaux
+     * 
+     * @return Collection
+     */
+    public function getAll()
+    {
+        // Simulating database query
+        $patients = Patient::take(10)->get();
+        $records = collect();
+        
+        foreach ($patients as $patient) {
+            $records->push($this->getByPatientId($patient->id));
+        }
+        
+        return $records;
+    }
+    
+    /**
+     * Récupère un dossier médical par son ID
+     * 
+     * @param int $id
+     * @return object|null
+     */
+    public function getById($id)
+    {
+        // Pour l'instant, nous renvoyons un mock de dossier médical
+        // Simulating find by ID
+        return (object) [
+            'id' => $id,
+            'patient_id' => rand(1, 100),
+            'title' => 'Dossier médical #' . $id,
+            'date' => now()->subDays(rand(1, 30))->format('Y-m-d'),
+            'doctor' => 'Dr. ' . ['Jean Dupont', 'Marie Martin', 'Pierre Durand'][rand(0, 2)],
+            'diagnosis' => 'Diagnostic exemple',
+            'notes' => 'Notes d\'exemple pour le dossier médical'
+        ];
+    }
+    
+    /**
+     * Récupère tous les dossiers médicaux d'un docteur
+     * 
+     * @param int $doctorId
+     * @return Collection
+     */
+    public function getAllByDoctorId($doctorId)
+    {
+        // Simulating database query
+        return collect([
+            (object) [
+                'id' => $doctorId * 10 + 1,
+                'patient_id' => rand(1, 100),
+                'title' => 'Consultation routine',
+                'date' => now()->subDays(rand(1, 30))->format('Y-m-d'),
+                'doctor_id' => $doctorId,
+                'diagnosis' => 'Examen de routine normal',
+                'notes' => 'Patient en bonne santé'
+            ],
+            (object) [
+                'id' => $doctorId * 10 + 2,
+                'patient_id' => rand(1, 100),
+                'title' => 'Traitement suivi',
+                'date' => now()->subDays(rand(1, 15))->format('Y-m-d'),
+                'doctor_id' => $doctorId,
+                'diagnosis' => 'Suivi de traitement',
+                'notes' => 'Évolution positive du traitement'
+            ]
+        ]);
+    }
+    
+    /**
+     * Supprime un dossier médical
+     * 
+     * @param int $id
+     * @return bool
+     */
+    public function delete($id)
+    {
+        // Simuler la suppression (retourne toujours true pour l'instant)
+        return true;
+    }
 }

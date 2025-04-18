@@ -18,23 +18,21 @@ class AdminController extends Controller
     {
         try {
             $patients = $this->dashboardService->getAllPatients();
-            // dd(  $patients);
+            
             $doctors = $this->dashboardService->getAllDoctors()->map(function ($doctor) {
                 return [
-                    'id' => $doctor->id,
-                    'name' => $doctor->user->name,
-                    'email' => $doctor->user->email,
-                    'phone' => $doctor->user->phone,
+                    'id' => $doctor->id ?? null,
+                    'name' => $doctor->user->name ?? 'N/A',
+                    'email' => $doctor->user->email ?? 'N/A',
+                    'phone' => $doctor->user->phone ?? 'N/A',
                     'doctor_details' => $doctor,
-                    'status' => $doctor->user->status,
-                    'is_available' => $doctor->is_available,
-                    'speciality' => $doctor->speciality,
-                    'nombre_cabinet' => $doctor->nombre_cabinet,
-                    'qualification' => $doctor->qualification
+                    'status' => $doctor->user->status ?? 'inactive',
+                    'is_available' => $doctor->is_available ?? false,
+                    'speciality' => $doctor->speciality ?? 'N/A',
+                    'nombre_cabinet' => $doctor->nombre_cabinet ?? 'N/A',
+                    'qualification' => $doctor->qualification ?? 'N/A'
                 ];
             });
-            
-            // dd($doctors);
 
             $appointments = $this->dashboardService->getAllAppointments();
             $totalPatients = $this->dashboardService->getTotalPatients();
@@ -56,7 +54,8 @@ class AdminController extends Controller
                 'pendingRequests'
             ));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Une erreur est survenue lors du chargement du tableau de bord.');
+            \Log::error('Admin Dashboard Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Une erreur est survenue lors du chargement du tableau de bord: ' . $e->getMessage());
         }
     }
 

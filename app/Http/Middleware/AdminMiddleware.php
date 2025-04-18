@@ -22,9 +22,14 @@ class AdminMiddleware
 
         $user = Auth::user();
 
-        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un administrateur
-        if ($user->role !== 'admin') {
+        // Vérification améliorée : on utilise la méthode isAdmin() et on vérifie si le compte est actif
+        if (!$user->isAdmin()) {
             return redirect()->route('home')->with('error', 'Accès réservé aux administrateurs.');
+        }
+
+        // Vérification que le compte est actif
+        if (!$user->isActive()) {
+            return redirect()->route('home')->with('error', 'Votre compte administrateur n\'est pas actif. Veuillez contacter le support.');
         }
 
         return $next($request);

@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\MedicalRecord;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\MedicalRecord>
  */
 class MedicalRecordFactory extends Factory
 {

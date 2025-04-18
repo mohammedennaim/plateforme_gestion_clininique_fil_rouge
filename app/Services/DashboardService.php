@@ -129,7 +129,7 @@ class DashboardService
     {
         $doctor = $this->doctorRepository->getById($doctorId);
         $appointments_count = $this->appointmentRepository->getCountByDoctorId($doctorId);
-        $patients_count = $this->appointmentRepository->getCountByPatientId($doctorId);
+        $patients_count = $this->appointmentRepository->getCountByPatientsByDoctorId($doctorId);
         $todayAppointments = $this->appointmentRepository->getTodayAppointments()->where('doctor_id', $doctorId);
 
         return [

@@ -34,6 +34,14 @@ class Doctor extends Model
     {
         return $this->hasMany(Appointment::class);
     }
+    
+    /**
+     * Get the medical records created by the doctor
+     */
+    public function medicalRecords()
+    {
+        return $this->hasMany(MedicalRecord::class);
+    }
 
     public function patients()
     {
