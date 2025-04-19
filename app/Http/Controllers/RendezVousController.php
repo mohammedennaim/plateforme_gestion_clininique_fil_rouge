@@ -27,6 +27,7 @@ class RendezVousController extends Controller
                 
                 return view('patient.reserver' , compact('user', 'patient', 'appointments', 'doctors', 'appointment', 'medecinDernierVisit', 'speciality'));
             }
+          
             // dd($appointment);
             $speciality = Speciality::all();
             return view('patient.reserver' , compact('user', 'patient', 'appointments', 'appointment', 'speciality'));
@@ -43,10 +44,11 @@ class RendezVousController extends Controller
             $patient = Patient::where('user_id', auth()->user()->id)->first();
             $appointments = Appointment::where('patient_id', $patient->id)->get();
             $doctors = User::where('role', 'doctor')->get();
+            dd($appointments);
             return view('patient.payment' , compact('patient', 'appointments', 'doctors'));
         }
         // $date_appointment = $appointments->where('date', '!=', null)->format('d/m/Y');
-        return view('patient.payment');
+        return view('patient.payment', compact('appointments', 'doctors'));
     }
 
     /**
@@ -148,7 +150,7 @@ class RendezVousController extends Controller
         $appointment->save();
 
         // Rediriger vers la page de paiement avec l'ID du rendez-vous
-        return redirect()->route('patient.payment')
+        return redirect()->route('patient.payment',$appointment->id)
             ->with('success', 'Votre rendez-vous a été enregistré. Procédez au paiement pour confirmer.');
     }
 

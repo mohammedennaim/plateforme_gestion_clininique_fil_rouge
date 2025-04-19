@@ -5,6 +5,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StripePaymentController;
 use App\Jobs\SendMessage;
+use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AdminController;
@@ -112,11 +113,6 @@ Route::prefix('patient')->group(function () {
 
     Route::get('/reserver', [RendezVousController::class, 'create'])->name('patient.reserverSansAuth');
     Route::post('/reserver', [RendezVousController::class, 'store'])->name('patient.reserver.store');
-    Route::get('/payment', [RendezVousController::class, 'payment'])->name('patient.payment');
-    Route::post('/payment/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
-    Route::post('/payment/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
-    Route::post('/payment/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
-    Route::get('/payment/success', [StripePaymentController::class, 'showSuccessPage'])->name('payment.success');
     Route::get('/appointment/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('patient.appointment.details');
 
     Route::get('/dossiers', [DossierMedicalController::class, 'index'])->name('dossiers.index');
@@ -126,6 +122,15 @@ Route::prefix('patient')->group(function () {
     Route::get('/dossiers/{id}/edit', [DossierMedicalController::class, 'edit'])->name('dossiers.edit');
     Route::put('/dossiers/{id}', [DossierMedicalController::class, 'update'])->name('dossiers.update');
     Route::delete('/dossiers/{id}', [DossierMedicalController::class, 'destroy'])->name('dossiers.destroy');
+});
+
+// Routes de paiement accessibles directement à la racine
+Route::prefix('payment')->group(function () {
+    Route::get('/{appointment}', [StripePaymentController::class, 'showPaymentPage'])->name('patient.payment');
+    Route::post('/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
+    Route::post('/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
+    Route::post('/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
+    Route::get('/success', [StripePaymentController::class, 'showSuccessPage'])->name('payment.success');
 });
 
 // Add Medical Records routes - accessible to all authenticated users
