@@ -23,103 +23,123 @@ class DoctorController extends Controller
         $this->appointmentService = $appointmentService;
     }
     public function index()
-    {
-        try {
-            $doctor = auth()->user();
-            $details = $this->doctorService->getDoctorDetails($doctor->id);
-            
-            $revenue = $this->appointmentService->getTotalRevenue();
-            $todayAppointments = $this->appointmentService->getTodayAppointments();
-            $Appointments = $this->appointmentService->getByDoctorId($doctor->id);
-            $patients = $this->appointmentService->getByDoctorId($doctor->id);
-            $speciality = Speciality::where('id', $details->id_speciality)->first();            // dd($todayAppointments[0]->status);
-            $monthlyRevenue = $revenue ?? 0;
-            $patientSatisfactionRate = 95; // Default value if not available
-            $satisfactionIncreasePercent = 5;
-            $reviewCount = 120;
-            $nextAppointment = $todayAppointments->first();
-            $nextAppointmentCountdown = "2h 30m";
-            $currentDateTime = now()->format('l, d F Y | H:i');
-            $currentMonth = now()->format('F');
-            $currentYear = now()->format('Y');
-            $prevMonth = now()->subMonth()->format('m');
-            $prevYear = now()->subMonth()->format('Y');
-            $nextMonth = now()->addMonth()->format('m');
-            $nextYear = now()->addMonth()->format('Y');
-            
-            // Calendar days for the mini calendar
-            $calendarDays = $this->generateCalendarDays();
-            $tomorrowAppointmentsCount = 3; // Example value
-            $visitsChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            $visitsChartData = [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95];
-            $revenueChartLabels = ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'];
-            $revenueChartData = [35, 25, 20, 15, 5];
-            $totalVisitsThisMonth = 145;
-            $visitsIncreasePercent = 12;
-            $totalRevenue = $revenue ?? 5000;
-            $revenueIncreasePercent = 8;
-            
-            // KPIs
-            $averageWaitTime = 15;
-            $waitTimeImprovement = 20;
-            $averageConsultationTime = 25;
-            $consultationTimeVariance = 5;
-            $noShowRate = 4;
-            $noShowRateImprovement = 25;
-            $onlineBookingRate = 68;
-            $onlineBookingImprovement = 15;
-            
-            // Additional information
-            $weather = (object) ['temperature' => 22, 'city' => 'Casablanca'];
-            $urgentLabResultsCount = 3;
-            $unreadMessagesCount = 5;
-            $newPatientsThisMonth = 12;
-            $appointmentIncreasePercent = 8;
-            
-            // Tasks and Activity
-            $tasks = collect([
-                (object) ['id' => 1, 'description' => 'Réviser les rapports de laboratoire', 'completed' => false, 'priority_label' => 'Urgent', 'priority_color' => 'red-600', 'priority_icon' => 'exclamation-circle', 'due_label' => "Aujourd'hui"],
-                (object) ['id' => 2, 'description' => 'Appeler les patients de suivi', 'completed' => false, 'priority_label' => 'Moyen', 'priority_color' => 'amber-600', 'priority_icon' => 'clock', 'due_label' => "Demain"]
-            ]);
-            $pendingTasksCount = 2;
-            
-            $recentActivities = collect([
-                (object) ['color' => 'indigo', 'icon' => 'user', 'title' => 'Nouveau patient enregistré', 'highlight' => 'Ahmed Benani', 'description' => 'a été ajouté à votre liste de patients.', 'time_ago' => 'Il y a 30 minutes'],
-                (object) ['color' => 'green', 'icon' => 'check', 'title' => 'Rendez-vous terminé', 'highlight' => 'Consultation avec Fatima Zahra', 'description' => 'a été complétée avec succès.', 'time_ago' => 'Il y a 2 heures']
-            ]);
-            
-            $messages = collect([
-                (object) ['id' => 1, 'sender' => (object) ['name' => 'Dr. Karim', 'avatar_url' => null], 'preview' => 'Pouvez-vous examiner les résultats du patient #12345?', 'time' => '09:45', 'unread_count' => 1],
-                (object) ['id' => 2, 'sender' => (object) ['name' => 'Administration', 'avatar_url' => null], 'preview' => 'Planning de la semaine prochaine disponible', 'time' => 'Hier', 'unread_count' => 0]
-            ]);
-            
-            // Patient statistics
-            $activePatientCount = count($patients);
-            $activePatientPercent = 85;
-            $patientsThisWeek = 24;
-            $patientsWeeklyChangePercent = 15;
-            $followUpsCount = 18;
-            $urgentFollowUpsCount = 3;
-
-            return view('doctor.dashboard', compact(
-                'details', 'revenue', 'todayAppointments', 'patients',
-                'monthlyRevenue', 'patientSatisfactionRate', 'satisfactionIncreasePercent', 'reviewCount',
-                'nextAppointment', 'nextAppointmentCountdown', 'currentDateTime',
-                'currentMonth', 'currentYear', 'prevMonth', 'prevYear', 'nextMonth', 'nextYear',
-                'calendarDays', 'tomorrowAppointmentsCount', 
-                'visitsChartLabels', 'visitsChartData', 'revenueChartLabels', 'revenueChartData',
-                'totalVisitsThisMonth', 'visitsIncreasePercent', 'totalRevenue', 'revenueIncreasePercent',
-                'averageWaitTime', 'waitTimeImprovement', 'averageConsultationTime', 'consultationTimeVariance',
-                'noShowRate', 'noShowRateImprovement', 'onlineBookingRate', 'onlineBookingImprovement',
-                'weather', 'urgentLabResultsCount', 'unreadMessagesCount', 'newPatientsThisMonth',
-                'appointmentIncreasePercent', 'tasks', 'pendingTasksCount', 'recentActivities', 'messages',
-                'activePatientCount', 'activePatientPercent', 'patientsThisWeek',
-                'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount','Appointments', 'speciality'
-            ));
-        } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Une erreur s\'est produite lors du chargement du tableau de bord: ' . $e->getMessage());
+{
+    try {
+        $doctor = auth()->user();
+        $doctorId = $doctor->doctor->id;
+        $details = $this->doctorService->getDoctorDetails($doctorId);
+        
+        // Correction pour récupérer les rendez-vous par docteur correctement
+        $todayAppointments = $this->appointmentService->getTodayAppointments($doctor->id) ?? collect([]);
+        $appointments = $this->appointmentService->getByDoctorId($doctor->id) ?? collect([]);
+        
+        // Correction pour récupérer les patients uniques du docteur
+        $patients = collect();
+        foreach($appointments as $appointment) {
+            if ($appointment->patient && !$patients->contains('id', $appointment->patient->id)) {
+                $patients->push($appointment->patient);
+            }
         }
+        
+        $revenue = $this->appointmentService->getTotalRevenue($doctor->id) ?? 0;
+        $speciality = null;
+        if ($details && isset($details->id_speciality)) {
+            $speciality = Speciality::where('id', $details->id_speciality)->first();
+        }
+        
+        $monthlyRevenue = $revenue;
+        $patientSatisfactionRate = 95; // Default value if not available
+        $satisfactionIncreasePercent = 5;
+        $reviewCount = 120;
+        $nextAppointment = $todayAppointments->first();
+        $nextAppointmentCountdown = "2h 30m";
+        $currentDateTime = now()->format('l, d F Y | H:i');
+        
+        // Correction des dates pour éviter d'altérer l'objet now() original
+        $now = now();
+        $currentMonth = $now->format('F');
+        $currentYear = $now->format('Y');
+        $prevMonth = $now->copy()->subMonth()->format('m');
+        $prevYear = $now->copy()->subMonth()->format('Y');
+        $nextMonth = $now->copy()->addMonth()->format('m');
+        $nextYear = $now->copy()->addMonth()->format('Y');
+        
+        // Calendar days for the mini calendar
+        $calendarDays = $this->generateCalendarDays();
+        $tomorrowAppointmentsCount = 3; // Example value
+        
+        // Reste du code inchangé
+        $visitsChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $visitsChartData = [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95];
+        $revenueChartLabels = ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'];
+        $revenueChartData = [35, 25, 20, 15, 5];
+        $totalVisitsThisMonth = 145;
+        $visitsIncreasePercent = 12;
+        $totalRevenue = $revenue ?? 5000;
+        $revenueIncreasePercent = 8;
+        
+        // KPIs
+        $averageWaitTime = 15;
+        $waitTimeImprovement = 20;
+        $averageConsultationTime = 25;
+        $consultationTimeVariance = 5;
+        $noShowRate = 4;
+        $noShowRateImprovement = 25;
+        $onlineBookingRate = 68;
+        $onlineBookingImprovement = 15;
+        
+        // dd($speciality);
+        // Additional information
+        $weather = (object) ['temperature' => 22, 'city' => 'Casablanca'];
+        $urgentLabResultsCount = 3;
+        $unreadMessagesCount = 5;
+        $newPatientsThisMonth = 12;
+        $appointmentIncreasePercent = 8;
+        
+        // Tasks and Activity
+        $tasks = collect([
+            (object) ['id' => 1, 'description' => 'Réviser les rapports de laboratoire', 'completed' => false, 'priority_label' => 'Urgent', 'priority_color' => 'red-600', 'priority_icon' => 'exclamation-circle', 'due_label' => "Aujourd'hui"],
+            (object) ['id' => 2, 'description' => 'Appeler les patients de suivi', 'completed' => false, 'priority_label' => 'Moyen', 'priority_color' => 'amber-600', 'priority_icon' => 'clock', 'due_label' => "Demain"]
+        ]);
+        $pendingTasksCount = 2;
+        
+        $recentActivities = collect([
+            (object) ['color' => 'indigo', 'icon' => 'user', 'title' => 'Nouveau patient enregistré', 'highlight' => 'Ahmed Benani', 'description' => 'a été ajouté à votre liste de patients.', 'time_ago' => 'Il y a 30 minutes'],
+            (object) ['color' => 'green', 'icon' => 'check', 'title' => 'Rendez-vous terminé', 'highlight' => 'Consultation avec Fatima Zahra', 'description' => 'a été complétée avec succès.', 'time_ago' => 'Il y a 2 heures']
+        ]);
+        
+        $messages = collect([
+            (object) ['id' => 1, 'sender' => (object) ['name' => 'Dr. Karim', 'avatar_url' => null], 'preview' => 'Pouvez-vous examiner les résultats du patient #12345?', 'time' => '09:45', 'unread_count' => 1],
+            (object) ['id' => 2, 'sender' => (object) ['name' => 'Administration', 'avatar_url' => null], 'preview' => 'Planning de la semaine prochaine disponible', 'time' => 'Hier', 'unread_count' => 0]
+        ]);
+        
+        // Patient statistics
+        $activePatientCount = $patients->count();
+        $activePatientPercent = 85;
+        $patientsThisWeek = 24;
+        $patientsWeeklyChangePercent = 15;
+        $followUpsCount = 18;
+        $urgentFollowUpsCount = 3;
+
+        return view('doctor.dashboard', compact(
+            'details', 'revenue', 'todayAppointments', 'patients',
+            'monthlyRevenue', 'patientSatisfactionRate', 'satisfactionIncreasePercent', 'reviewCount',
+            'nextAppointment', 'nextAppointmentCountdown', 'currentDateTime',
+            'currentMonth', 'currentYear', 'prevMonth', 'prevYear', 'nextMonth', 'nextYear',
+            'calendarDays', 'tomorrowAppointmentsCount', 
+            'visitsChartLabels', 'visitsChartData', 'revenueChartLabels', 'revenueChartData',
+            'totalVisitsThisMonth', 'visitsIncreasePercent', 'totalRevenue', 'revenueIncreasePercent',
+            'averageWaitTime', 'waitTimeImprovement', 'averageConsultationTime', 'consultationTimeVariance',
+            'noShowRate', 'noShowRateImprovement', 'onlineBookingRate', 'onlineBookingImprovement',
+            'weather', 'urgentLabResultsCount', 'unreadMessagesCount', 'newPatientsThisMonth',
+            'appointmentIncreasePercent', 'tasks', 'pendingTasksCount', 'recentActivities', 'messages',
+            'activePatientCount', 'activePatientPercent', 'patientsThisWeek',
+            'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount', 'appointments', 'speciality'
+        ));
+    } catch (\Exception $e) {
+        return back()->with('error', 'Erreur lors du chargement du tableau de bord: ' . $e->getMessage());
     }
+}
     
     /**
      * Generate calendar days for the mini calendar

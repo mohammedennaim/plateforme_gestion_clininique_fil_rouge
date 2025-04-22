@@ -17,15 +17,16 @@ class RendezVousController extends Controller
         if (auth()->user()) {
             $user = User::where('role', 'patient')->get()[0];
             $patient = Patient::where('user_id', auth()->user()->id)->first();
-            $appointments = Appointment::where('patient_id', $patient->id)->get();
+            $appointment = Appointment::where('patient_id', $patient->id)->get()->last();
             $doctors = User::where('role', 'doctor')->get();
-
-            $appointment = $appointments->where('patient_id', auth()->user()->id)->whereNotNull('date')->sortBy('date')->last();
+            $speciality = Speciality::all();
+            // $appointment = $appointments->where('patient_id', auth()->user()->id)->whereNotNull('date')->sortBy('date')->last();
             if ($appointment != null) {
                 $doctor = Doctor::where('id', $appointment->doctor_id)->first();
                 $medecinDernierVisit = User::where('id', $doctor->user_id)->first();
+                // dd($medecinDernierVisit);
                 
-                return view('patient.reserver' , compact('user', 'patient', 'appointments', 'doctors', 'appointment', 'medecinDernierVisit', 'speciality'));
+                return view('patient.reserver' , compact('user', 'patient', 'doctors', 'appointment', 'medecinDernierVisit', 'speciality'));
             }
             // dd($appointment);
             $speciality = Speciality::all();
@@ -148,7 +149,8 @@ class RendezVousController extends Controller
         $appointment->save();
 
         // Rediriger vers la page de paiement avec l'ID du rendez-vous
-        return redirect()->route('patient.payment')
+        return redirect()->route('patient.payment', ['patient' => $appointment->patient_id])
+            ->with('appointment_id', $appointment->id)
             ->with('success', 'Votre rendez-vous a été enregistré. Procédez au paiement pour confirmer.');
     }
 

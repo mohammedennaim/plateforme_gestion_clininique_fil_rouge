@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Patient;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -23,8 +24,20 @@ class StripePaymentController extends Controller
      */
     public function showPaymentPage(Request $request)
     {
+        
+        $appointmentId = Appointment::all()->last()->id;
+        
+        // Vérifier si le rendez-vous existe
+        if ($appointmentId) {
+            $appointment = Appointment::find($appointmentId);
+            if (!$appointment) {
+                return redirect()->route('home')->with('error', 'Rendez-vous introuvable');
+            }
+        }
+        // dd($appointmentId);
+        
         return view('patient.payment', [
-            'appointmentId' => $request->query('appointment_id')
+            'appointmentId' => $appointmentId
         ]);
     }
 
@@ -34,64 +47,100 @@ class StripePaymentController extends Controller
     public function processPayment(Request $request)
     {
         try {
-            // Get the payment method ID from the request
-            $paymentMethodId = $request->input('payment_method_id');
-            $amount = $request->input('amount', 45); // Default amount 45 euros
-            $currency = $request->input('currency', 'EUR');
-            $description = $request->input('description', 'Consultation médicale');
-            $appointmentId = $request->input('appointment_id');
-            
-            // Convert amount to cents (Stripe requires amount in cents)
-            $amountInCents = $amount * 100;
-            
-            // Calculer l'URL de retour en cas de redirection
-            $returnUrl = url('/payment') . (empty($appointmentId) ? '' : "?appointment_id=$appointmentId");
-            
-            // Create a PaymentIntent with the payment method
-            $paymentIntent = PaymentIntent::create([
-                'amount' => $amountInCents,
-                'currency' => $currency,
-                'description' => $description,
-                'payment_method' => $paymentMethodId,
-                'confirm' => true,
-                'return_url' => $returnUrl
+            // Valider les données entrantes
+            $validated = $request->validate([
+                'payment_method_id' => 'required|string',
+                'amount' => 'nullable|numeric|min:1',
+                'currency' => 'nullable|string|size:3',
+                'description' => 'nullable|string',
+                'appointment_id' => 'nullable|exists:appointments,id'
             ]);
             
-            // Handle the result
-            if ($paymentIntent->status === 'succeeded') {
-                // Payment successful without additional authentication
-                $this->savePaymentRecord($paymentIntent, $appointmentId);
-                
-                return response()->json([
-                    'success' => true,
-                    'transaction_id' => $paymentIntent->id,
-                    'status' => $paymentIntent->status
+            // Get the payment method ID from the request
+            $paymentMethodId = $validated['payment_method_id'];
+            $amount = $validated['amount'] ?? 45; // Default amount 45 euros
+            $currency = $validated['currency'] ?? 'EUR';
+            $description = $validated['description'] ?? 'Consultation médicale';
+            $appointmentId = $validated['appointment_id'] ?? null;
+            
+            // Convert amount to cents (Stripe requires amount in cents)
+            $amountInCents = (int)($amount * 100);
+            
+            // Créer les metadata pour le PaymentIntent
+            $metadata = [
+                'appointment_id' => $appointmentId,
+                'application' => 'MediClinic',
+                'environment' => app()->environment()
+            ];
+            
+            // Calculer l'URL de retour en cas de redirection
+            $returnUrl = url('/payment/confirm') . (empty($appointmentId) ? '' : "?appointment_id=$appointmentId");
+            
+            try {
+                // Create a PaymentIntent with the payment method
+                $paymentIntent = PaymentIntent::create([
+                    'amount' => $amountInCents,
+                    'currency' => $currency,
+                    'description' => $description,
+                    'payment_method' => $paymentMethodId,
+                    'confirm' => true,
+                    'return_url' => $returnUrl,
+                    'metadata' => $metadata,
+                    // Utiliser uniquement automatic_payment_methods, pas payment_method_types
+                    'automatic_payment_methods' => [
+                        'enabled' => true,
+                    ],
                 ]);
                 
-            } else if ($paymentIntent->status === 'requires_action' && 
-                       isset($paymentIntent->next_action) &&
-                       $paymentIntent->next_action->type === 'use_stripe_sdk') {
-                // 3D Secure authentication required
+                // Handle the result
+                if ($paymentIntent->status === 'succeeded') {
+                    // Payment successful without additional authentication
+                    $this->savePaymentRecord($paymentIntent, $appointmentId);
+                    
+                    return response()->json([
+                        'success' => true,
+                        'transaction_id' => $paymentIntent->id,
+                        'status' => $paymentIntent->status
+                    ]);
+                    
+                } else if ($paymentIntent->status === 'requires_action' && 
+                          isset($paymentIntent->next_action) &&
+                          $paymentIntent->next_action->type === 'use_stripe_sdk') {
+                    // 3D Secure authentication required
+                    return response()->json([
+                        'success' => false,
+                        'requires_action' => true,
+                        'payment_intent_client_secret' => $paymentIntent->client_secret
+                    ]);
+                    
+                } else {
+                    // Payment in other state (processing, etc)
+                    return response()->json([
+                        'success' => false,
+                        'payment_intent_id' => $paymentIntent->id,
+                        'message' => 'Le paiement est en cours de traitement'
+                    ]);
+                }
+            } catch (ApiErrorException $e) {
+                // Gérer spécifiquement les erreurs Stripe API
+                Log::error('Stripe API Error during payment intent creation: ' . $e->getMessage());
                 return response()->json([
-                    'success' => false,
-                    'requires_action' => true,
-                    'payment_intent_client_secret' => $paymentIntent->client_secret
-                ]);
-                
-            } else {
-                // Payment in other state (processing, etc)
-                return response()->json([
-                    'success' => false,
-                    'payment_intent_id' => $paymentIntent->id,
-                    'message' => 'Le paiement est en cours de traitement'
-                ]);
+                    'success' => false, 
+                    'message' => 'Erreur lors du traitement de votre carte: ' . $e->getMessage()
+                ], 400); // Code 400 au lieu de 500 pour les erreurs de carte
             }
             
         } catch (ApiErrorException $e) {
             Log::error('Stripe API Error: ' . $e->getMessage());
             return response()->json([
+                'success' => false, 
+                'message' => 'Erreur de paiement: ' . $e->getMessage()
+            ], 400);
+        } catch (\Exception $e) {
+            Log::error('General payment error: ' . $e->getMessage());
+            return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => 'Une erreur est survenue lors du traitement du paiement. Veuillez réessayer.'
             ], 500);
         }
     }
@@ -102,20 +151,26 @@ class StripePaymentController extends Controller
     public function confirmPayment(Request $request)
     {
         try {
-            $paymentIntentId = $request->input('payment_intent_id');
-            $appointmentId = $request->input('appointment_id');
+            $validated = $request->validate([
+                'payment_intent_id' => 'required|string',
+                'appointment_id' => 'nullable|exists:appointments,id'
+            ]);
+            
+            $paymentIntentId = $validated['payment_intent_id'];
+            $appointmentId = $validated['appointment_id'] ?? null;
             
             // Retrieve the payment intent
             $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
             
             // If payment intent already succeeded, just return success
             if ($paymentIntent->status === 'succeeded') {
-                $this->savePaymentRecord($paymentIntent, $appointmentId);
+                $payment = $this->savePaymentRecord($paymentIntent, $appointmentId);
                 
                 return response()->json([
                     'success' => true,
                     'transaction_id' => $paymentIntent->id,
-                    'status' => $paymentIntent->status
+                    'status' => $paymentIntent->status,
+                    'payment_id' => $payment ? $payment->id : null
                 ]);
             }
             
@@ -125,11 +180,12 @@ class StripePaymentController extends Controller
             }
             
             if ($paymentIntent->status === 'succeeded') {
-                $this->savePaymentRecord($paymentIntent, $appointmentId);
+                $payment = $this->savePaymentRecord($paymentIntent, $appointmentId);
                 
                 return response()->json([
                     'success' => true,
-                    'transaction_id' => $paymentIntent->id
+                    'transaction_id' => $paymentIntent->id,
+                    'payment_id' => $payment ? $payment->id : null
                 ]);
             } else {
                 return response()->json([
@@ -142,8 +198,14 @@ class StripePaymentController extends Controller
         } catch (ApiErrorException $e) {
             Log::error('Stripe Confirmation Error: ' . $e->getMessage());
             return response()->json([
-                'success' => false,
+                'success' => false, 
                 'message' => $e->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            Log::error('General confirmation error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la confirmation du paiement'
             ], 500);
         }
     }
@@ -154,10 +216,20 @@ class StripePaymentController extends Controller
     public function checkPaymentStatus(Request $request)
     {
         try {
-            $paymentIntentId = $request->input('payment_intent_id');
+            $validated = $request->validate([
+                'payment_intent_id' => 'required|string'
+            ]);
+            
+            $paymentIntentId = $validated['payment_intent_id'];
             
             // Retrieve the payment intent
             $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
+            
+            // If the payment succeeded, ensure we have a record
+            if ($paymentIntent->status === 'succeeded') {
+                $appointmentId = $paymentIntent->metadata->appointment_id ?? null;
+                $this->savePaymentRecord($paymentIntent, $appointmentId);
+            }
             
             // Return the status
             return response()->json([
@@ -171,6 +243,12 @@ class StripePaymentController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
+        } catch (\Exception $e) {
+            Log::error('General status check error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la vérification du paiement'
+            ], 500);
         }
     }
     
@@ -180,14 +258,32 @@ class StripePaymentController extends Controller
     private function savePaymentRecord($paymentIntent, $appointmentId = null)
     {
         try {
+            // Check if we already have a record for this payment
+            $existingPayment = Payment::where('transaction_id', $paymentIntent->id)->first();
+            if ($existingPayment) {
+                // Update the status if needed
+                if ($existingPayment->status !== $paymentIntent->status) {
+                    $existingPayment->status = $paymentIntent->status;
+                    $existingPayment->save();
+                }
+                return $existingPayment;
+            }
+            
             // Create a new payment record
             $payment = new Payment();
+            $payment->user_id = Patient::with('user')->get()->last()->id;
+            $payment->appointment_id = Appointment::get()->last()->id;
             $payment->transaction_id = $paymentIntent->id;
             $payment->amount = $paymentIntent->amount / 100; // Convert back from cents
             $payment->currency = $paymentIntent->currency;
             $payment->status = $paymentIntent->status;
             $payment->payment_method = 'stripe';
             $payment->description = $paymentIntent->description ?? 'Consultation médicale';
+            
+            // Récupérer l'ID du rendez-vous depuis les métadonnées si disponible
+            if (!$appointmentId && isset($paymentIntent->metadata->appointment_id)) {
+                $appointmentId = $paymentIntent->metadata->appointment_id;
+            }
             
             // Récupérer l'utilisateur connecté si disponible
             if (auth()->check()) {
@@ -206,8 +302,13 @@ class StripePaymentController extends Controller
                     }
                     
                     // Update the appointment payment status
-                    $appointment->paiement = true;
-                    $appointment->save();
+                    if ($payment->status === 'succeeded') {
+                        $appointment->paiement = true;
+                        $appointment->save();
+                        
+                        // Traiter les actions post-paiement si nécessaire
+                        $this->processAppointmentAfterPayment($appointment);
+                    }
                 }
             }
             
@@ -220,12 +321,27 @@ class StripePaymentController extends Controller
             return null;
         }
     }
+    
+    /**
+     * Process appointment related actions after payment
+     */
+    private function processAppointmentAfterPayment(Appointment $appointment)
+    {
+        try {
+            // Si un contrôleur de rendez-vous existe, traiter les actions post-paiement
+            if (class_exists(RendezVousController::class)) {
+                app(RendezVousController::class)->processAfterPayment($appointment->id);
+            }
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du traitement post-paiement: ' . $e->getMessage());
+        }
+    }
 
     /**
      * Affiche la page de succès après un paiement réussi
      * 
      * @param Request $request
-     * @return \Illuminate\View\View
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
     public function showSuccessPage(Request $request)
     {
@@ -233,12 +349,31 @@ class StripePaymentController extends Controller
         $transactionId = $request->query('transaction_id');
         $appointmentId = $request->query('appointment_id');
         
+        // Vérifier si nous avons un ID de transaction
+        if (!$transactionId) {
+            return redirect()->route('home')
+                ->with('error', 'Aucune information de paiement trouvée');
+        }
+        
         // Récupérer le paiement associé
         $payment = Payment::where('transaction_id', $transactionId)->first();
         
         if (!$payment) {
-            return redirect()->route('payment.show')
-                ->with('error', 'Nous n\'avons pas pu trouver les détails de votre paiement.');
+            // Essayer de récupérer depuis Stripe directement
+            try {
+                $paymentIntent = PaymentIntent::retrieve($transactionId);
+                if ($paymentIntent->status === 'succeeded') {
+                    $appointmentId = $paymentIntent->metadata->appointment_id ?? $appointmentId;
+                    $payment = $this->savePaymentRecord($paymentIntent, $appointmentId);
+                }
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de la récupération du paiement depuis Stripe: ' . $e->getMessage());
+            }
+            
+            if (!$payment) {
+                return redirect()->route('patient.payment')
+                    ->with('error', 'Nous n\'avons pas pu trouver les détails de votre paiement.');
+            }
         }
         
         // Récupérer le rendez-vous associé
@@ -250,22 +385,11 @@ class StripePaymentController extends Controller
         }
         
         if (!$appointment) {
-            return redirect()->route('payment.show')->with('error', 'Nous n\'avons pas pu trouver les détails de votre rendez-vous.');
+            return redirect()->route('home')->with('success', 'Paiement réussi. Merci pour votre achat.');
         }
         
-        // Mettre à jour le statut du rendez-vous si le paiement est réussi
-        if ($payment->status === 'succeeded') {
-            app(RendezVousController::class)->processAfterPayment($appointment->id);
-            
-            // Redirection vers la page de détails avec un message de succès
-            return redirect()->route('patient.appointment.details', ['appointment_id' => $appointment->id])
-                ->with('success', 'true');
-        }
-        
-        // Passer à la vue les informations nécessaires dans le cas où le processAfterPayment ne gère pas la redirection
-        return view('patient.appointment-details', [
-            'payment' => $payment,
-            'appointment' => $appointment
-        ]);
+        // Redirection vers la page de détails avec un message de succès
+        return redirect()->route('patient.appointment.details', ['appointment_id' => $appointment->id])
+            ->with('success', 'Paiement effectué avec succès');
     }
 }

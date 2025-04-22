@@ -40,10 +40,17 @@ class AppointmentService{
         return $this->appointmentRepository->delete($id);
     }
 
-    public function getTodayAppointments()
+    public function getTodayAppointments($doctorId = null)
     {
+        if ($doctorId) {
+            return Appointment::with('patient')
+                ->where('doctor_id', $doctorId)
+                ->whereDate('date', now()->format('Y-m-d'))
+                ->get();
+        }
         return $this->appointmentRepository->getTodayAppointments();
     }
+
     public function getPendingRequests()
     {
         return $this->appointmentRepository->getPendingRequests();
@@ -52,8 +59,11 @@ class AppointmentService{
     {
         return $this->appointmentRepository->getTotalAppointments();
     }
-    public function getTotalRevenue()
+    public function getTotalRevenue($doctorId = null)
     {
+        if ($doctorId) {
+            return Appointment::where('doctor_id', $doctorId)->sum('price');
+        }
         return $this->appointmentRepository->getTotalRevenue();
     }
     public function getByDoctorId($doctorId)

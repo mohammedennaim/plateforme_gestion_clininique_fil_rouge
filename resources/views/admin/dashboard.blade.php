@@ -1456,7 +1456,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group">
-                                                                <a href="{{ Route('admin.patients.show', $patient['id']) }}" class="btn btn-sm btn-info">
+                                                                <a href="" class="btn btn-sm btn-info">
                                                                     <i class="fas fa-eye"></i>
                                                                 </a>
                                                                 <button type="button"

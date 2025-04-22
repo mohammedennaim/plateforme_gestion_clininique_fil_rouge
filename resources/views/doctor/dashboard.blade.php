@@ -980,12 +980,12 @@
                                             <i class="fas fa-file-medical text-indigo-500 mr-2"></i>
                                             Dossier médical
                                         </a>
-                                        <a href="{{ route('patients.history', $nextAppointment->patient->id ?? 1) }}"
+                                        <a href=""
                                             class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                             <i class="fas fa-history text-amber-500 mr-2"></i>
                                             Historique
                                         </a>
-                                        <a href="{{ route('appointments.check-in', $nextAppointment->id ?? 1) }}"
+                                        <a href=""
                                             class="flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
                                             <i class="fas fa-check-circle mr-2"></i>
                                             Enregistrer
@@ -1005,11 +1005,11 @@
                             {{ $currentMonth }} {{ $currentYear }}
                         </h3>
                         <div class="flex items-center space-x-2">
-                            <a href="{{ route('calendar.index', ['month' => $prevMonth, 'year' => $prevYear]) }}" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+                            <a href="" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
                                 <i class="fas fa-chevron-left"></i>
                             </a>
-                            <a href="{{ route('calendar.index') }}" class="text-sm font-medium">Aujourd'hui</a>
-                            <a href="{{ route('calendar.index', ['month' => $nextMonth, 'year' => $nextYear]) }}" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+                            <a href="" class="text-sm font-medium">Aujourd'hui</a>
+                            <a href="" class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100">
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         </div>
@@ -1043,7 +1043,7 @@
                                 <span class="text-xs text-gray-600">{{ $tomorrowAppointmentsCount }} demain</span>
                             </div>
                         </div>
-                        <a href="{{ route('appointments.index') }}" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
+                        <a href="" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
                     </div>
                 </div>
             </div>
@@ -1278,7 +1278,7 @@
                     </div>
                     <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
                         <span class="text-sm text-gray-700">Affichage de {{ count($todayAppointments) }} rendez-vous sur {{ count($todayAppointments)  }}</span>
-                        <a href="{{ route('appointments.index') }}" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
+                        <a href="" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
                             Voir tous les rendez-vous
                         </a>
                     </div>
@@ -1384,7 +1384,7 @@
                         </div>
 
                         <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-center">
-                            <a href="{{ route('messages.index') }}" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
+                            <a href="" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
                                 <i class="fas fa-envelope mr-2"></i>
                                 Ouvrir la boîte de réception
                             </a>
@@ -1392,7 +1392,7 @@
                     </div>
 
                     <div class="bg-gray-50 px-6 py-3 border-t border-gray-200">
-                        <a href="{{ route('activities.index') }}"
+                        <a href=""
                             class="inline-flex w-full items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm">
                             <i class="fas fa-history mr-2"></i>
                             Voir toute l'activité
@@ -1413,7 +1413,7 @@
             <!-- Search & Filters -->
             <div class="bg-white rounded-xl shadow-sm mb-6">
                 <div class="p-4 md:p-6">
-                    <form action="{{ route('patients.search') }}" method="GET" class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <form action="" method="GET" class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                         <div class="relative flex-grow">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
@@ -1821,7 +1821,7 @@
             if (patientSort) {
                 patientSort.addEventListener("change", function() {
                     const sortBy = this.value;
-                    window.location.href = `{{ route('patients.index') }}?sort=${sortBy}`;
+                    window.location.href = ``;
                 });
             }
 
@@ -1865,7 +1865,7 @@
             const exportRevenueBtn = document.getElementById("export-revenue");
             if (exportRevenueBtn) {
                 exportRevenueBtn.addEventListener("click", function() {
-                    window.location.href = "{{ route('analytics.export-revenue') }}";
+                    window.location.href = "";
                 });
             }
 
