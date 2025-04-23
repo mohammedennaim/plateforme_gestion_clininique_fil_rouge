@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nos Services - MediClinic</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -76,8 +74,6 @@
 
 <body class="font-sans text-secondary-800 bg-gray-50">
     @if (auth()->check())
-
-
         <header class="bg-white shadow-sm py-4">
             <div class="container mx-auto px-4 flex justify-between items-center">
                 <div class="flex items-center">
@@ -85,18 +81,14 @@
                     <span class="text-xl font-semibold text-primary-700">MediClinic</span>
                 </div>
                 <nav class="hidden md:flex space-x-6">
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                    <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                    <a href="{{ route('welcome') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
+                    <a href="{{ route('services') }}" class="text-primary-600 font-medium">Services</a>
+                    <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-
-
-                    <!-- Profil utilisateur (caché par défaut) -->
                     <div id="user-profile" class="items-center">
                         <div class="relative">
                             <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
@@ -107,8 +99,6 @@
                                 <span class="text-sm font-medium text-secondary-700">{{ $user['name'] }}</span>
                                 <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
                             </button>
-
-                            <!-- Dropdown menu (caché par défaut) -->
                             <div id="profile-dropdown"
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
                                 <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
@@ -150,11 +140,7 @@
                     <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-
-
-                    <!-- Bouton de connexion/profil -->
                     <div id="auth-buttons" class="flex items-center">
                         <a href="{{ Route('login') }}" id="login-button"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
@@ -167,7 +153,6 @@
         </header>
     @endif
 
-    <!-- Bannière de la page -->
     <section class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Nos Services Médicaux</h1>
@@ -176,7 +161,6 @@
         </div>
     </section>
 
-    <!-- Introduction aux services -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="flex flex-col lg:flex-row items-center gap-12">
@@ -209,7 +193,6 @@
         </div>
     </section>
 
-    <!-- Nos spécialités médicales -->
     <section id="specialites" class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -224,7 +207,6 @@
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Cardiologie -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden service-card">
                     <div class="p-8">
                         <div
@@ -261,7 +243,6 @@
                     </div>
                 </div>
 
-                <!-- Neurologie -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden service-card">
                     <div class="p-8">
                         <div
@@ -298,7 +279,6 @@
                     </div>
                 </div>
 
-                <!-- Pédiatrie -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden service-card">
                     <div class="p-8">
                         <div
@@ -335,7 +315,6 @@
                     </div>
                 </div>
 
-                <!-- Orthopédie -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden service-card">
                     <div class="p-8">
                         <div
@@ -371,7 +350,6 @@
                     </div>
                 </div>
 
-                <!-- Dermatologie -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden service-card">
                     <div class="p-8">
                         <div
@@ -408,7 +386,6 @@
                     </div>
                 </div>
 
-                <!-- Gynécologie -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden service-card">
                     <div class="p-8">
                         <div
@@ -447,7 +424,6 @@
         </div>
     </section>
 
-    <!-- Services de diagnostic -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -525,7 +501,6 @@
         </div>
     </section>
 
-    <!-- Services préventifs -->
     <section class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -614,7 +589,6 @@
         </div>
     </section>
 
-    <!-- Témoignages -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -711,7 +685,6 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl font-bold mb-6">Prêt à prendre soin de votre santé?</h2>
@@ -731,7 +704,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-secondary-900 text-secondary-400 py-16">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -823,16 +795,17 @@
         </div>
     </footer>
 
-    <!-- Bouton Retour en Haut -->
     <a href="#" id="back-to-top"
         class="fixed bottom-6 right-6 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-primary-700">
         <i class="fas fa-arrow-up"></i>
     </a>
 
-    <!-- Script JavaScript -->
     <script>
         const profileDropdownButton = document.getElementById('profile-dropdown-button');
         const profileDropdown = document.getElementById('profile-dropdown');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const backToTopButton = document.getElementById('back-to-top');
 
         profileDropdownButton.addEventListener('click', function () {
             profileDropdown.classList.toggle('hidden');
@@ -843,16 +816,11 @@
                 profileDropdown.classList.add('hidden');
             }
         });
-        // Gestion du menu mobile
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
 
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
 
-        // Gestion du bouton retour en haut
-        const backToTopButton = document.getElementById('back-to-top');
 
         window.addEventListener('scroll', () => {
             if (window.pageYOffset > 300) {

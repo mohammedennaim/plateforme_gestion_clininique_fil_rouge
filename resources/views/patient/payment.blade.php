@@ -119,16 +119,13 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="flex-grow container mx-auto px-4 py-8">
         <div class="max-w-2xl mx-auto">
-            <!-- Page Title -->
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold text-secondary-800 mb-2">Paiement Sécurisé</h1>
                 <p class="text-secondary-500">Finalisez votre réservation en effectuant le paiement</p>
             </div>
-            
-            <!-- Progress Steps -->
+
             <div class="flex justify-between mb-8 relative">
                 <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-secondary-200 -translate-y-1/2 z-0"></div>
                 <div class="relative z-10 flex flex-col items-center">
@@ -157,9 +154,7 @@
                 </div>
             </div>
             
-            <!-- Payment Card -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <!-- Card Header -->
                 <div class="bg-primary-600 py-4 px-6">
                     <h2 class="text-lg font-semibold text-white flex items-center">
                         <i class="fas fa-lock mr-2"></i>
@@ -167,9 +162,7 @@
                     </h2>
                 </div>
                 
-                <!-- Card Body -->
                 <div class="p-6">
-                    <!-- Récapitulatif de la commande -->
                     <div class="mb-6 bg-secondary-50 rounded-lg p-4">
                         <h3 class="text-sm font-medium text-secondary-700 mb-3">Récapitulatif</h3>
                         <div class="flex justify-between mb-2">

@@ -1038,10 +1038,6 @@
                                 <div class="w-3 h-3 bg-indigo-600 rounded-full mr-1"></div>
                                 <span class="text-xs text-gray-600">{{ count($todayAppointments)  }} aujourd'hui</span>
                             </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-amber-500 rounded-full mr-1"></div>
-                                <span class="text-xs text-gray-600">{{ $tomorrowAppointmentsCount }} demain</span>
-                            </div>
                         </div>
                         <a href="" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
                     </div>
@@ -1253,11 +1249,11 @@
                                             </div>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <a href="{{ route('appointments.show', $appointment->id) }}"
+                                            <a href="{{ route('doctor.appointments.show', $appointment->id) }}"
                                                 class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('appointments.check-in', $appointment->id) }}"
+                                            <a href="{{ route('doctor.appointments.check', $appointment->id) }}"
                                                 class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
                                                 <i class="fas fa-check"></i>
                                             </a>
@@ -1505,12 +1501,12 @@
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
                                     <img src="{{ $patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($patient->name).'&background=6366F1&color=ffffff' }}"
-                                        alt="{{ $patient->patient->user->name }}">
+                                        alt="{{ $patient->name }}">
                                 </div>
                                 <div class="ml-4 flex-1">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <h3 class="text-lg font-medium text-indigo-600">{{ $patient->patient->user->name }}</h3>
+                                            <h3 class="text-lg font-medium text-indigo-600">{{ $patient->name }}</h3>
                                             <p class="text-sm text-gray-500">ID: #{{ $patient->id }}</p>
                                         </div>
                                         <span
@@ -1527,21 +1523,21 @@
                             <div class="grid grid-cols-3 gap-2 text-sm">
                                 <div>
                                     <p class="text-gray-500">Âge</p>
-                                    <p class="font-medium">{{ $patient->patient->age}} ans</p>
+                                    <p class="font-medium">{{ $patient->age}} ans</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Genre</p>
-                                    <p class="font-medium">{{ $patient->patient->gender }}</p>
+                                    <p class="font-medium">{{ $patient->gender }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Téléphone</p>
-                                    <p class="font-medium">{{ $patient->patient->user->phone }}</p>
+                                    <p class="font-medium">{{ $patient->phone }}</p>
                                 </div>
                             </div>
                             <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
                                 <div>
                                     <p class="text-gray-500">Dernière visite</p>
-                                    <p class="font-medium">{{ $patient->patient->last_visit_date }}</p>
+                                    <p class="font-medium">{{ $patient->last_visit_date }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-500">Prochain RDV</p>
@@ -1555,14 +1551,14 @@
                                 <a href="{{ route('medical-records.show', $patient->id) }}" class="text-sm text-indigo-600 hover:text-indigo-500">
                                     <i class="fas fa-file-medical"></i>
                                 </a>
-                                <a href="{{ route('appointments.create', ['patient_id' => $patient->id]) }}" class="text-sm text-emerald-600 hover:text-emerald-500">
+                                <a href="{{ route('doctor.appointments.create', $patient->id) }}" class="text-sm text-emerald-600 hover:text-emerald-500">
                                     <i class="fas fa-calendar-plus"></i>
                                 </a>
-                                <a href="{{ route('messages.create', ['recipient_id' => $patient->id]) }}" class="text-sm text-blue-600 hover:text-blue-500">
+                                <a href="" class="text-sm text-blue-600 hover:text-blue-500">
                                     <i class="fas fa-comments"></i>
                                 </a>
                             </div>
-                            <a href="{{ route('patients.show', $patient->id) }}" class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                            <a href="{{ route('doctor.patients.show', $patient->id) }}" class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
                                 Voir détails
                             </a>
                         </div>

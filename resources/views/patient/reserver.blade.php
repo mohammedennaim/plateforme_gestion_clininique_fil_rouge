@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réservation de Rendez-vous | Clinique Médicale</title>
-    <!-- TailwindCSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuration Tailwind personnalisée -->
     <script>
         tailwind.config = {
             theme: {
@@ -44,13 +42,10 @@
                 }
             }
         }
-    </script>
-    <!-- Google Fonts -->
+    </script>    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Animations personnalisées */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -67,7 +62,6 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Style pour le sélecteur de date et d'heure */
         input[type="date"],
         input[type="time"] {
             appearance: none;
@@ -75,7 +69,6 @@
             -moz-appearance: none;
         }
 
-        /* Style pour les champs invalides */
         .invalid-feedback {
             display: none;
         }
@@ -85,7 +78,6 @@
             display: block;
         }
 
-        /* Tooltip styles */
         .tooltip {
             position: relative;
             display: inline-block;

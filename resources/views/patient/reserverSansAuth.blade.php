@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réservation de Rendez-vous | Clinique Médicale</title>
-    <!-- TailwindCSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuration Tailwind personnalisée -->
     <script>
         tailwind.config = {
             theme: {
@@ -44,9 +42,7 @@
             }
         }
     </script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Animations personnalisées */
@@ -118,7 +114,7 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-primary-50 to-secondary-50 min-h-screen flex flex-col">
-    <!-- Header -->
+
     <header class="bg-white shadow-sm py-4">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <div class="flex items-center">
@@ -133,11 +129,7 @@
                 <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
             </nav>
             
-            <!-- User Authentication Section -->
             <div class="flex items-center space-x-4">
-
-                
-                <!-- Bouton de connexion/profil -->
                 <div id="auth-buttons" class="flex items-center">
                     <a href="{{ Route('login') }}" id="login-button" class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
                     <span class="mx-2 text-secondary-300">|</span>
@@ -151,16 +143,13 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="flex-grow container mx-auto px-4 py-8">
         <div class="max-w-3xl mx-auto">
-            <!-- Page Title -->
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold text-secondary-800 mb-2">Réserver un rendez-vous</h1>
                 <p class="text-secondary-500">Prenez rendez-vous avec l'un de nos spécialistes en quelques clics</p>
             </div>
             
-            <!-- User Welcome Banner (pour utilisateurs connectés) -->
             <div id="user-welcome" class="mb-8 bg-primary-50 rounded-xl p-6 border border-primary-100 hidden animate-fadeIn">
                 <div class="flex items-start">
                     <div class="flex-shrink-0">
@@ -172,7 +161,6 @@
                         <h2 class="text-lg font-medium text-secondary-800">Bienvenue, Marie Dupont</h2>
                         <p class="text-secondary-600 mt-1">Nous sommes ravis de vous revoir. Vos informations personnelles ont été pré-remplies pour faciliter votre réservation.</p>
                         
-                        <!-- Derniers rendez-vous -->
                         <div class="mt-4">
                             <h3 class="text-sm font-medium text-secondary-700 mb-2">Vos derniers rendez-vous :</h3>
                             <div class="bg-white rounded-lg p-3 border border-secondary-200">
@@ -191,7 +179,6 @@
                 </div>
             </div>
             
-            <!-- Guest User Banner -->
             <div id="guest-banner" class="mb-8 bg-secondary-50 rounded-xl p-6 border border-secondary-200 animate-fadeIn">
                 <div class="flex items-start">
                     <div class="flex-shrink-0 text-secondary-400">
@@ -228,9 +215,7 @@
                 </div>
             </div>
             
-            <!-- Booking Form Card -->
             <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
-                <!-- Progress Steps -->
                 <div class="flex justify-between mb-8 relative">
                     <div class="absolute top-1/2 left-0 right-0 h-0.5 bg-secondary-200 -translate-y-1/2 z-0"></div>
                     <div class="relative z-10 flex flex-col items-center">
@@ -253,17 +238,14 @@
                     </div>
                 </div>
                 
-                <!-- Form -->
                 <form method="POST" action="{{ route('patient.reserver.store') }}" id="appointment-form" class="space-y-6">
                     @csrf
                     <input type="hidden" name="doctor_id" id="doctor_id" value="1">
                     
-                    <!-- Step 1: Personal Information -->
                     <div id="step-1" class="space-y-6">
                         <h2 class="text-xl font-semibold text-secondary-800 mb-4">Informations personnelles</h2>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Full Name -->
                             <div>
                                 <label for="fullname" class="block text-sm font-medium text-secondary-700 mb-1">Nom complet <span class="text-red-500">*</span></label>
                                 <div class="relative">
@@ -278,7 +260,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Date of Birth -->
                             <div>
                                 <label for="birth-date" class="block text-sm font-medium text-secondary-700 mb-1">Date de naissance <span class="text-red-500">*</span></label>
                                 <div class="relative">
@@ -293,7 +274,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-secondary-700 mb-1">Adresse e-mail <span class="text-red-500">*</span></label>
                                 <div class="relative">
@@ -308,7 +288,6 @@
                                 </div>
                             </div>
                             
-                            <!-- Phone Number -->
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-secondary-700 mb-1">Numéro de téléphone <span class="text-red-500">*</span></label>
                                 <div class="relative">
@@ -324,7 +303,6 @@
                             </div>
                         </div>
                         
-                        <!-- Preferred Contact Method -->
                         <div>
                             <label class="block text-sm font-medium text-secondary-700 mb-1">Méthode de contact préférée</label>
                             <div class="flex flex-wrap gap-4">
@@ -343,7 +321,6 @@
                             </div>
                         </div>
                         
-                        <!-- Insurance Information -->
                         <div class="border border-secondary-200 rounded-lg p-4">
                             <div class="flex items-center mb-4">
                                 <input type="checkbox" id="has-insurance" name="has-insurance" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
@@ -362,7 +339,6 @@
                             </div>
                         </div>
                         
-                        <!-- Emergency Contact -->
                         <div class="border border-secondary-200 rounded-lg p-4">
                             <h3 class="text-sm font-medium text-secondary-700 mb-3">Contact d'urgence</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -388,7 +364,6 @@
                             </div>
                         </div>
                         
-                        <!-- Save Information (Guest Only) -->
                         <div id="save-info-section" class="border border-secondary-200 rounded-lg p-4">
                             <div class="flex items-center">
                                 <input type="checkbox" id="save-info" name="save-info" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
@@ -401,7 +376,6 @@
                         </div>
                     </div>
                     
-                    <!-- Step 2: Appointment Details (Hidden initially) -->
                     <div id="step-2" class="space-y-6 hidden">
                         <h2 class="text-xl font-semibold text-secondary-800 mb-4">Détails du rendez-vous</h2>
                         
@@ -575,7 +549,6 @@
                         </div>
                     </div>
                     
-                    <!-- Step 3: Review & Confirm (Hidden initially) -->
                     <div id="step-3" class="space-y-6 hidden">
                         <h2 class="text-xl font-semibold text-secondary-800 mb-4">Vérification et confirmation</h2>
                         
@@ -631,7 +604,6 @@
                         </div>
                     </div>
                     
-                    <!-- Form Actions -->
                     <div class="pt-4 border-t border-secondary-200">
                         <div class="flex justify-between">
                             <button type="button" id="prev-step" class="inline-flex items-center px-4 py-2 border border-secondary-300 text-base font-medium rounded-lg shadow-sm text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors hidden">
@@ -655,7 +627,6 @@
                 </form>
             </div>
             
-            <!-- Success Message (Hidden by default) -->
             <div id="success-message" class="mt-8 bg-green-50 border border-green-200 rounded-xl p-6 hidden animate-fadeIn">
                 <div class="flex">
                     <div class="flex-shrink-0">
@@ -696,7 +667,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-white border-t border-secondary-200 py-8">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -755,9 +725,7 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script>
-        // Données simulées pour les médecins par spécialité
         const doctors = {
             cardiologie: [
                 { id: 1, name: "Dr. Martin", availability: ["09:00", "10:30", "14:00", "16:30"], gender: "male" },
@@ -782,7 +750,6 @@
             ]
         };
 
-        // Données utilisateur simulées (pour l'utilisateur connecté)
         const userData = {
             fullname: "Marie Dupont",
             email: "marie.dupont@example.com",
@@ -802,9 +769,7 @@
             accessibility: ["wheelchair"]
         };
 
-        // Attendre que le DOM soit chargé
         document.addEventListener('DOMContentLoaded', function() {
-            // Récupérer les éléments du formulaire
             const form = document.getElementById('appointment-form');
             const specialtySelect = document.getElementById('specialty');
             const timeSelect = document.getElementById('time');
@@ -812,16 +777,12 @@
             const successMessage = document.getElementById('success-message');
             const hasInsuranceCheckbox = document.getElementById('has-insurance');
             const insuranceFields = document.getElementById('insurance-fields');
-            
-            // Éléments pour la navigation entre les étapes
             const step1 = document.getElementById('step-1');
             const step2 = document.getElementById('step-2');
             const step3 = document.getElementById('step-3');
             const nextStepBtn = document.getElementById('next-step');
             const prevStepBtn = document.getElementById('prev-step');
             const submitFormBtn = document.getElementById('submit-form');
-            
-            // Éléments pour la gestion des utilisateurs
             const userStatusToggle = document.getElementById('user-status-toggle');
             const userStatusLabel = document.getElementById('user-status-label');
             const authButtons = document.getElementById('auth-buttons');
@@ -832,37 +793,27 @@
             const profileDropdownButton = document.getElementById('profile-dropdown-button');
             const profileDropdown = document.getElementById('profile-dropdown');
             const logoutButton = document.getElementById('logout-button');
-            
-            // Indicateurs d'étape
             const stepIndicator1 = document.getElementById('step-indicator-1');
             const stepIndicator2 = document.getElementById('step-indicator-2');
             const stepIndicator3 = document.getElementById('step-indicator-3');
             const stepText2 = document.getElementById('step-text-2');
             const stepText3 = document.getElementById('step-text-3');
             
-            // Étape actuelle
             let currentStep = 1;
-            
-            // État de l'utilisateur (connecté ou invité)
             let isLoggedIn = false;
-            
-            // Définir la date minimale (aujourd'hui)
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
             dateInput.min = formattedDate;
             
-            // Afficher/masquer les champs d'assurance
             hasInsuranceCheckbox.addEventListener('change', function() {
                 insuranceFields.classList.toggle('hidden', !this.checked);
             });
             
-            // Mettre à jour les horaires disponibles en fonction de la spécialité sélectionnée
             specialtySelect.addEventListener('change', function() {
                 const specialty = this.value;
                 updateAvailableTimes(specialty);
             });
             
-            // Navigation entre les étapes
             nextStepBtn.addEventListener('click', function() {
                 if (currentStep === 1) {
                     if (validateStep1()) {
@@ -884,36 +835,25 @@
                 }
             });
             
-            // Gérer la soumission du formulaire
             form.addEventListener('submit', function(e) {
-                // Ne pas empêcher la soumission du formulaire par défaut
                 // e.preventDefault();
-
-                // Vérifier si tous les champs requis sont remplis
                 if (validateForm()) {
-                    // Remplir les champs cachés avec les données du rendez-vous
                     document.getElementById('appointment-specialty').value = specialtySelect.value;
                     document.getElementById('appointment-date').value = dateInput.value;
                     document.getElementById('appointment-time').value = timeSelect.value;
                     document.getElementById('appointment-reason').value = document.getElementById('reason').value;
                     
-                    // Laisser le formulaire se soumettre normalement vers patient.payment
                     return true;
                 } else {
-                    e.preventDefault(); // Empêcher la soumission uniquement si le formulaire n'est pas valide
+                    e.preventDefault();
                     return false;
                 }
             });
             
-            // Toggle pour basculer entre utilisateur connecté et invité (pour la démo)
             userStatusToggle.addEventListener('change', function() {
                 isLoggedIn = this.checked;
                 userStatusLabel.textContent = isLoggedIn ? "Connecté" : "Invité";
-                
-                // Mettre à jour l'interface en fonction de l'état de connexion
                 updateUserInterface();
-                
-                // Si l'utilisateur est connecté, pré-remplir le formulaire
                 if (isLoggedIn) {
                     prefillFormWithUserData();
                 } else {
@@ -921,19 +861,16 @@
                 }
             });
             
-            // Afficher/masquer le menu déroulant du profil
             profileDropdownButton.addEventListener('click', function() {
                 profileDropdown.classList.toggle('hidden');
             });
             
-            // Fermer le menu déroulant lorsqu'on clique ailleurs
             document.addEventListener('click', function(event) {
                 if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
                     profileDropdown.classList.add('hidden');
                 }
             });
             
-            // Gérer la déconnexion
             logoutButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 userStatusToggle.checked = false;
@@ -943,7 +880,6 @@
                 resetForm();
             });
             
-            // Fonction pour mettre à jour l'interface utilisateur
             function updateUserInterface() {
                 if (isLoggedIn) {
                     authButtons.classList.add('hidden');
@@ -962,17 +898,13 @@
                 }
             }
             
-            // Fonction pour pré-remplir le formulaire avec les données utilisateur
             function prefillFormWithUserData() {
                 document.getElementById('fullname').value = userData.fullname;
                 document.getElementById('email').value = userData.email;
                 document.getElementById('phone').value = userData.phone;
                 document.getElementById('birth-date').value = userData.birthDate;
-                
-                // Méthode de contact
                 document.querySelector(`input[name="contact-method"][value="${userData.contactMethod}"]`).checked = true;
-                
-                // Assurance
+
                 hasInsuranceCheckbox.checked = userData.hasInsurance;
                 if (userData.hasInsurance) {
                     insuranceFields.classList.remove('hidden');
@@ -980,12 +912,10 @@
                     document.getElementById('insurance-number').value = userData.insuranceNumber;
                 }
                 
-                // Contact d'urgence
                 document.getElementById('emergency-name').value = userData.emergencyContact.name;
                 document.getElementById('emergency-phone').value = userData.emergencyContact.phone;
                 document.getElementById('emergency-relation').value = userData.emergencyContact.relation;
-                
-                // Préférences médicales (étape 2)
+
                 if (userData.preferredSpecialty) {
                     document.getElementById('specialty').value = userData.preferredSpecialty;
                     updateAvailableTimes(userData.preferredSpecialty);
@@ -994,8 +924,7 @@
                 if (userData.preferredGender) {
                     document.querySelector(`input[name="doctor-gender"][value="${userData.preferredGender}"]`).checked = true;
                 }
-                
-                // Besoins d'accessibilité
+
                 if (userData.accessibility) {
                     userData.accessibility.forEach(need => {
                         document.getElementById(need).checked = true;
@@ -1003,61 +932,43 @@
                 }
             }
             
-            // Fonction pour réinitialiser le formulaire
             function resetForm() {
                 form.reset();
                 insuranceFields.classList.add('hidden');
             }
-            
-            // Fonction pour afficher l'étape spécifiée
             function showStep(step) {
-                // Masquer toutes les étapes
                 step1.classList.add('hidden');
                 step2.classList.add('hidden');
                 step3.classList.add('hidden');
-                
-                // Afficher l'étape demandée
                 if (step === 1) {
                     step1.classList.remove('hidden');
                     prevStepBtn.classList.add('hidden');
                     nextStepBtn.classList.remove('hidden');
                     submitFormBtn.classList.add('hidden');
-                    
-                    // Mettre à jour les indicateurs d'étape
                     updateStepIndicators(1);
                 } else if (step === 2) {
                     step2.classList.remove('hidden');
                     prevStepBtn.classList.remove('hidden');
                     nextStepBtn.classList.remove('hidden');
                     submitFormBtn.classList.add('hidden');
-                    
-                    // Mettre à jour les indicateurs d'étape
                     updateStepIndicators(2);
                 } else if (step === 3) {
                     step3.classList.remove('hidden');
                     prevStepBtn.classList.remove('hidden');
                     nextStepBtn.classList.add('hidden');
                     submitFormBtn.classList.remove('hidden');
-                    
-                    // Mettre à jour les indicateurs d'étape
                     updateStepIndicators(3);
                 }
-                
-                // Mettre à jour l'étape actuelle
                 currentStep = step;
             }
             
-            // Fonction pour mettre à jour les indicateurs d'étape
             function updateStepIndicators(step) {
-                // Réinitialiser tous les indicateurs
                 stepIndicator1.className = "w-8 h-8 rounded-full bg-secondary-200 text-secondary-500 flex items-center justify-center";
                 stepIndicator2.className = "w-8 h-8 rounded-full bg-secondary-200 text-secondary-500 flex items-center justify-center";
                 stepIndicator3.className = "w-8 h-8 rounded-full bg-secondary-200 text-secondary-500 flex items-center justify-center";
-                
                 stepText2.className = "text-xs mt-2 font-medium text-secondary-500";
                 stepText3.className = "text-xs mt-2 font-medium text-secondary-500";
                 
-                // Mettre à jour en fonction de l'étape actuelle
                 if (step >= 1) {
                     stepIndicator1.className = "w-8 h-8 rounded-full bg-primary-600 text-white flex items-center justify-center";
                 }
@@ -1073,7 +984,6 @@
                 }
             }
             
-            // Fonction pour valider l'étape 1
             function validateStep1() {
                 const requiredFields = step1.querySelectorAll('[required]');
                 let isValid = true;
@@ -1090,7 +1000,6 @@
                 return isValid;
             }
             
-            // Fonction pour valider l'étape 2
             function validateStep2() {
                 const requiredFields = step2.querySelectorAll('[required]');
                 let isValid = true;
@@ -1107,26 +1016,19 @@
                 return isValid;
             }
             
-            // Fonction pour mettre à jour les horaires disponibles
             function updateAvailableTimes(specialty) {
-                // Réinitialiser les horaires
                 resetTimeOptions();
                 
                 if (doctors[specialty]) {
-                    // Créer un ensemble d'horaires disponibles pour tous les médecins de cette spécialité
                     const availableTimesSet = new Set();
+                    const availableTimes = Array.from(availableTimesSet);
                     
-                    // Collecter tous les horaires disponibles pour cette spécialité
                     doctors[specialty].forEach(doctor => {
                         doctor.availability.forEach(time => {
                             availableTimesSet.add(time);
                         });
                     });
                     
-                    // Convertir l'ensemble en tableau
-                    const availableTimes = Array.from(availableTimesSet);
-                    
-                    // Parcourir toutes les options d'horaire
                     Array.from(timeSelect.options).forEach(option => {
                         if (option.value && !availableTimes.includes(option.value)) {
                             option.disabled = true;
@@ -1136,7 +1038,6 @@
                 }
             }
             
-            // Fonction pour réinitialiser les options d'horaire
             function resetTimeOptions() {
                 Array.from(timeSelect.options).forEach(option => {
                     if (option.value) {
@@ -1146,7 +1047,6 @@
                 });
             }
             
-            // Fonction pour valider le formulaire complet
             function validateForm() {
                 const requiredFields = form.querySelectorAll('[required]');
                 let isValid = true;
@@ -1163,9 +1063,7 @@
                 return isValid;
             }
             
-            // Fonction pour mettre à jour le récapitulatif
             function updateSummary() {
-                // Récupérer les valeurs du formulaire
                 const fullName = document.getElementById('fullname').value;
                 const email = document.getElementById('email').value;
                 const phone = document.getElementById('phone').value;
@@ -1174,8 +1072,6 @@
                 const selectedTime = timeSelect.value;
                 const urgency = document.getElementById('urgency').options[document.getElementById('urgency').selectedIndex].text;
                 const reason = document.getElementById('reason').value;
-                
-                // Formater la date en français
                 const formattedDate = selectedDate.toLocaleDateString('fr-FR', {
                     weekday: 'long',
                     day: 'numeric',
@@ -1183,7 +1079,6 @@
                     year: 'numeric'
                 });
                 
-                // Mettre à jour les éléments du récapitulatif
                 document.getElementById('summary-name').textContent = fullName;
                 document.getElementById('summary-email').textContent = email;
                 document.getElementById('summary-phone').textContent = phone;
@@ -1193,89 +1088,63 @@
                 document.getElementById('summary-reason').textContent = reason || "Aucun motif spécifié";
             }
             
-            // Fonction pour trouver un médecin disponible
             function findAvailableDoctor(specialty, selectedTime, genderPreference) {
-                // Vérifier si la spécialité existe
                 if (!doctors[specialty]) {
                     return null;
                 }
                 
-                // Filtrer les médecins disponibles à l'heure sélectionnée
                 let availableDoctors = doctors[specialty].filter(doctor => 
                     doctor.availability.includes(selectedTime)
                 );
                 
-                // Si une préférence de genre est spécifiée et qu'il y a des médecins disponibles de ce genre
                 if (genderPreference !== 'no-preference') {
                     const doctorsWithPreferredGender = availableDoctors.filter(doctor => 
                         doctor.gender === genderPreference
                     );
                     
-                    // Si des médecins du genre préféré sont disponibles, les utiliser
                     if (doctorsWithPreferredGender.length > 0) {
                         availableDoctors = doctorsWithPreferredGender;
                     }
                 }
                 
-                // Si aucun médecin n'est disponible, retourner null
                 if (availableDoctors.length === 0) {
                     return null;
                 }
                 
-                // Sélectionner aléatoirement un médecin parmi ceux disponibles
                 const randomIndex = Math.floor(Math.random() * availableDoctors.length);
                 return availableDoctors[randomIndex];
             }
             
-            // Fonction pour simuler la soumission du formulaire
             function simulateFormSubmission() {
-                // Récupérer les valeurs du formulaire
                 const specialty = specialtySelect.value;
                 const selectedTime = timeSelect.value;
                 const genderPreference = document.querySelector('input[name="doctor-gender"]:checked').value;
-                
-                // Trouver un médecin disponible
                 const assignedDoctor = findAvailableDoctor(specialty, selectedTime, genderPreference);
                 
                 if (!assignedDoctor) {
-                    // Afficher un message d'erreur si aucun médecin n'est disponible
                     alert("Désolé, aucun médecin n'est disponible à cette heure. Veuillez choisir un autre horaire.");
                     return;
                 }
                 
-                // Afficher un indicateur de chargement
                 const submitButton = submitFormBtn;
                 const originalButtonText = submitButton.innerHTML;
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Traitement en cours...';
                 submitButton.disabled = true;
                 
-                // Simuler un délai de traitement
                 setTimeout(() => {
-                    // Masquer le formulaire
                     form.parentElement.classList.add('hidden');
-                    
-                    // Mettre à jour le récapitulatif final
                     updateFinalSummary(assignedDoctor, specialty);
-                    
-                    // Afficher le message de succès
                     successMessage.classList.remove('hidden');
-                    
-                    // Faire défiler jusqu'au message de succès
                     successMessage.scrollIntoView({ behavior: 'smooth' });
-                    
-                    // Réinitialiser le bouton
                     submitButton.innerHTML = originalButtonText;
                     submitButton.disabled = false;
                 }, 1500);
             }
             
-            // Fonction pour mettre à jour le récapitulatif final
             function updateFinalSummary(doctor, specialty) {
                 const specialtyName = specialtySelect.options[specialtySelect.selectedIndex].text;
                 const selectedDate = new Date(dateInput.value);
                 const selectedTime = timeSelect.value;
-                
-                // Formater la date en français
                 const formattedDate = selectedDate.toLocaleDateString('fr-FR', {
                     weekday: 'long',
                     day: 'numeric',
@@ -1283,13 +1152,10 @@
                     year: 'numeric'
                 });
                 
-                // Mettre à jour les éléments du récapitulatif
                 document.getElementById('summary-doctor').textContent = `${doctor.name} (${specialtyName})`;
                 document.getElementById('summary-date').textContent = formattedDate;
                 document.getElementById('summary-time').textContent = selectedTime;
             }
-            
-            // Initialiser l'interface utilisateur
             updateUserInterface();
         });
     </script>

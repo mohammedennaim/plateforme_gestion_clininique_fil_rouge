@@ -94,19 +94,24 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(
     
     // Appointments routes
     Route::get('/appointments', [DoctorController::class, 'appointments'])->name('appointments');
-    Route::get('/appointments/{id}', [DoctorController::class, 'showAppointment'])->name('doctor.appointments.show');
+    Route::get('/appointments/create/{patient}', [DoctorController::class, 'createAppointment'])->name('appointments.create');
+    Route::get('/appointments/{id}', [DoctorController::class, 'showAppointment'])->name('appointments.show');
     Route::put('/appointments/{id}', [DoctorController::class, 'updateAppointment'])->name('appointments.update');
+    Route::get('/appointments/check/{id}', [DoctorController::class, 'checkInAppointment'])->name('appointments.check');
     Route::delete('/appointments/{id}',
-     [DoctorController::class, 'destroyAppointment'])->name('appointments.destroy');
+    [DoctorController::class, 'destroyAppointment'])->name('appointments.destroy');
+    Route::post('/appointments/{id}/cancel', [DoctorController::class, 'cancelAppointment'])->name('appointments.cancel');
     
+
+    Route::get('/patient/show/{id}', [DoctorController::class, 'showPatient'])->name('patients.show');
     // Profile routes
+
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     
     // API Routes for tasks and appointments
-    Route::post('/api/tasks/{id}/toggle', [DoctorController::class, 'toggleTask'])->name('tasks.toggle');
-    Route::post('/api/tasks', [DoctorController::class, 'storeTask'])->name('tasks.store');
-    Route::post('/api/appointments/{id}/cancel', [DoctorController::class, 'cancelAppointment'])->name('api.appointments.cancel');
+    Route::post('/tasks/{id}/toggle', [DoctorController::class, 'toggleTask'])->name('tasks.toggle');
+    Route::post('/tasks', [DoctorController::class, 'storeTask'])->name('tasks.store');
 });
 
 Route::get('/home', function () {

@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - MediClinic</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         tailwind.config = {
@@ -82,8 +79,6 @@
 
 <body class="font-sans text-secondary-800 bg-gray-50" x-data="contactPage()">
 @if (auth()->check())
-
-
         <header class="bg-white shadow-sm py-4">
             <div class="container mx-auto px-4 flex justify-between items-center">
                 <div class="flex items-center">
@@ -91,18 +86,14 @@
                     <span class="text-xl font-semibold text-primary-700">MediClinic</span>
                 </div>
                 <nav class="hidden md:flex space-x-6">
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                    <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                    <a href="{{ route('welcome') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
+                    <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                    <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('contact') }}" class="text-primary-600 font-medium">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-
-
-                    <!-- Profil utilisateur (caché par défaut) -->
                     <div id="user-profile" class="items-center">
                         <div class="relative">
                             <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
@@ -113,8 +104,6 @@
                                 <span class="text-sm font-medium text-secondary-700">{{ $user['name'] }}</span>
                                 <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
                             </button>
-
-                            <!-- Dropdown menu (caché par défaut) -->
                             <div id="profile-dropdown"
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
                                 <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
@@ -156,9 +145,7 @@
                     <a href="{{ route('contact') }}" class="text-primary-600 font-medium">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-                    <!-- Bouton de connexion/profil -->
                     <div id="auth-buttons" class="flex items-center">
                         <a href="{{ Route('login') }}" id="login-button"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
@@ -175,7 +162,6 @@
         </header>
     @endif
 
-    <!-- Bannière de la page -->
     <section class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Contactez-Nous</h1>
@@ -183,7 +169,6 @@
         </div>
     </section>
 
-    <!-- Informations de contact -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -225,7 +210,6 @@
                     </a>
                 </div>
 
-                <!-- Email -->
                 <div class="bg-gray-50 p-8 rounded-xl shadow-md text-center contact-card">
                     <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-2xl mx-auto mb-6 contact-icon">
                         <i class="fas fa-envelope"></i>
@@ -241,7 +225,6 @@
                     </a>
                 </div>
 
-                <!-- Heures d'ouverture -->
                 <div class="bg-gray-50 p-8 rounded-xl shadow-md text-center contact-card">
                     <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-2xl mx-auto mb-6 contact-icon">
                         <i class="fas fa-clock"></i>
@@ -270,7 +253,6 @@
         </div>
     </section>
 
-    <!-- Formulaire de contact et carte -->
     <section class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -282,7 +264,6 @@
             </div>
 
             <div class="grid lg:grid-cols-2 gap-12">
-                <!-- Formulaire de contact -->
                 <div class="bg-white rounded-2xl shadow-lg p-8 md:p-10">
                     <form x-data="contactForm()" @submit.prevent="submitForm">
                         <div class="grid md:grid-cols-2 gap-6 mb-6">
@@ -360,7 +341,6 @@
                             ></textarea>
                         </div>
 
-                        <!-- Message de succès -->
                         <div 
                             x-show="formSubmitted" 
                             x-transition
@@ -390,11 +370,9 @@
                     </form>
                 </div>
 
-                <!-- Carte et informations supplémentaires -->
                 <div>
                     <div class="bg-white rounded-2xl shadow-lg p-8">
                         <h3 class="text-2xl font-bold mb-6">Informations supplémentaires</h3>
-                        
                         <div class="space-y-6">
                             <div>
                                 <h4 class="font-bold text-lg mb-2">Transport</h4>
@@ -463,7 +441,6 @@
         </div>
     </section>
 
-    <!-- FAQ Section -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -476,7 +453,6 @@
 
             <div class="max-w-4xl mx-auto" x-data="{activeTab: 0}">
                 <div class="space-y-4">
-                    <!-- Question 1 -->
                     <div class="border border-gray-200 rounded-lg overflow-hidden">
                         <button 
                             @click="activeTab = activeTab === 0 ? null : 0" 
@@ -502,7 +478,6 @@
                         </div>
                     </div>
 
-                    <!-- Question 2 -->
                     <div class="border border-gray-200 rounded-lg overflow-hidden">
                         <button 
                             @click="activeTab = activeTab === 1 ? null : 1" 
@@ -528,7 +503,6 @@
                         </div>
                     </div>
 
-                    <!-- Question 3 -->
                     <div class="border border-gray-200 rounded-lg overflow-hidden">
                         <button 
                             @click="activeTab = activeTab === 2 ? null : 2" 
@@ -553,7 +527,6 @@
                         </div>
                     </div>
 
-                    <!-- Question 4 -->
                     <div class="border border-gray-200 rounded-lg overflow-hidden">
                         <button 
                             @click="activeTab = activeTab === 3 ? null : 3" 
@@ -576,7 +549,6 @@
                         </div>
                     </div>
 
-                    <!-- Question 5 -->
                     <div class="border border-gray-200 rounded-lg overflow-hidden">
                         <button 
                             @click="activeTab = activeTab === 4 ? null : 4" 
@@ -610,7 +582,6 @@
         </div>
     </section>
 
-    <!-- Newsletter Section -->
     <section class="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
         <div class="container mx-auto px-4">
             <div class="max-w-3xl mx-auto text-center">
@@ -639,7 +610,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-secondary-900 text-secondary-400 py-16">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -714,12 +684,10 @@
         </div>
     </footer>
 
-    <!-- Bouton Retour en Haut -->
     <a href="#" id="back-to-top" class="fixed bottom-6 right-6 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-primary-700">
         <i class="fas fa-arrow-up"></i>
     </a>
 
-    <!-- Script JavaScript -->
     <script>
             const profileDropdownButton = document.getElementById('profile-dropdown-button');
             const profileDropdown = document.getElementById('profile-dropdown');
@@ -733,7 +701,6 @@
                     profileDropdown.classList.add('hidden');
                 }
             });
-        // Gestion du menu mobile
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
 
@@ -741,7 +708,6 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        // Gestion du bouton retour en haut
         const backToTopButton = document.getElementById('back-to-top');
 
         window.addEventListener('scroll', () => {
@@ -759,7 +725,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Alpine.js - Logique du formulaire de contact
         function contactForm() {
             return {
                 formData: {
@@ -776,12 +741,9 @@
                 submitForm() {
                     this.formSubmitting = true;
                     
-                    // Simuler un envoi de formulaire (remplacer par un vrai envoi en production)
                     setTimeout(() => {
                         this.formSubmitting = false;
                         this.formSubmitted = true;
-                        
-                        // Réinitialiser le formulaire
                         this.formData = {
                             firstName: '',
                             lastName: '',
@@ -792,7 +754,6 @@
                             consent: false
                         };
                         
-                        // Faire défiler jusqu'au message de succès
                         setTimeout(() => {
                             window.scrollBy({
                                 top: 100,
@@ -801,13 +762,6 @@
                         }, 100);
                     }, 1500);
                 }
-            };
-        }
-
-        // Alpine.js - Logique de la page de contact
-        function contactPage() {
-            return {
-                // Vous pouvez ajouter d'autres fonctionnalités ici si nécessaire
             };
         }
     </script>

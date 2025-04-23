@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediClinic - Healthcare Excellence</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -95,7 +93,6 @@
             color: white;
         }
 
-        /* Enhanced Hero Section Styling */
         .hero-section {
             background: linear-gradient(135deg, rgba(30, 136, 229, 0.95) 0%, rgba(21, 101, 192, 0.95) 100%),
                 url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3') no-repeat center center;
@@ -110,7 +107,6 @@
             min-height: 75vh;
         }
 
-        /* Text highlight effect */
         .text-highlight {
             position: relative;
             z-index: 1;
@@ -128,7 +124,6 @@
             transform: rotate(-1deg);
         }
 
-        /* Hero badge */
         .hero-badge {
             background-color: rgba(255, 255, 255, 0.2);
             padding: 8px 16px;
@@ -137,7 +132,6 @@
             font-size: 0.9rem;
         }
 
-        /* Hero stats */
         .hero-stats {
             margin-top: 2rem;
         }
@@ -161,7 +155,6 @@
             opacity: 0.9;
         }
 
-        /* Hero image styling */
         .hero-image-container {
             position: relative;
         }
@@ -172,7 +165,6 @@
             transition: all 0.5s ease;
         }
 
-        /* Floating badge */
         .hero-floating-badge {
             position: absolute;
             bottom: -20px;
@@ -208,7 +200,6 @@
             color: var(--primary);
         }
 
-        /* Animated background elements */
         .hero-bg-elements {
             position: absolute;
             width: 100%;
@@ -258,7 +249,6 @@
             }
         }
 
-        /* Add animations - include animate.css or use these basic ones */
         .animate__animated {
             animation-duration: 1s;
         }
@@ -596,7 +586,6 @@
             margin-right: 0.35rem;
         }
 
-        /* Availability indicator */
         .availability {
             position: absolute;
             top: 1rem;
@@ -621,7 +610,6 @@
             vertical-align: middle;
         }
 
-        /* View all doctors button styling */
         .btn-primary-custom {
             background-color: #135cae;
             color: white;
@@ -639,7 +627,6 @@
             box-shadow: 0 6px 20px rgba(19, 92, 174, 0.3);
         }
 
-        /* Facility Cards Styling */
         .facility-card {
             transition: all 0.3s ease;
             border-radius: 12px;
@@ -693,8 +680,6 @@
 <body>
 
     @if (auth()->check())
-
-
         <header class="bg-white shadow-sm py-4">
             <div class="container mx-auto px-4 flex justify-between items-center">
                 <div class="flex items-center">
@@ -702,18 +687,14 @@
                     <span class="text-xl font-semibold text-primary-700">MediClinic</span>
                 </div>
                 <nav class="hidden md:flex space-x-6">
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                    <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                    <a href="{{ route('welcome') }}" class="text-primary-600 font-medium">Accueil</a>
+                    <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                    <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-
-
-                    <!-- Profil utilisateur (caché par défaut) -->
                     <div id="user-profile" class="items-center">
                         <div class="relative">
                             <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
@@ -725,7 +706,6 @@
                                 <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
                             </button>
 
-                            <!-- Dropdown menu (caché par défaut) -->
                             <div id="profile-dropdown"
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
                                 <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
@@ -767,11 +747,7 @@
                     <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-
-
-                    <!-- Bouton de connexion/profil -->
                     <div id="auth-buttons" class="flex items-center">
                         <a href="{{ Route('login') }}" id="login-button"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
@@ -779,13 +755,7 @@
                         <a href="{{ Route('logout') }}"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
                     </div>
-
-                    
                 </div>
-
-                <button class="md:hidden text-secondary-600 focus:outline-none">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
             </div>
         </header>
     @endif

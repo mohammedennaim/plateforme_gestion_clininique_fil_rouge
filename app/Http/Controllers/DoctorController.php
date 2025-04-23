@@ -28,13 +28,10 @@ class DoctorController extends Controller
         $doctor = auth()->user();
         $doctorId = $doctor->doctor->id;
         $details = $this->doctorService->getDoctorDetails($doctorId);
-        
-        // Correction pour récupérer les rendez-vous par docteur correctement
-        $todayAppointments = $this->appointmentService->getTodayAppointments($doctor->id) ?? collect([]);
-        $appointments = $this->appointmentService->getByDoctorId($doctor->id) ?? collect([]);
-        
-        // Correction pour récupérer les patients uniques du docteur
-        $patients = collect();
+        $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId);
+        $appointments = $this->appointmentService->getByDoctorId($doctorId);
+        $patients = $this->appointmentService->getByDoctorId($doctorId) ;
+        // dd($todayAppointments[0]->date->format('d/m/Y'));
         foreach($appointments as $appointment) {
             if ($appointment->patient && !$patients->contains('id', $appointment->patient->id)) {
                 $patients->push($appointment->patient);
@@ -48,14 +45,13 @@ class DoctorController extends Controller
         }
         
         $monthlyRevenue = $revenue;
-        $patientSatisfactionRate = 95; // Default value if not available
+        $patientSatisfactionRate = 95;
         $satisfactionIncreasePercent = 5;
         $reviewCount = 120;
         $nextAppointment = $todayAppointments->first();
         $nextAppointmentCountdown = "2h 30m";
         $currentDateTime = now()->format('l, d F Y | H:i');
         
-        // Correction des dates pour éviter d'altérer l'objet now() original
         $now = now();
         $currentMonth = $now->format('F');
         $currentYear = $now->format('Y');
@@ -63,12 +59,8 @@ class DoctorController extends Controller
         $prevYear = $now->copy()->subMonth()->format('Y');
         $nextMonth = $now->copy()->addMonth()->format('m');
         $nextYear = $now->copy()->addMonth()->format('Y');
-        
-        // Calendar days for the mini calendar
         $calendarDays = $this->generateCalendarDays();
-        $tomorrowAppointmentsCount = 3; // Example value
         
-        // Reste du code inchangé
         $visitsChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         $visitsChartData = [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95];
         $revenueChartLabels = ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'];
@@ -78,7 +70,6 @@ class DoctorController extends Controller
         $totalRevenue = $revenue ?? 5000;
         $revenueIncreasePercent = 8;
         
-        // KPIs
         $averageWaitTime = 15;
         $waitTimeImprovement = 20;
         $averageConsultationTime = 25;
@@ -88,15 +79,13 @@ class DoctorController extends Controller
         $onlineBookingRate = 68;
         $onlineBookingImprovement = 15;
         
-        // dd($speciality);
-        // Additional information
+   
         $weather = (object) ['temperature' => 22, 'city' => 'Casablanca'];
         $urgentLabResultsCount = 3;
         $unreadMessagesCount = 5;
         $newPatientsThisMonth = 12;
         $appointmentIncreasePercent = 8;
         
-        // Tasks and Activity
         $tasks = collect([
             (object) ['id' => 1, 'description' => 'Réviser les rapports de laboratoire', 'completed' => false, 'priority_label' => 'Urgent', 'priority_color' => 'red-600', 'priority_icon' => 'exclamation-circle', 'due_label' => "Aujourd'hui"],
             (object) ['id' => 2, 'description' => 'Appeler les patients de suivi', 'completed' => false, 'priority_label' => 'Moyen', 'priority_color' => 'amber-600', 'priority_icon' => 'clock', 'due_label' => "Demain"]
@@ -113,7 +102,6 @@ class DoctorController extends Controller
             (object) ['id' => 2, 'sender' => (object) ['name' => 'Administration', 'avatar_url' => null], 'preview' => 'Planning de la semaine prochaine disponible', 'time' => 'Hier', 'unread_count' => 0]
         ]);
         
-        // Patient statistics
         $activePatientCount = $patients->count();
         $activePatientPercent = 85;
         $patientsThisWeek = 24;
@@ -126,7 +114,7 @@ class DoctorController extends Controller
             'monthlyRevenue', 'patientSatisfactionRate', 'satisfactionIncreasePercent', 'reviewCount',
             'nextAppointment', 'nextAppointmentCountdown', 'currentDateTime',
             'currentMonth', 'currentYear', 'prevMonth', 'prevYear', 'nextMonth', 'nextYear',
-            'calendarDays', 'tomorrowAppointmentsCount', 
+            'calendarDays', 
             'visitsChartLabels', 'visitsChartData', 'revenueChartLabels', 'revenueChartData',
             'totalVisitsThisMonth', 'visitsIncreasePercent', 'totalRevenue', 'revenueIncreasePercent',
             'averageWaitTime', 'waitTimeImprovement', 'averageConsultationTime', 'consultationTimeVariance',
@@ -265,7 +253,7 @@ class DoctorController extends Controller
                 return redirect()->back()->with('error', 'Rendez-vous introuvable.');
             }
             
-            return view('doctor.appointments.check-in', compact('appointment'));
+            return view('doctor.appointments.check', compact('appointment'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erreur lors du chargement du check-in: ' . $e->getMessage());
         }

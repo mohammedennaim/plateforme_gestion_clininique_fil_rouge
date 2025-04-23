@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nos Médecins - MediClinic</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         tailwind.config = {
@@ -76,8 +73,6 @@
 <body class="font-sans text-secondary-800 bg-gray-50" x-data="doctorsPage()">
 
 @if (auth()->check())
-
-
         <header class="bg-white shadow-sm py-4">
             <div class="container mx-auto px-4 flex justify-between items-center">
                 <div class="flex items-center">
@@ -85,18 +80,14 @@
                     <span class="text-xl font-semibold text-primary-700">MediClinic</span>
                 </div>
                 <nav class="hidden md:flex space-x-6">
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                    <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
-                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                    <a href="{{ route('welcome') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
+                    <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                    <a href="{{ route('doctors') }}" class="text-primary-600 font-medium">Médecins</a>
+                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-
-
-                    <!-- Profil utilisateur (caché par défaut) -->
                     <div id="user-profile" class="items-center">
                         <div class="relative">
                             <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
@@ -107,8 +98,6 @@
                                 <span class="text-sm font-medium text-secondary-700">{{ $user['name'] }}</span>
                                 <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
                             </button>
-
-                            <!-- Dropdown menu (caché par défaut) -->
                             <div id="profile-dropdown"
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
                                 <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
@@ -150,9 +139,7 @@
                     <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
                 </nav>
 
-                <!-- User Authentication Section -->
                 <div class="flex items-center space-x-4">
-                    <!-- Bouton de connexion/profil -->
                     <div id="auth-buttons" class="flex items-center">
                         <a href="{{ Route('login') }}" id="login-button"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
@@ -165,7 +152,6 @@
         </header>
     @endif
 
-    <!-- Bannière de la page -->
     <section class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Nos Médecins Spécialistes</h1>
@@ -173,7 +159,6 @@
         </div>
     </section>
 
-    <!-- Section de recherche et filtrage -->
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto">
@@ -222,10 +207,8 @@
         </div>
     </section>
 
-    <!-- Liste des médecins -->
     <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
-            <!-- Résultats de recherche -->
             <div class="mb-8">
                 <h2 class="text-2xl font-bold mb-2">Résultats</h2>
                 <p class="text-secondary-600">
@@ -234,8 +217,6 @@
                     <span x-show="searchTerm !== ''">correspondant à "<span class="font-semibold" x-text="searchTerm"></span>"</span>
                 </p>
             </div>
-
-            <!-- Message si aucun résultat -->
             <div x-show="filteredDoctors.length === 0" class="text-center py-12">
                 <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
                     <i class="fas fa-user-md text-3xl"></i>
@@ -250,7 +231,6 @@
                 </button>
             </div>
 
-            <!-- Grille des médecins -->
             <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" x-show="filteredDoctors.length > 0">
                 <template x-for="doctor in filteredDoctors" :key="doctor.id">
                     <div class="bg-white rounded-xl overflow-hidden shadow-md doctor-card h-full relative">
@@ -300,7 +280,6 @@
                 </template>
             </div>
 
-            <!-- Pagination (optionnelle) -->
             <div class="mt-12 flex justify-center" x-show="filteredDoctors.length > 0">
                 <nav class="flex items-center space-x-2">
                     <button class="w-10 h-10 rounded-full bg-white border border-gray-300 flex items-center justify-center text-secondary-600 hover:bg-gray-50 transition-colors">
@@ -317,7 +296,6 @@
         </div>
     </section>
 
-    <!-- Pourquoi choisir nos médecins -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -371,8 +349,7 @@
             </div>
         </div>
     </section>
-
-    <!-- CTA Section -->
+    
     <section class="py-16 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl font-bold mb-6">Prêt à rencontrer nos spécialistes ?</h2>
@@ -390,7 +367,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-secondary-900 text-secondary-400 py-16">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -673,9 +649,7 @@
                 specialties: [],
 
                 init() {
-                    // Extraire les spécialités uniques
                     this.specialties = [...new Set(this.doctors.map(doctor => doctor.specialty))];
-                    // Initialiser les médecins filtrés
                     this.filteredDoctors = [...this.doctors];
                 },
 
