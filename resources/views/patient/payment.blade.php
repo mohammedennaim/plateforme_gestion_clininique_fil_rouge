@@ -321,7 +321,7 @@
             </div>
             
             <div class="text-center space-y-3">
-                <a href="#" id="view-appointment" class="block w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <a href="{{ route('appointment.details', $appointmentId ) }}" id="view-appointment" class="block w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Voir mon rendez-vous
                 </a>
                 <a href="#" class="block w-full px-4 py-2 border border-secondary-300 text-sm font-medium rounded-md text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
@@ -331,7 +331,6 @@
         </div>
     </div>
     
-    <!-- Modal d'erreur de paiement (Hidden by default) -->
     <div id="payment-error-modal" class="fixed inset-0 bg-secondary-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-xl p-8 max-w-md w-full animate-fadeIn">
             <div class="text-center mb-4">

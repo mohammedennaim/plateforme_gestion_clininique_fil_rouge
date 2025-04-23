@@ -8,7 +8,6 @@ use App\Models\Patient;
 use App\Models\Speciality;
 use App\Models\User;
 use Illuminate\Http\Request;
-use PhpParser\Comment\Doc;
 
 class RendezVousController extends Controller
 {

@@ -127,6 +127,7 @@ Route::prefix('patient')->group(function () {
 // Routes de paiement accessibles directement à la racine
 Route::prefix('payment')->group(function () {
     Route::get('/{patient}', [StripePaymentController::class, 'showPaymentPage'])->name('patient.payment');
+    Route::get('/appointment/{appointment_id}', [StripePaymentController::class, 'showAppointmentDetails'])->name('payment.appointment-details');
     Route::post('/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
     Route::post('/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
     Route::post('/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
