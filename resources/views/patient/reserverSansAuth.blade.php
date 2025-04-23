@@ -126,11 +126,11 @@
                 <span class="text-xl font-semibold text-primary-700">MediClinic</span>
             </div>
             <nav class="hidden md:flex space-x-6">
-                <a href="/" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                <a href="{{ route('welcome') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
+                <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                <a href="{{ route('patient.reserver.store') }}" class="text-primary-600 font-medium">Rendez-vous</a>
+                <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
             </nav>
             
             <!-- User Authentication Section -->
@@ -142,36 +142,6 @@
                     <a href="{{ Route('login') }}" id="login-button" class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
                     <span class="mx-2 text-secondary-300">|</span>
                     <a href="{{ Route('logout') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
-                </div>
-                
-                <!-- Profil utilisateur (caché par défaut) -->
-                <div id="user-profile" class="hidden items-center">
-                    <div class="relative">
-                        <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
-                            <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
-                                <i class="fas fa-user-circle"></i>
-                            </div>
-                            <span class="text-sm font-medium text-secondary-700">Marie Dupont</span>
-                            <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
-                        </button>
-                        
-                        <!-- Dropdown menu (caché par défaut) -->
-                        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-user mr-2 text-secondary-400"></i>Mon profil
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-calendar-check mr-2 text-secondary-400"></i>Mes rendez-vous
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-cog mr-2 text-secondary-400"></i>Paramètres
-                            </a>
-                            <div class="border-t border-secondary-200 my-1"></div>
-                            <a href="#" id="logout-button" class="block px-4 py-2 text-sm text-red-600 hover:bg-secondary-50">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
-                            </a>
-                        </div>
-                    </div>
                 </div>
             </div>
             

@@ -189,14 +189,12 @@
                     <!-- Formulaire de paiement -->
                     <form id="payment-form" action="{{ route('payment.process') }}" method="POST" class="space-y-4">
                         @csrf
-                        
-                        <!-- Informations du client -->
+
                         <div>
                             <label for="cardholder-name" class="block text-sm font-medium text-secondary-700 mb-1">Nom du titulaire <span class="text-red-500">*</span></label>
                             <input type="text" id="cardholder-name" name="cardholder_name" class="block w-full px-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Nom complet" required>
                         </div>
-                        
-                        <!-- Informations de facturation -->
+                     
                         <div>
                             <label for="billing-address" class="block text-sm font-medium text-secondary-700 mb-1">Adresse <span class="text-red-500">*</span></label>
                             <input type="text" id="billing-address" name="billing_address" class="block w-full px-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Numéro et rue" required>
@@ -225,11 +223,10 @@
                             </select>
                         </div>
                         
-                        <!-- Élément Stripe pour la carte -->
                         <div>
                             <label for="card-element" class="block text-sm font-medium text-secondary-700 mb-1">Carte de crédit <span class="text-red-500">*</span></label>
                             <div id="card-element" class="p-3 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                                <!-- Stripe Card Element will be inserted here -->
+                                
                             </div>
                             <div id="card-errors" class="text-red-500 text-sm mt-1" role="alert"></div>
                         </div>
@@ -324,7 +321,7 @@
                 <a href="{{ route('appointment.details', $appointmentId ) }}" id="view-appointment" class="block w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Voir mon rendez-vous
                 </a>
-                <a href="#" class="block w-full px-4 py-2 border border-secondary-300 text-sm font-medium rounded-md text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <a href="{{ route('welcome') }}" class="block w-full px-4 py-2 border border-secondary-300 text-sm font-medium rounded-md text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Retour à l'accueil
                 </a>
             </div>

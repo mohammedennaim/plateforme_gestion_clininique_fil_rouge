@@ -640,123 +640,158 @@
         }
 
         /* Facility Cards Styling */
-.facility-card {
-    transition: all 0.3s ease;
-    border-radius: 12px;
-    overflow: hidden;
-}
+        .facility-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
 
-.facility-card:hover {
-    transform: translateY(-10px);
-}
+        .facility-card:hover {
+            transform: translateY(-10px);
+        }
 
-.facility-img {
-    height: 220px;
-    object-fit: cover;
-    width: 100%;
-}
+        .facility-img {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+        }
 
-.facility-overlay {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 2;
-}
+        .facility-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 2;
+        }
 
-.facility-icon {
-    width: 50px;
-    height: 50px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    font-size: 1.25rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
+        .facility-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.25rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
-.facility-card:hover .facility-icon {
-    background-color: var(--primary);
-    color: white;
-    transform: rotateY(180deg);
-}
+        .facility-card:hover .facility-icon {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+        }
 
-.badge.bg-primary-custom {
-    background-color: rgba(30, 136, 229, 0.1);
-    color: var(--primary);
-}
+        .badge.bg-primary-custom {
+            background-color: rgba(30, 136, 229, 0.1);
+            color: var(--primary);
+        }
     </style>
 </head>
 
 <body>
-    <!-- Navigation -->
-    <header class="bg-white shadow-sm py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <i class="fas fa-hospital text-primary-600 text-2xl mr-2"></i>
-                <span class="text-xl font-semibold text-primary-700">MediClinic</span>
-            </div>
-            <nav class="hidden md:flex space-x-6">
-                <a href="/" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                <a href="{{ Route('patient.reserver.store') }}" class="text-primary-600 font-medium">Rendez-vous</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
-            </nav>
-            
-            <!-- User Authentication Section -->
-            <div class="flex items-center space-x-4">
 
-                
-                <!-- Bouton de connexion/profil -->
-                <div id="auth-buttons" class="flex items-center">
-                    <a href="{{ Route('login') }}" id="login-button" class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
-                    <span class="mx-2 text-secondary-300">|</span>
-                    <a href="{{ Route('logout') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
+    @if (auth()->check())
+
+
+        <header class="bg-white shadow-sm py-4">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-hospital text-primary-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-semibold text-primary-700">MediClinic</span>
                 </div>
-                
-                <!-- Profil utilisateur (caché par défaut) -->
-                <div id="user-profile" class="hidden items-center">
-                    <div class="relative">
-                        <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
-                            <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
-                                <i class="fas fa-user-circle"></i>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
+                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                    <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
+                    <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                </nav>
+
+                <!-- User Authentication Section -->
+                <div class="flex items-center space-x-4">
+
+
+                    <!-- Profil utilisateur (caché par défaut) -->
+                    <div id="user-profile" class="items-center">
+                        <div class="relative">
+                            <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <span class="text-sm font-medium text-secondary-700">{{ $user['name'] }}</span>
+                                <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
+                            </button>
+
+                            <!-- Dropdown menu (caché par défaut) -->
+                            <div id="profile-dropdown"
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user mr-2 text-secondary-400"></i>Mon profil
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-calendar-check mr-2 text-secondary-400"></i>Mes rendez-vous
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2 text-secondary-400"></i>Paramètres
+                                </a>
+                                <div class="border-t border-secondary-200 my-1"></div>
+
+                                <form action="{{ route('logout') }}" method="POST" class="w-full">
+                                    @csrf
+                                    <button type="submit" id="logout-button"
+                                        class="block px-4 py-2 text-sm text-red-600 hover:bg-secondary-50 w-full">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                                    </button>
+                                </form>
                             </div>
-                            <span class="text-sm font-medium text-secondary-700">Marie Dupont</span>
-                            <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
-                        </button>
-                        
-                        <!-- Dropdown menu (caché par défaut) -->
-                        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-user mr-2 text-secondary-400"></i>Mon profil
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-calendar-check mr-2 text-secondary-400"></i>Mes rendez-vous
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
-                                <i class="fas fa-cog mr-2 text-secondary-400"></i>Paramètres
-                            </a>
-                            <div class="border-t border-secondary-200 my-1"></div>
-                            <a href="#" id="logout-button" class="block px-4 py-2 text-sm text-red-600 hover:bg-secondary-50">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
-                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <button class="md:hidden text-secondary-600 focus:outline-none">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-        </div>
-    </header>
+        </header>
+    @else
+        <header class="bg-white shadow-sm py-4">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-hospital text-primary-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-semibold text-primary-700">MediClinic</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{{ route('welcome') }}" class="text-primary-600 font-medium">Accueil</a>
+                    <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                    <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                </nav>
 
-    <!-- Hero Section -->
+                <!-- User Authentication Section -->
+                <div class="flex items-center space-x-4">
+
+
+                    <!-- Bouton de connexion/profil -->
+                    <div id="auth-buttons" class="flex items-center">
+                        <a href="{{ Route('login') }}" id="login-button"
+                            class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
+                        <span class="mx-2 text-secondary-300">|</span>
+                        <a href="{{ Route('logout') }}"
+                            class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
+                    </div>
+
+                    
+                </div>
+
+                <button class="md:hidden text-secondary-600 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </header>
+    @endif
+
+
     <section class="hero-section position-relative">
-        <!-- Animated Background Elements -->
         <div class="hero-bg-elements">
             <div class="bg-element bg-element-1"></div>
             <div class="bg-element bg-element-2"></div>
@@ -784,7 +819,6 @@
                         </a>
                     </div>
 
-                    <!-- Quick Stats -->
                     <div
                         class="row hero-stats g-3 mt-2 d-none d-md-flex animate__animated animate__fadeInUp animate__delay-3s">
                         <div class="col-auto">
@@ -828,7 +862,6 @@
         </div>
     </section>
 
-    <!-- Features Section -->
     <section class="py-5">
         <div class="container">
             <div class="row g-4">
@@ -865,7 +898,6 @@
         </div>
     </section>
 
-    <!-- About Section -->
     <section class="py-5 bg-light" id="about">
         <div class="container">
             <div class="row align-items-center gap-5">
@@ -907,7 +939,6 @@
         </div>
     </section>
 
-    <!-- Services Section -->
     <section class="py-5" id="services">
         <div class="container">
             <div class="text-center mb-5">
@@ -956,7 +987,6 @@
         </div>
     </section>
 
-    <!-- Doctors Section -->
     <section class="py-5 bg-light" id="doctors">
         <div class="container">
             <div class="text-center mb-5">
@@ -964,7 +994,6 @@
                 <p class="text-muted">Experienced healthcare professionals committed to your wellbeing</p>
             </div>
             <div class="row g-4">
-                <!-- Doctor 1 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="card border-0 shadow-sm h-100 doctor-card">
                         <div class="position-relative">
@@ -998,7 +1027,6 @@
                     </div>
                 </div>
 
-                <!-- Doctor 2 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="card border-0 shadow-sm h-100 doctor-card">
                         <div class="position-relative">
@@ -1032,7 +1060,6 @@
                     </div>
                 </div>
 
-                <!-- Doctor 3 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="card border-0 shadow-sm h-100 doctor-card">
                         <div class="position-relative">
@@ -1067,7 +1094,6 @@
                     </div>
                 </div>
 
-                <!-- Doctor 4 -->
                 <div class="col-lg-3 col-md-6">
                     <div class="card border-0 shadow-sm h-100 doctor-card">
                         <div class="position-relative">
@@ -1108,192 +1134,216 @@
         </div>
     </section>
 
-<!-- Advanced Healthcare Technology Section -->
-<section class="py-5 bg-light" id="features">
-    <div class="container">
-        <div class="text-center mb-5">
-            <span class="badge bg-primary-custom px-3 py-2 rounded-pill mb-3">Medical Innovation</span>
-            <h2 class="fw-bold">Advanced Healthcare Solutions</h2>
-            <p class="text-muted col-lg-8 mx-auto">Our state-of-the-art technologies and specialized medical equipment enable precise diagnosis and effective treatment for optimal patient outcomes.</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-6">
-                <div class="border-0 rounded-4 overflow-hidden position-relative">
-                    <img src="https://images.unsplash.com/photo-1612886649688-ef2912f17921?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="img-fluid w-100 rounded-4" alt="Medical Technology" style="height: 500px; object-fit: cover;">
-                    <div class="position-absolute" style="top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%);"></div>
-                    <div class="position-absolute bottom-0 p-4 text-white">
-                        <h3 class="fw-bold">Diagnostic Excellence</h3>
-                        <p class="mb-0">Advanced imaging and laboratory services for accurate diagnosis</p>
-                    </div>
-                </div>
+    <section class="py-5 bg-light" id="features">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary-custom px-3 py-2 rounded-pill mb-3">Medical Innovation</span>
+                <h2 class="fw-bold">Advanced Healthcare Solutions</h2>
+                <p class="text-muted col-lg-8 mx-auto">Our state-of-the-art technologies and specialized medical
+                    equipment enable precise diagnosis and effective treatment for optimal patient outcomes.</p>
             </div>
-            
-            <div class="col-lg-6">
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body p-4">
-                                <div class="feature-icon mb-3">
-                                    <i class="fas fa-xray"></i>
-                                </div>
-                                <h5 class="fw-bold">3D Imaging</h5>
-                                <p class="text-muted mb-0">High-precision imaging technology for detailed visualization and diagnosis</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body p-4">
-                                <div class="feature-icon mb-3">
-                                    <i class="fas fa-microscope"></i>
-                                </div>
-                                <h5 class="fw-bold">Laboratory Services</h5>
-                                <p class="text-muted mb-0">Comprehensive testing with rapid results for informed treatment decisions</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body p-4">
-                                <div class="feature-icon mb-3">
-                                    <i class="fas fa-heartbeat"></i>
-                                </div>
-                                <h5 class="fw-bold">Cardiac Monitoring</h5>
-                                <p class="text-muted mb-0">Real-time heart monitoring with AI-assisted analysis</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm h-100 feature-card">
-                            <div class="card-body p-4">
-                                <div class="feature-icon mb-3">
-                                    <i class="fas fa-brain"></i>
-                                </div>
-                                <h5 class="fw-bold">Neurological Assessment</h5>
-                                <p class="text-muted mb-0">Advanced tools for comprehensive brain and nervous system evaluation</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="mt-5">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-0">
-                    <div class="row g-0 align-items-center p-5">
-                        <div class="col-lg-6">
-                            <div class="p-3">
-                                <h3 class="fw-bold mb-4">Patient-Centered Technology</h3>
-                                <p class="mb-4">Our investment in cutting-edge medical technology is guided by one principle: improving patient outcomes and experiences.</p>
-                                
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="feature-icon bg-white me-3" style="width: 50px; height: 50px;">
-                                                <i class="fas fa-robot text-primary"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="fw-bold mb-0">Robotic Surgery</h5>
-                                                <p class="small text-muted mb-0">Precision surgery with minimal recovery time</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-6">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="feature-icon bg-white me-3" style="width: 50px; height: 50px;">
-                                                <i class="fas fa-mobile-alt text-primary"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="fw-bold mb-0">Digital Care</h5>
-                                                <p class="small text-muted mb-0">Remote monitoring and telemedicine options</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-6">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="feature-icon bg-white me-3" style="width: 50px; height: 50px;">
-                                                <i class="fas fa-database text-primary"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="fw-bold mb-0">Health Records</h5>
-                                                <p class="small text-muted mb-0">Secure digital health information access</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-6">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="feature-icon bg-white me-3" style="width: 50px; height: 50px;">
-                                                <i class="fas fa-chart-line text-primary"></i>
-                                            </div>
-                                            <div>
-                                                <h5 class="fw-bold mb-0">Analytics</h5>
-                                                <p class="small text-muted mb-0">Data-driven personalized treatment plans</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <a href="#technology" class="btn btn-primary-custom mt-4">Discover Our Technology</a>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 p-0">
-                            <div class="ratio ratio-16x9 h-100" style="min-height: 400px;">
-                            <iframe class="rounded-4" width="1519" height="566" src="https://www.youtube.com/embed/P5PqnkN9bLU" title="تصوير عيادة دازل لطب الأسنان - DAZZLE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="row mt-5 g-4">
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-4">
-                            <span class="display-4 text-primary fw-bold me-2">98%</span>
-                            <p class="mb-0 fw-bold">Diagnostic Accuracy</p>
-                        </div>
-                        <p class="text-muted">Our advanced diagnostic equipment achieves exceptional accuracy rates, ensuring precise treatment planning.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-4">
-                            <span class="display-4 text-primary fw-bold me-2">45%</span>
-                            <p class="mb-0 fw-bold">Faster Recovery</p>
-                        </div>
-                        <p class="text-muted">Patients treated with our minimally invasive technologies experience significantly quicker recovery times.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-4">
-                            <span class="display-4 text-primary fw-bold me-2">24/7</span>
-                            <p class="mb-0 fw-bold">Technology Support</p>
-                        </div>
-                        <p class="text-muted">Our technical teams ensure all medical equipment operates flawlessly around the clock for uninterrupted care.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-    <!-- Appointment Section -->
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="border-0 rounded-4 overflow-hidden position-relative">
+                        <img src="https://images.unsplash.com/photo-1612886649688-ef2912f17921?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            class="img-fluid w-100 rounded-4" alt="Medical Technology"
+                            style="height: 500px; object-fit: cover;">
+                        <div class="position-absolute"
+                            style="top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%);">
+                        </div>
+                        <div class="position-absolute bottom-0 p-4 text-white">
+                            <h3 class="fw-bold">Diagnostic Excellence</h3>
+                            <p class="mb-0">Advanced imaging and laboratory services for accurate diagnosis</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100 feature-card">
+                                <div class="card-body p-4">
+                                    <div class="feature-icon mb-3">
+                                        <i class="fas fa-xray"></i>
+                                    </div>
+                                    <h5 class="fw-bold">3D Imaging</h5>
+                                    <p class="text-muted mb-0">High-precision imaging technology for detailed
+                                        visualization and diagnosis</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100 feature-card">
+                                <div class="card-body p-4">
+                                    <div class="feature-icon mb-3">
+                                        <i class="fas fa-microscope"></i>
+                                    </div>
+                                    <h5 class="fw-bold">Laboratory Services</h5>
+                                    <p class="text-muted mb-0">Comprehensive testing with rapid results for informed
+                                        treatment decisions</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100 feature-card">
+                                <div class="card-body p-4">
+                                    <div class="feature-icon mb-3">
+                                        <i class="fas fa-heartbeat"></i>
+                                    </div>
+                                    <h5 class="fw-bold">Cardiac Monitoring</h5>
+                                    <p class="text-muted mb-0">Real-time heart monitoring with AI-assisted analysis</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm h-100 feature-card">
+                                <div class="card-body p-4">
+                                    <div class="feature-icon mb-3">
+                                        <i class="fas fa-brain"></i>
+                                    </div>
+                                    <h5 class="fw-bold">Neurological Assessment</h5>
+                                    <p class="text-muted mb-0">Advanced tools for comprehensive brain and nervous system
+                                        evaluation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="row g-0 align-items-center p-5">
+                            <div class="col-lg-6">
+                                <div class="p-3">
+                                    <h3 class="fw-bold mb-4">Patient-Centered Technology</h3>
+                                    <p class="mb-4">Our investment in cutting-edge medical technology is guided by one
+                                        principle: improving patient outcomes and experiences.</p>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="feature-icon bg-white me-3"
+                                                    style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-robot text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h5 class="fw-bold mb-0">Robotic Surgery</h5>
+                                                    <p class="small text-muted mb-0">Precision surgery with minimal
+                                                        recovery time</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="feature-icon bg-white me-3"
+                                                    style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-mobile-alt text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h5 class="fw-bold mb-0">Digital Care</h5>
+                                                    <p class="small text-muted mb-0">Remote monitoring and telemedicine
+                                                        options</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="feature-icon bg-white me-3"
+                                                    style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-database text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h5 class="fw-bold mb-0">Health Records</h5>
+                                                    <p class="small text-muted mb-0">Secure digital health information
+                                                        access</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="feature-icon bg-white me-3"
+                                                    style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-chart-line text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h5 class="fw-bold mb-0">Analytics</h5>
+                                                    <p class="small text-muted mb-0">Data-driven personalized treatment
+                                                        plans</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <a href="#technology" class="btn btn-primary-custom mt-4">Discover Our
+                                        Technology</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 p-0">
+                                <div class="ratio ratio-16x9 h-100" style="min-height: 400px;">
+                                    <iframe class="rounded-4" width="1519" height="566"
+                                        src="https://www.youtube.com/embed/P5PqnkN9bLU"
+                                        title="تصوير عيادة دازل لطب الأسنان - DAZZLE" frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5 g-4">
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="display-4 text-primary fw-bold me-2">98%</span>
+                                <p class="mb-0 fw-bold">Diagnostic Accuracy</p>
+                            </div>
+                            <p class="text-muted">Our advanced diagnostic equipment achieves exceptional accuracy rates,
+                                ensuring precise treatment planning.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="display-4 text-primary fw-bold me-2">45%</span>
+                                <p class="mb-0 fw-bold">Faster Recovery</p>
+                            </div>
+                            <p class="text-muted">Patients treated with our minimally invasive technologies experience
+                                significantly quicker recovery times.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="display-4 text-primary fw-bold me-2">24/7</span>
+                                <p class="mb-0 fw-bold">Technology Support</p>
+                            </div>
+                            <p class="text-muted">Our technical teams ensure all medical equipment operates flawlessly
+                                around the clock for uninterrupted care.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="py-5 bg-primary-custom text-white" id="appointment">
         <div class="container">
             <div class="row align-items-center">
@@ -1360,7 +1410,6 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section class="py-5" id="contact">
         <div class="container">
             <div class="text-center mb-5">
@@ -1411,12 +1460,14 @@
                 </div>
             </div>
             <div class="mt-5">
-                <iframe class="w-100 rounded-4 shadow-sm" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3374.3378787825227!2d-8.52476942466352!3d32.248990210783916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xdaee2d4d7d4c337%3A0x3e72d780e0ecf09d!2sH%C3%B4pital%20Multidisciplinaire%20Youssoufia!5e0!3m2!1sfr!2sma!4v1741945956212!5m2!1sfr!2sma" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe class="w-100 rounded-4 shadow-sm"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3374.3378787825227!2d-8.52476942466352!3d32.248990210783916!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xdaee2d4d7d4c337%3A0x3e72d780e0ecf09d!2sH%C3%B4pital%20Multidisciplinaire%20Youssoufia!5e0!3m2!1sfr!2sma!4v1741945956212!5m2!1sfr!2sma"
+                    height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="row g-4">
@@ -1520,6 +1571,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const profileDropdownButton = document.getElementById('profile-dropdown-button');
+        const profileDropdown = document.getElementById('profile-dropdown');
+
+        profileDropdownButton.addEventListener('click', function () {
+            profileDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
         document.addEventListener('DOMContentLoaded', function () {
             const backToTopBtn = document.querySelector('.btn-primary-custom.position-fixed');
 

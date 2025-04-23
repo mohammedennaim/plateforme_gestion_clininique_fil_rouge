@@ -136,11 +136,11 @@
                 <span class="text-xl font-semibold text-primary-700">MediClinic</span>
             </div>
             <nav class="hidden md:flex space-x-6">
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                <a href="{{ route('welcome') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
+                <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                <a href="{{ route('patient.reserver.store') }}" class="text-primary-600 font-medium">Rendez-vous</a>
+                <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
             </nav>
 
             <!-- User Authentication Section -->
@@ -266,6 +266,7 @@
                 <!-- Form -->
                 <form method="POST" action="{{ route('patient.reserver.store') }}" id="appointment-form">
                     @csrf
+                    <input type="hidden" name="doctor_id" id="doctor_id" value="1">
                     <!-- Step 1: Personal Information -->
                     <h2 class="text-xl font-semibold text-secondary-800 mb-4">Informations personnelles</h2>
 
@@ -357,7 +358,7 @@
                                     <input type="tel" id="phone" name="phone"
                                         class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                                         value="{{ $user['phone'] }}"
-                                        placeholder="06 12 34 56 78" pattern="[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{2}[0-9]{2}"
+                                        placeholder="06 12 34 56 78" 
                                         required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
@@ -576,7 +577,6 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Review & Confirm (Hidden initially) -->
                     <div id="step-3" class="space-y-6 hidden">
                         <h2 class="text-xl font-semibold text-secondary-800 mb-4">Vérification et confirmation</h2>
 
@@ -642,13 +642,11 @@
                         </div>
                     </div>
 
-                    <!-- Hidden fields to pass appointment data to payment page -->
                     <input type="hidden" id="appointment-specialty" name="specialty">
                     <input type="hidden" id="appointment-date" name="date">
                     <input type="hidden" id="appointment-time" name="time">
                     <input type="hidden" id="appointment-reason" name="reason">
 
-                    <!-- Form Actions -->
                     <div class="pt-4 border-t border-secondary-200">
                         <div class="flex justify-between">
                             <button type="button" id="prev-step"
@@ -663,12 +661,10 @@
                                     <span>Continuer</span>
                                     <i class="fas fa-arrow-right ml-2"></i>
                                 </button>
-                                <form action="{{ route('patient.payment', $appointment) }}" method="get">
                                     <button type="submit" id="submit-form" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors hidden">
                                         <span>Confirmer le rendez-vous</span>
                                         <i class="fas fa-check ml-2"></i>
                                     </button>
-                                </form>
                             </div>
                         </div>
                     </div>

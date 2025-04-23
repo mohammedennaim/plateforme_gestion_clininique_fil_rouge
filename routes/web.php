@@ -27,6 +27,10 @@ use App\Http\Controllers\MedicalRecordController;
 */
 
 Route::get('/', [HomeController::class ,'welcome'])->name('welcome');
+Route::get('/about', [HomeController::class ,'about'])->name('about');
+Route::get('/contact', [HomeController::class ,'contact'])->name('contact');
+Route::get('/services', [HomeController::class ,'services'])->name('services');
+Route::get('/doctors', [HomeController::class ,'doctors'])->name('doctors');
 
 Route::prefix('auth')->group(function () {
 
