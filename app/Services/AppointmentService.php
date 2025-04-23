@@ -45,6 +45,7 @@ class AppointmentService{
         if ($doctorId) {
             return Appointment::with('patient')
                 ->where('doctor_id', $doctorId)
+                ->where('status', '=', 'pending')
                 ->whereDate('date', now()->format('Y-m-d'))
                 ->get();
         }

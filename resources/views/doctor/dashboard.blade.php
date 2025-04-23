@@ -585,7 +585,8 @@
             <a href="#tab-tasks" class="sidebar-item flex items-center p-3" data-section="tasks">
                 <i class="fas fa-tasks text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Tâches</span>
-                <span class="ml-auto bg-red-100 text-red-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ $pendingTasksCount ?? 'N/A' }}</span>
+                <span
+                    class="ml-auto bg-red-100 text-red-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ $pendingTasksCount ?? 'N/A' }}</span>
             </a>
 
             <div class="px-4 mt-6 mb-3">
@@ -682,7 +683,6 @@
             <!-- Quick Actions -->
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
                 <a href=""
-                
                     class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                     <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mb-2">
                         <i class="fas fa-user-plus text-indigo-600 text-xl"></i>
@@ -739,7 +739,8 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">Total Patients</dt>
                                     <dd class="flex items-center">
                                         <div class="text-2xl font-semibold text-gray-900" id="patient-counter">
-                                            {{ count($patients) }}</div>
+                                            {{ count($patients) }}
+                                        </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
                                             <span>{{ $newPatientsThisMonth ?? 'N/A'}} ce mois</span>
@@ -813,7 +814,9 @@
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Revenu Mensuel</dt>
                                     <dd class="flex items-center">
-                                        <div class="text-2xl font-semibold text-gray-900">{{ number_format($monthlyRevenue, 0) }} MAD</div>
+                                        <div class="text-2xl font-semibold text-gray-900">
+                                            {{ number_format($monthlyRevenue, 0) }} MAD
+                                        </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
                                             <span>{{ $revenueIncreasePercent }}%</span>
@@ -849,7 +852,9 @@
                                 <dl>
                                     <dt class="text-sm font-medium text-gray-500 truncate">Satisfaction Patients</dt>
                                     <dd class="flex items-center">
-                                        <div class="text-2xl font-semibold text-gray-900">{{ $patientSatisfactionRate }}%</div>
+                                        <div class="text-2xl font-semibold text-gray-900">
+                                            {{ $patientSatisfactionRate }}%
+                                        </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
                                             <span>{{ $satisfactionIncreasePercent }}%</span>
@@ -858,7 +863,8 @@
                                 </dl>
                                 <div class="mt-2">
                                     <div class="progress-bar">
-                                        <div class="progress-bar-fill bg-rose-600" style="width: {{ $patientSatisfactionRate }}%"></div>
+                                        <div class="progress-bar-fill bg-rose-600"
+                                            style="width: {{ $patientSatisfactionRate }}%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -879,126 +885,134 @@
             <!-- Next appointment & Calendar -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 <!-- Next appointment -->
-                <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div
-                        class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-4 flex justify-between items-center">
-                        <h2 class="text-xl font-bold flex items-center">
-                            <i class="fas fa-star text-yellow-300 mr-2"></i>
-                            Prochain Rendez-vous
-                        </h2>
-                        <div
-                            class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                            <i class="fas fa-clock mr-1.5"></i>
-                            <span id="appointment-countdown">{{ $nextAppointmentCountdown }}</span>
-                        </div>
-                    </div>
-                    <div class="md:flex">
-                        <!-- Date column -->
-                        <div
-                            class="bg-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center">
-                            <div class="text-center">
-                                <p class="text-indigo-200 text-sm">{{ $nextAppointment->day_name ?? 'Aujourd\'hui' }}</p>
-                                <p class="text-3xl font-bold">{{ $nextAppointment->formatted_time ?? '09:30' }}</p>
-                                <p class="text-xs">{{ $nextAppointment->am_pm ?? 'AM' }}</p>
+                @if (count($todayAppointments) > 0)
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl" style="height: 50.2vh;">
+                        <div class="md:flex h-full">
+                            <div class="bg-gradient-to-r from-indigo-700 to-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center relative overflow-hidden">
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full transform translate-x-16 -translate-y-16"></div>
+                                
+                                <div class="text-center z-10">
+                                    <p class="text-indigo-200 font-medium mb-1">Messages</p>
+                                    <p class="text-4xl font-bold mb-0 font-mono">{{ $unreadMessagesCount ?? 'N/A' }}</p>
+                                    <p class="text-xs uppercase tracking-wider bg-white/20 rounded-full px-2 py-1 mt-1 backdrop-blur-sm">Non lus</p>
+                                </div>
+                                
+                                <div class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center mt-4 z-10 border border-white/30">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <span>Dernière: {{ $lastMessageTime ?? 'Aujourd\'hui' }}</span>
+                                </div>
                             </div>
-                            <div class="md:mt-4 text-center">
-                                <span class="px-2 py-1 bg-indigo-700 rounded-lg text-xs">Salle {{ $nextAppointment->room ?? '204' }}</span>
-                            </div>
-                        </div>
 
-                        <!-- Content -->
-                        <div class="p-6 flex-grow">
-                            <div class="flex flex-wrap">
-                                <div class="w-full lg:w-2/3">
-                                    <div class="flex items-center">
-                                        <img class="h-12 w-12 rounded-full mr-4"
-                                            src="{{ $nextAppointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($nextAppointment->patient->name ?? 'Patient').'&background=6366F1&color=ffffff' }}"
-                                            alt="{{ $nextAppointment->patient->name ?? 'Patient' }}">
-                                        <div>
-                                            <h3 class="text-lg font-medium text-indigo-700">{{ $nextAppointment->patient->name ?? 'Mohammed Alami' }}</h3>
-                                            <div class="flex flex-wrap text-sm text-gray-600">
-                                                <span class="mr-3">{{ $nextAppointment->patient->gender ?? 'Homme' }} • {{ $nextAppointment->patient->age ?? '42' }} ans</span>
-                                                <span>Patient ID: #{{ $nextAppointment->patient->id_number ?? 'MED-12345' }}</span>
-                                            </div>
+                            <div class="p-6 flex-grow overflow-hidden">
+                                <div class="flex flex-col h-full">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                            <i class="fas fa-comments text-indigo-500 mr-2"></i>
+                                            Messages récents
+                                        </h3>
+                                        <div class="flex gap-2">
+                                            <button class="px-3 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors">
+                                                Tous
+                                            </button>
+                                            <button class="px-3 py-1 text-xs bg-white text-gray-600 rounded-full hover:bg-gray-50 transition-colors border border-gray-200">
+                                                Non lus
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                        <div>
-                                            <p class="text-gray-500">Type de rendez-vous</p>
-                                            <p class="font-medium flex items-center mt-1">
-                                                <i class="fas fa-heartbeat text-indigo-500 mr-2"></i>
-                                                {{ $nextAppointment->type ?? 'Contrôle de routine' }}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-500">Médecin</p>
-                                            <p class="font-medium flex items-center mt-1">
-                                                <i class="fas fa-user-md text-indigo-500 mr-2"></i>
-                                                Dr. {{ $details->user->name }}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-500">Département</p>
-                                            <p class="font-medium flex items-center mt-1">
-                                                <i class="fas fa-stethoscope text-indigo-500 mr-2"></i>
-                                                {{ $details->department ?? 'Cardiologie' }}
-                                            </p>
-                                        </div>
+                                    <div class="overflow-y-auto flex-grow pr-2" style="max-height: calc(50.2vh - 140px);">
+                                        @forelse($messages as $message)
+                                            <div class="message-item p-3 hover:bg-gray-50 rounded-lg mb-2 border border-gray-100 cursor-pointer transition-all duration-200">
+                                                <div class="flex items-start">
+                                                    <div class="flex-shrink-0 relative">
+                                                        <img class="h-10 w-10 rounded-full object-cover border-2 border-indigo-100"
+                                                            src="{{ $message->sender->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($message->sender->name) . '&background=6366F1&color=ffffff' }}"
+                                                            alt="{{ $message->sender->name }}">
+                                                        @if($message->unread_count > 0)
+                                                            <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="ml-3 flex-grow">
+                                                        <div class="flex justify-between items-start">
+                                                            <p class="text-sm font-semibold text-gray-900">{{ $message->sender->name }}</p>
+                                                            <span class="text-xs text-gray-500">{{ $message->time }}</span>
+                                                        </div>
+                                                        <p class="text-sm text-gray-600 line-clamp-1">{{ $message->preview }}</p>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <div class="flex flex-col items-center justify-center h-full py-6 text-center">
+                                                <div class="h-16 w-16 rounded-full bg-indigo-50 flex items-center justify-center mb-3">
+                                                    <i class="fas fa-inbox text-indigo-400 text-2xl"></i>
+                                                </div>
+                                                <p class="text-gray-600 mb-1">Aucun message récent</p>
+                                                <p class="text-sm text-gray-500">Votre boîte de réception est vide</p>
+                                            </div>
+                                        @endforelse
                                     </div>
 
                                     <div class="mt-4 pt-4 border-t border-gray-100">
-                                        <div class="flex items-center text-sm">
-                                            <div class="w-24 text-gray-500">Dernière visite:</div>
-                                            <div class="font-medium">{{ $nextAppointment->patient->last_visit_date ?? '12 Mars 2025' }} ({{ $nextAppointment->patient->days_since_last_visit ?? '24' }} jours)</div>
+                                        <div class="flex justify-between">
+                                            <div class="flex gap-2">
+                                                <a href="#" class="flex items-center px-3 py-2 text-sm border border-indigo-300 text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 transition-colors">
+                                                    <i class="fas fa-sync-alt mr-2"></i>
+                                                    Actualiser
+                                                </a>
+                                                <a href="#" class="flex items-center px-3 py-2 text-sm border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 transition-colors">
+                                                    <i class="fas fa-archive mr-2"></i>
+                                                    Archiver
+                                                </a>
+                                            </div>
+                                            <a href="" class="flex items-center px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors shadow-sm">
+                                                <i class="fas fa-comment-alt mr-2"></i>
+                                                Nouveau message
+                                            </a>
                                         </div>
-                                        <div class="flex items-center text-sm mt-1.5">
-                                            <div class="w-24 text-gray-500">Téléphone:</div>
-                                            <div class="font-medium">{{ $nextAppointment->patient->phone ?? '+212 661-234567' }}</div>
-                                        </div>
-                                        <div class="flex items-center text-sm mt-1.5">
-                                            <div class="w-24 text-gray-500">Email:</div>
-                                            <div class="font-medium">{{ $nextAppointment->patient->email ?? 'm.alami@example.com' }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="w-full lg:w-1/3 mt-4 lg:mt-0 lg:border-l lg:pl-6 border-gray-100">
-                                    <span
-                                        class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
-                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 pulse"></span>
-                                        {{ $nextAppointment->status ?? 'Confirmé' }}
-                                    </span>
-                                    <div class="mt-4">
-                                        <p class="text-sm font-medium text-gray-700">Notes:</p>
-                                        <p class="text-sm text-gray-600 mt-1">{{ $nextAppointment->notes ?? 'Le patient a mentionné des douleurs thoraciques lors de la dernière visite. Suivi de l\'efficacité des médicaments.' }}</p>
-                                    </div>
-
-                                    <div class="mt-6 flex flex-wrap gap-2">
-                                        <a href="{{ route('medical-records.show', $nextAppointment->patient->id ?? 1) }}"
-                                            class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                                            <i class="fas fa-file-medical text-indigo-500 mr-2"></i>
-                                            Dossier médical
-                                        </a>
-                                        <a href=""
-                                            class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                                            <i class="fas fa-history text-amber-500 mr-2"></i>
-                                            Historique
-                                        </a>
-                                        <a href=""
-                                            class="flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
-                                            <i class="fas fa-check-circle mr-2"></i>
-                                            Enregistrer
-                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    <!-- Message quand il n'y a pas de rendez-vous aujourd'hui -->
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 flex items-center">
+                            <h2 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-calendar-day text-yellow-300 mr-2"></i>
+                                Aucun rendez-vous aujourd'hui
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex flex-col items-center justify-center py-8">
+                                <div class="h-24 w-24 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+                                    <i class="fas fa-calendar-check text-blue-500 text-4xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">Votre journée est libre</h3>
+                                <p class="text-gray-500 text-center max-w-md mb-6">
+                                    Vous n'avez pas de rendez-vous programmés pour aujourd'hui. Profitez de ce temps pour
+                                    gérer vos dossiers médicaux ou planifier vos prochaines consultations.
+                                </p>
+                                <div class="flex gap-3">
+                                    <a href="{{ route('doctor.appointments') }}"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <i class="fas fa-calendar-alt mr-2"></i>
+                                        Voir mon agenda
+                                    </a>
+                                    <a href="{{ route('doctor.appointments.create', $doctorId) }}"
+                                        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                        <i class="fas fa-user-plus mr-2"></i>
+                                        Créer un rendez-vous
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Mini Calendar -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden" style="height: 50.2vh;">
                     <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                         <h3 class="text-lg font-medium text-gray-900 flex items-center">
                             <i class="fas fa-calendar-alt text-indigo-500 mr-2"></i>
@@ -1026,7 +1040,8 @@
                         </div>
                         <div class="grid grid-cols-7 gap-1">
                             @foreach($calendarDays as $day)
-                                <div class="calendar-day {{ $day['isCurrentMonth'] ? '' : 'text-gray-400' }} {{ $day['isToday'] ? 'active' : '' }} {{ $day['hasAppointments'] ? 'has-appointments' : '' }}">
+                                <div
+                                    class="calendar-day {{ $day['isCurrentMonth'] ? '' : 'text-gray-400' }} {{ $day['isToday'] ? 'active' : '' }} {{ $day['hasAppointments'] ? 'has-appointments' : '' }}">
                                     {{ $day['day'] }}
                                 </div>
                             @endforeach
@@ -1077,15 +1092,18 @@
                                     <h3 class="text-lg font-medium text-gray-900">Visites des patients</h3>
                                     <div class="flex space-x-2">
                                         <button
-                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period" data-period="week">
+                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period"
+                                            data-period="week">
                                             Semaine
                                         </button>
                                         <button
-                                            class="px-3 py-1 bg-indigo-600 border border-indigo-600 rounded-md text-sm text-white hover:bg-indigo-700 chart-period active" data-period="month">
+                                            class="px-3 py-1 bg-indigo-600 border border-indigo-600 rounded-md text-sm text-white hover:bg-indigo-700 chart-period active"
+                                            data-period="month">
                                             Mois
                                         </button>
                                         <button
-                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period" data-period="year">
+                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period"
+                                            data-period="year">
                                             Année
                                         </button>
                                     </div>
@@ -1099,7 +1117,8 @@
                                     <div class="flex justify-between items-center text-gray-600">
                                         <span>Total des visites ce mois: {{ $totalVisitsThisMonth }}</span>
                                         <span class="text-emerald-600 flex items-center font-medium">
-                                            <i class="fas fa-arrow-up mr-1"></i> {{ $visitsIncreasePercent }}% vs mois dernier
+                                            <i class="fas fa-arrow-up mr-1"></i> {{ $visitsIncreasePercent }}% vs mois
+                                            dernier
                                         </span>
                                     </div>
                                 </div>
@@ -1110,8 +1129,10 @@
                                 <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                                     <h3 class="text-lg font-medium text-gray-900">Distribution des revenus</h3>
                                     <div class="flex items-center">
-                                        <span class="text-sm text-gray-500 mr-3">{{ $currentMonth }} {{ $currentYear }}</span>
-                                        <button class="flex items-center text-sm text-indigo-600 hover:text-indigo-500" id="export-revenue">
+                                        <span class="text-sm text-gray-500 mr-3">{{ $currentMonth }}
+                                            {{ $currentYear }}</span>
+                                        <button class="flex items-center text-sm text-indigo-600 hover:text-indigo-500"
+                                            id="export-revenue">
                                             <i class="fas fa-download mr-1"></i> Exporter
                                         </button>
                                     </div>
@@ -1125,7 +1146,8 @@
                                     <div class="flex justify-between items-center text-gray-600">
                                         <span>Revenu total: {{ number_format($totalRevenue, 0) }} MAD</span>
                                         <span class="text-emerald-600 flex items-center font-medium">
-                                            <i class="fas fa-arrow-up mr-1"></i> {{ $revenueIncreasePercent }}% vs mois dernier
+                                            <i class="fas fa-arrow-up mr-1"></i> {{ $revenueIncreasePercent }}% vs mois
+                                            dernier
                                         </span>
                                     </div>
                                 </div>
@@ -1230,50 +1252,57 @@
                     <div class="max-h-80 overflow-y-auto">
                         <ul class="divide-y divide-gray-200" id="appointments-list">
                             @forelse($todayAppointments as $appointment)
-                            <li class="appointment-card" data-status="{{ $appointment->status }}">
-                                <div class="px-6 py-4">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0">
-                                                <img class="h-10 w-10 rounded-full"
-                                                    src="{{ $appointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($appointment->patient->name).'&background=6366F1&color=ffffff' }}"
-                                                    alt="{{ $appointment->patient->user->name }}">
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm font-medium text-indigo-600">{{ $appointment->patient->name }}</p>
-                                                <p class="text-xs text-gray-500">Dr. {{ $appointment->doctor->user->name }} • {{ $appointment->time }}</p>
-                                                <div class="flex items-center mt-1">
-                                                    <span class="status-indicator status-{{ $appointment->status_class }}"></span>
-                                                    <span class="text-xs font-medium text-{{ $appointment->status_color }}-800">{{ $appointment->status_label }}</span>
+                                <li class="appointment-card" data-status="{{ $appointment->status }}">
+                                    <div class="px-6 py-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0">
+                                                    <img class="h-10 w-10 rounded-full"
+                                                        src="{{ $appointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($appointment->patient->name) . '&background=6366F1&color=ffffff' }}"
+                                                        alt="{{ $appointment->patient->user->name }}">
+                                                </div>
+                                                <div class="ml-3">
+                                                    <p class="text-sm font-medium text-indigo-600">
+                                                        {{ $appointment->patient->name }}
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">Dr.
+                                                        {{ $appointment->doctor->user->name }} • {{ $appointment->time }}
+                                                    </p>
+                                                    <div class="flex items-center mt-1">
+                                                        <span
+                                                            class="status-indicator status-{{ $appointment->status_class }}"></span>
+                                                        <span
+                                                            class="text-xs font-medium text-{{ $appointment->status_color }}-800">{{ $appointment->status_label }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('doctor.appointments.show', $appointment->id) }}"
-                                                class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('doctor.appointments.check', $appointment->id) }}"
-                                                class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
-                                                <i class="fas fa-check"></i>
-                                            </a>
-                                            <button data-id="{{ $appointment->id }}"
-                                                class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors cancel-appointment">
-                                                <i class="fas fa-times"></i>
-                                            </button>
+                                            <div class="flex space-x-2">
+                                                <a href="{{ route('doctor.appointments.show', $appointment->id) }}"
+                                                    class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('doctor.appointments.check', $appointment->id) }}"
+                                                    class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
+                                                    <i class="fas fa-check"></i>
+                                                </a>
+                                                <button data-id="{{ $appointment->id }}"
+                                                    class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors cancel-appointment">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </li>
+                                </li>
                             @empty
-                            <li class="px-6 py-4 text-center text-gray-500">
-                                Aucun rendez-vous pour aujourd'hui
-                            </li>
+                                <li class="px-6 py-4 text-center text-gray-500">
+                                    Aucun rendez-vous pour aujourd'hui
+                                </li>
                             @endforelse
                         </ul>
                     </div>
                     <div class="bg-gray-50 px-6 py-3 flex justify-between items-center">
-                        <span class="text-sm text-gray-700">Affichage de {{ count($todayAppointments) }} rendez-vous sur {{ count($todayAppointments)  }}</span>
+                        <span class="text-sm text-gray-700">Affichage de {{ count($todayAppointments) }} rendez-vous sur
+                            {{ count($todayAppointments)  }}</span>
                         <a href="" class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
                             Voir tous les rendez-vous
                         </a>
@@ -1304,19 +1333,22 @@
                             <div class="flow-root">
                                 <ul class="relative">
                                     @foreach($recentActivities as $activity)
-                                    <li class="ml-6 mb-4 relative">
-                                        <div
-                                            class="absolute top-2.5 left-0 -ml-6 flex items-center justify-center w-5 h-5 bg-{{ $activity->color }}-600 rounded-full">
-                                            <i class="fas fa-{{ $activity->icon }} text-white text-xs"></i>
-                                        </div>
-                                        <div class="ml-2 relative bg-gray-50 p-3 rounded-lg shadow-sm">
-                                            <div class="text-sm font-medium text-gray-900">{{ $activity->title }}</div>
-                                            <p class="mt-1 text-xs text-gray-500">
-                                                <span class="font-medium text-{{ $activity->color }}-600">{{ $activity->highlight }}</span> {{ $activity->description }}
-                                            </p>
-                                            <span class="text-xs text-gray-500 mt-1 block">{{ $activity->time_ago }}</span>
-                                        </div>
-                                    </li>
+                                        <li class="ml-6 mb-4 relative">
+                                            <div
+                                                class="absolute top-2.5 left-0 -ml-6 flex items-center justify-center w-5 h-5 bg-{{ $activity->color }}-600 rounded-full">
+                                                <i class="fas fa-{{ $activity->icon }} text-white text-xs"></i>
+                                            </div>
+                                            <div class="ml-2 relative bg-gray-50 p-3 rounded-lg shadow-sm">
+                                                <div class="text-sm font-medium text-gray-900">{{ $activity->title }}</div>
+                                                <p class="mt-1 text-xs text-gray-500">
+                                                    <span
+                                                        class="font-medium text-{{ $activity->color }}-600">{{ $activity->highlight }}</span>
+                                                    {{ $activity->description }}
+                                                </p>
+                                                <span
+                                                    class="text-xs text-gray-500 mt-1 block">{{ $activity->time_ago }}</span>
+                                            </div>
+                                        </li>
                                     @endforeach
                                 </ul>
                             </div>
@@ -1335,18 +1367,22 @@
 
                             <div class="space-y-2">
                                 @foreach($tasks as $task)
-                                <div class="task-item" data-id="{{ $task->id }}">
-                                    <div class="flex items-start">
-                                        <div class="task-checkbox flex-shrink-0 mr-3 {{ $task->completed ? 'checked' : '' }}" data-id="{{ $task->id }}"></div>
-                                        <div class="flex-grow">
-                                            <div class="task-text {{ $task->completed ? 'checked' : '' }}">{{ $task->description }}</div>
-                                            <div class="text-xs text-{{ $task->priority_color }} mt-1 flex items-center">
-                                                <i class="fas fa-{{ $task->priority_icon }} mr-1"></i>
-                                                {{ $task->priority_label }} • {{ $task->due_label }}
+                                    <div class="task-item" data-id="{{ $task->id }}">
+                                        <div class="flex items-start">
+                                            <div class="task-checkbox flex-shrink-0 mr-3 {{ $task->completed ? 'checked' : '' }}"
+                                                data-id="{{ $task->id }}"></div>
+                                            <div class="flex-grow">
+                                                <div class="task-text {{ $task->completed ? 'checked' : '' }}">
+                                                    {{ $task->description }}
+                                                </div>
+                                                <div
+                                                    class="text-xs text-{{ $task->priority_color }} mt-1 flex items-center">
+                                                    <i class="fas fa-{{ $task->priority_icon }} mr-1"></i>
+                                                    {{ $task->priority_label }} • {{ $task->due_label }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
                                 @endforeach
                             </div>
                         </div>
@@ -1356,26 +1392,27 @@
                     <div id="panel-messages" class="panel max-h-80 overflow-y-auto hidden">
                         <div class="divide-y divide-gray-200">
                             @foreach($messages as $message)
-                            <div class="message-item p-4 cursor-pointer" data-id="{{ $message->id }}">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex">
-                                        <img class="h-10 w-10 rounded-full"
-                                            src="{{ $message->sender->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($message->sender->name).'&background=4f46e5&color=ffffff' }}"
-                                            alt="{{ $message->sender->name }}">
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900">{{ $message->sender->name }}</p>
-                                            <p class="text-sm text-gray-500 line-clamp-1">{{ $message->preview }}</p>
+                                <div class="message-item p-4 cursor-pointer" data-id="{{ $message->id }}">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex">
+                                            <img class="h-10 w-10 rounded-full"
+                                                src="{{ $message->sender->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($message->sender->name) . '&background=4f46e5&color=ffffff' }}"
+                                                alt="{{ $message->sender->name }}">
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-900">{{ $message->sender->name }}
+                                                </p>
+                                                <p class="text-sm text-gray-500 line-clamp-1">{{ $message->preview }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <span class="text-xs text-gray-500">{{ $message->time }}</span>
+                                            @if($message->unread_count > 0)
+                                                <span
+                                                    class="w-5 h-5 bg-indigo-600 rounded-full text-white text-xs flex items-center justify-center mt-1">{{ $message->unread_count }}</span>
+                                            @endif
                                         </div>
                                     </div>
-                                    <div class="flex flex-col items-end">
-                                        <span class="text-xs text-gray-500">{{ $message->time }}</span>
-                                        @if($message->unread_count > 0)
-                                        <span
-                                            class="w-5 h-5 bg-indigo-600 rounded-full text-white text-xs flex items-center justify-center mt-1">{{ $message->unread_count }}</span>
-                                        @endif
-                                    </div>
                                 </div>
-                            </div>
                             @endforeach
                         </div>
 
@@ -1496,77 +1533,81 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                     @forelse($patients as $patient)
-                    <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                        <div class="px-4 py-4 sm:px-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
-                                    <img src="{{ $patient->avatar_url ?? 'https://ui-avatars.com/api/?name='.urlencode($patient->name).'&background=6366F1&color=ffffff' }}"
-                                        alt="{{ $patient->name }}">
-                                </div>
-                                <div class="ml-4 flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h3 class="text-lg font-medium text-indigo-600">{{ $patient->name }}</h3>
-                                            <p class="text-sm text-gray-500">ID: #{{ $patient->id }}</p>
+                        <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <div class="px-4 py-4 sm:px-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
+                                        <img src="{{ $patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($patient->name) . '&background=6366F1&color=ffffff' }}"
+                                            alt="{{ $patient->name }}">
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-medium text-indigo-600">{{ $patient->name }}</h3>
+                                                <p class="text-sm text-gray-500">ID: #{{ $patient->id }}</p>
+                                            </div>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $patient->status_color }}-100 text-{{ $patient->status_color }}-800">
+                                                <span
+                                                    class="w-1.5 h-1.5 bg-{{ $patient->status_color }}-500 rounded-full mr-1.5"></span>
+                                                {{ $patient->status_label }}
+                                            </span>
                                         </div>
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $patient->status_color }}-100 text-{{ $patient->status_color }}-800">
-                                            <span class="w-1.5 h-1.5 bg-{{ $patient->status_color }}-500 rounded-full mr-1.5"></span>
-                                            {{ $patient->status_label }}
-                                        </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="border-t border-gray-200 px-4 py-4 sm:px-6 bg-gray-50">
-                            <div class="grid grid-cols-3 gap-2 text-sm">
-                                <div>
-                                    <p class="text-gray-500">Âge</p>
-                                    <p class="font-medium">{{ $patient->age}} ans</p>
+                            <div class="border-t border-gray-200 px-4 py-4 sm:px-6 bg-gray-50">
+                                <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Âge</p>
+                                        <p class="font-medium">{{ $patient->age}} ans</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Genre</p>
+                                        <p class="font-medium">{{ $patient->gender }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Téléphone</p>
+                                        <p class="font-medium">{{ $patient->phone }}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-gray-500">Genre</p>
-                                    <p class="font-medium">{{ $patient->gender }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-500">Téléphone</p>
-                                    <p class="font-medium">{{ $patient->phone }}</p>
+                                <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Dernière visite</p>
+                                        <p class="font-medium">{{ $patient->last_visit_date }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Prochain RDV</p>
+                                        <p class="font-medium text-indigo-600">{{ $patient->next_appointment }}</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
-                                <div>
-                                    <p class="text-gray-500">Dernière visite</p>
-                                    <p class="font-medium">{{ $patient->last_visit_date }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-500">Prochain RDV</p>
-                                    <p class="font-medium text-indigo-600">{{ $patient->next_appointment }}</p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="px-4 py-3 sm:px-6 flex justify-between border-t border-gray-200">
-                            <div class="patient-actions flex space-x-2">
-                                <a href="{{ route('medical-records.show', $patient->id) }}" class="text-sm text-indigo-600 hover:text-indigo-500">
-                                    <i class="fas fa-file-medical"></i>
-                                </a>
-                                <a href="{{ route('doctor.appointments.create', $patient->id) }}" class="text-sm text-emerald-600 hover:text-emerald-500">
-                                    <i class="fas fa-calendar-plus"></i>
-                                </a>
-                                <a href="" class="text-sm text-blue-600 hover:text-blue-500">
-                                    <i class="fas fa-comments"></i>
+                            <div class="px-4 py-3 sm:px-6 flex justify-between border-t border-gray-200">
+                                <div class="patient-actions flex space-x-2">
+                                    <a href="{{ route('medical-records.show', $patient->id) }}"
+                                        class="text-sm text-indigo-600 hover:text-indigo-500">
+                                        <i class="fas fa-file-medical"></i>
+                                    </a>
+                                    <a href="{{ route('doctor.appointments.create', $patient->id) }}"
+                                        class="text-sm text-emerald-600 hover:text-emerald-500">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </a>
+                                    <a href="" class="text-sm text-blue-600 hover:text-blue-500">
+                                        <i class="fas fa-comments"></i>
+                                    </a>
+                                </div>
+                                <a href="{{ route('doctor.patients.show', $patient->id) }}"
+                                    class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
+                                    Voir détails
                                 </a>
                             </div>
-                            <a href="{{ route('doctor.patients.show', $patient->id) }}" class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
-                                Voir détails
-                            </a>
                         </div>
-                    </div>
                     @empty
-                    <div class="col-span-3 text-center py-8 text-gray-500">
-                        Aucun patient trouvé
-                    </div>
+                        <div class="col-span-3 text-center py-8 text-gray-500">
+                            Aucun patient trouvé
+                        </div>
                     @endforelse
                 </div>
 
@@ -1637,18 +1678,18 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Current date and time
             function updateDateTime() {
                 const now = new Date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 const dateTimeElement = document.getElementById('current-date-time');
                 if (dateTimeElement) {
-                    dateTimeElement.textContent = now.toLocaleDateString('fr-FR', options) + ' | ' + 
+                    dateTimeElement.textContent = now.toLocaleDateString('fr-FR', options) + ' | ' +
                         now.toLocaleTimeString('fr-FR');
                 }
             }
-            
+
             updateDateTime();
             setInterval(updateDateTime, 1000);
 
@@ -1658,12 +1699,12 @@
             const overlay = document.getElementById("overlay");
 
             if (sidebarToggle && sidebar && overlay) {
-                sidebarToggle.addEventListener("click", function() {
+                sidebarToggle.addEventListener("click", function () {
                     sidebar.classList.toggle("open");
                     overlay.classList.toggle("active");
                 });
 
-                overlay.addEventListener("click", function() {
+                overlay.addEventListener("click", function () {
                     sidebar.classList.remove("open");
                     overlay.classList.remove("active");
                 });
@@ -1674,7 +1715,7 @@
             const sections = document.querySelectorAll(".dashboard-section");
 
             sidebarItems.forEach(item => {
-                item.addEventListener("click", function(e) {
+                item.addEventListener("click", function (e) {
                     if (this.getAttribute("href").startsWith("#")) {
                         e.preventDefault();
                         const targetSection = this.getAttribute("data-section");
@@ -1706,20 +1747,20 @@
             // Tab switching
             const tabButtons = document.querySelectorAll(".tab-button");
             tabButtons.forEach(button => {
-                button.addEventListener("click", function() {
+                button.addEventListener("click", function () {
                     const tabId = this.getAttribute("id") || this.getAttribute("data-tab");
                     const tabGroup = this.closest("div").querySelectorAll(".tab-button");
                     const panels = document.querySelectorAll(".panel");
-                    
+
                     // Remove active class from all tabs in this group
                     tabGroup.forEach(tab => tab.classList.remove("active"));
-                    
+
                     // Add active class to clicked tab
                     this.classList.add("active");
-                    
+
                     // Hide all panels
                     panels.forEach(panel => panel.classList.add("hidden"));
-                    
+
                     // Show the corresponding panel
                     if (tabId === "tab-activity") {
                         document.getElementById("panel-activity").classList.remove("hidden");
@@ -1739,14 +1780,14 @@
             // Task checkbox toggle
             const taskCheckboxes = document.querySelectorAll(".task-checkbox");
             taskCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener("click", function() {
+                checkbox.addEventListener("click", function () {
                     const taskId = this.getAttribute("data-id");
                     this.classList.toggle("checked");
-                    
+
                     // Toggle the task text style
                     const taskText = this.closest(".task-item").querySelector(".task-text");
                     taskText.classList.toggle("checked");
-                    
+
                     // Update task status via AJAX
                     fetch(`/api/tasks/${taskId}/toggle`, {
                         method: 'POST',
@@ -1755,23 +1796,23 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Task updated:', data);
-                    })
-                    .catch(error => {
-                        console.error('Error updating task:', error);
-                    });
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Task updated:', data);
+                        })
+                        .catch(error => {
+                            console.error('Error updating task:', error);
+                        });
                 });
             });
 
             // Filter appointments by status
             const statusFilter = document.getElementById("appointment-status-filter");
             if (statusFilter) {
-                statusFilter.addEventListener("change", function() {
+                statusFilter.addEventListener("change", function () {
                     const status = this.value;
                     const appointments = document.querySelectorAll(".appointment-card");
-                    
+
                     appointments.forEach(appointment => {
                         if (status === "all" || appointment.getAttribute("data-status") === status) {
                             appointment.style.display = "block";
@@ -1785,7 +1826,7 @@
             // Cancel appointment
             const cancelButtons = document.querySelectorAll(".cancel-appointment");
             cancelButtons.forEach(button => {
-                button.addEventListener("click", function() {
+                button.addEventListener("click", function () {
                     const appointmentId = this.getAttribute("data-id");
                     if (confirm("Êtes-vous sûr de vouloir annuler ce rendez-vous?")) {
                         fetch(`/api/appointments/${appointmentId}/cancel`, {
@@ -1795,19 +1836,19 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             }
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Update UI or reload
-                                window.location.reload();
-                            } else {
-                                alert("Erreur lors de l'annulation du rendez-vous");
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error cancelling appointment:', error);
-                            alert("Une erreur s'est produite lors de l'annulation du rendez-vous");
-                        });
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Update UI or reload
+                                    window.location.reload();
+                                } else {
+                                    alert("Erreur lors de l'annulation du rendez-vous");
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error cancelling appointment:', error);
+                                alert("Une erreur s'est produite lors de l'annulation du rendez-vous");
+                            });
                     }
                 });
             });
@@ -1815,7 +1856,7 @@
             // Sort patients
             const patientSort = document.getElementById("patient-sort");
             if (patientSort) {
-                patientSort.addEventListener("change", function() {
+                patientSort.addEventListener("change", function () {
                     const sortBy = this.value;
                     window.location.href = ``;
                 });
@@ -1827,7 +1868,7 @@
             // Add task button
             const addTaskBtn = document.getElementById("add-task-btn");
             if (addTaskBtn) {
-                addTaskBtn.addEventListener("click", function() {
+                addTaskBtn.addEventListener("click", function () {
                     const taskDescription = prompt("Entrez la description de la tâche:");
                     if (taskDescription) {
                         fetch('/api/tasks', {
@@ -1842,17 +1883,17 @@
                                 due_date: new Date().toISOString().split('T')[0]
                             })
                         })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.reload();
-                            } else {
-                                alert("Erreur lors de l'ajout de la tâche");
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error adding task:', error);
-                        });
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.reload();
+                                } else {
+                                    alert("Erreur lors de l'ajout de la tâche");
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error adding task:', error);
+                            });
                     }
                 });
             }
@@ -1860,7 +1901,7 @@
             // Export revenue data
             const exportRevenueBtn = document.getElementById("export-revenue");
             if (exportRevenueBtn) {
-                exportRevenueBtn.addEventListener("click", function() {
+                exportRevenueBtn.addEventListener("click", function () {
                     window.location.href = "";
                 });
             }
@@ -1868,18 +1909,18 @@
             // Chart period buttons
             const chartPeriodBtns = document.querySelectorAll(".chart-period");
             chartPeriodBtns.forEach(btn => {
-                btn.addEventListener("click", function() {
+                btn.addEventListener("click", function () {
                     const period = this.getAttribute("data-period");
-                    
+
                     // Update active state
                     chartPeriodBtns.forEach(b => {
                         b.classList.remove("active", "bg-indigo-600", "text-white");
                         b.classList.add("bg-white", "text-gray-700");
                     });
-                    
+
                     this.classList.add("active", "bg-indigo-600", "text-white");
                     this.classList.remove("bg-white", "text-gray-700");
-                    
+
                     // Fetch new data and update chart
                     fetch(`/api/analytics/patient-visits?period=${period}`)
                         .then(response => response.json())
@@ -1932,7 +1973,7 @@
                                 boxPadding: 5,
                                 usePointStyle: true,
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         return `Visites: ${context.parsed.y}`;
                                     }
                                 }
@@ -2005,7 +2046,7 @@
                                 boxPadding: 5,
                                 usePointStyle: true,
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const value = context.parsed;
                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                         const percentage = Math.round((value / total) * 100);
@@ -2027,7 +2068,7 @@
                 window.patientVisitsChart.data.labels = data.labels;
                 window.patientVisitsChart.data.datasets[0].data = data.values;
                 window.patientVisitsChart.update();
-                
+
                 // Update total visits text
                 const totalVisitsElement = document.querySelector('.text-gray-600:contains("Total des visites")');
                 if (totalVisitsElement) {

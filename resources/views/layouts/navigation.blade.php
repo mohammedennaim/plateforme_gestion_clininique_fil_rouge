@@ -27,12 +27,12 @@
                                 <i class="fas fa-tachometer-alt mr-2"></i>
                                 Tableau de bord
                             </a>
-                            <a href="{{ route('appointments.index') }}" 
+                            <a href="" 
                                 class="{{ request()->routeIs('appointments.*') ? 'inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-gray-900 focus:outline-none focus:border-indigo-700 transition' : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition' }}">
                                 <i class="fas fa-calendar-check mr-2"></i>
                                 Rendez-vous
                             </a>
-                            <a href="{{ route('patients.index') }}" 
+                            <a href="" 
                                 class="{{ request()->routeIs('patients.*') ? 'inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-gray-900 focus:outline-none focus:border-indigo-700 transition' : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition' }}">
                                 <i class="fas fa-users mr-2"></i>
                                 Patients
@@ -119,11 +119,11 @@
                         <i class="fas fa-tachometer-alt mr-2"></i>
                         Tableau de bord
                     </a>
-                    <a href="{{ route('appointments.index') }}" class="{{ request()->routeIs('appointments.*') ? 'block pl-3 pr-4 py-2 border-l-4 border-indigo-400 text-base font-medium text-indigo-700 bg-indigo-50 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition' : 'block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition' }}">
+                    <a href="" class="{{ request()->routeIs('appointments.*') ? 'block pl-3 pr-4 py-2 border-l-4 border-indigo-400 text-base font-medium text-indigo-700 bg-indigo-50 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition' : 'block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition' }}">
                         <i class="fas fa-calendar-check mr-2"></i>
                         Rendez-vous
                     </a>
-                    <a href="{{ route('patients.index') }}" class="{{ request()->routeIs('patients.*') ? 'block pl-3 pr-4 py-2 border-l-4 border-indigo-400 text-base font-medium text-indigo-700 bg-indigo-50 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition' : 'block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition' }}">
+                    <a href="" class="{{ request()->routeIs('patients.*') ? 'block pl-3 pr-4 py-2 border-l-4 border-indigo-400 text-base font-medium text-indigo-700 bg-indigo-50 focus:outline-none focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700 transition' : 'block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300 transition' }}">
                         <i class="fas fa-users mr-2"></i>
                         Patients
                     </a>
