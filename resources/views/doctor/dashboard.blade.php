@@ -777,7 +777,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">RDV Aujourd'hui</dt>
                                     <dd class="flex items-center">
                                         <div class="text-2xl font-semibold text-gray-900" id="appointment-counter">
-                                            {{ count($todayAppointments)  }}
+                                        {{ $stats["totalAppointments"] }}
                                         </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
@@ -1672,8 +1672,156 @@
         <section id="appointments-section" class="p-4 md:p-8 dashboard-section hidden">
             <h1 class="text-2xl font-bold text-gray-900 mb-6">Gestion des Rendez-vous</h1>
             <!-- Appointments content would go here -->
-            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
-                <p class="text-gray-500">Section en cours de développement</p>
+            <div class="bg-white rounded-xl shadow-sm mb-8"></div>
+                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-4 rounded-t-xl">
+                    <h2 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-calendar-check text-yellow-300 mr-2"></i>
+                        Gestion des Rendez-vous
+                    </h2>
+                </div>
+                
+                <!-- Search & Filters -->
+                <div class="p-4 md:p-6 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <div class="relative flex-grow">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" id="appointment-search" 
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="Rechercher un rendez-vous par patient, date...">
+                        </div>
+                        <div class="flex space-x-2">
+                            <select id="appointment-status-filter" class="border border-gray-300 rounded-lg shadow-sm py-2 px-3 sm:text-sm">
+                                <option value="all">Tous les statuts</option>
+                                <option value="confirmed">Confirmés</option>
+                                <option value="pending">En attente</option>
+                                <option value="completed">Terminés</option>
+                                <option value="canceled">Annulés</option>
+                            </select>
+                        </div>
+                        <a href="{{ route('doctor.appointments.create',$appointment->id) }}" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                            <i class="fas fa-plus mr-2"></i>
+                            Nouveau RDV
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Appointments List -->
+                <div class="overflow-hidden">
+                    <ul class="divide-y divide-gray-200" id="appointments-list">
+                        @forelse($stats['Appointments'] as $appointment)
+                            <li class="appointment-card p-5" data-status="{{ $appointment->status }}">
+                                <div class="flex flex-col md:flex-row md:items-center">
+                                    <!-- Time Column -->
+                                    <div class="md:w-1/6 mb-4 md:mb-0">
+                                        <div class="text-center p-3 bg-indigo-50 rounded-lg">
+                                            <p class="text-xs text-indigo-600 font-medium">{{ $appointment->formatted_date }}</p>
+                                            <p class="text-xl font-bold text-indigo-700">{{ $appointment->formatted_time }}</p>
+                                            <p class="text-xs text-indigo-500">Durée: {{ $appointment->duration ?? '30' }} min</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Patient Info -->
+                                    <div class="md:w-2/6 md:px-4">
+                                        <div class="flex items-center">
+                                            <img class="h-12 w-12 rounded-full mr-3"
+                                                src="{{ $appointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($appointment->patient->name) . '&background=6366F1&color=ffffff' }}"
+                                                alt="{{ $appointment->patient->name }}">
+                                            <div>
+                                                <h3 class="text-md font-medium text-gray-800">{{ $appointment->patient->name }}</h3>
+                                                <div class="text-sm text-gray-500">
+                                                    ID: {{ $appointment->patient->id_number ?? $appointment->patient->id }} | 
+                                                    {{ $appointment->patient->age ?? '?' }} ans
+                                                </div>
+                                                <div class="flex items-center mt-1">
+                                                    <span class="status-indicator status-{{ $appointment->status_class }}"></span>
+                                                    <span class="text-xs font-medium text-{{ $appointment->status_color }}-800">
+                                                        {{ $appointment->status_label }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Appointment Details -->
+                                    <div class="md:w-2/6 mt-4 md:mt-0 md:px-4">
+                                        <div class="grid grid-cols-2 gap-2 text-sm">
+                                            <div>
+                                                <p class="text-gray-500">Type</p>
+                                                <p class="font-medium">
+                                                    <i class="fas fa-stethoscope text-indigo-500 mr-1"></i>
+                                                    {{ $appointment->type ?? 'Consultation' }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Salle</p>
+                                                <p class="font-medium">
+                                                    <i class="fas fa-door-open text-emerald-500 mr-1"></i>
+                                                    {{ $appointment->room ?? 'Non assignée' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <p class="text-gray-500 text-sm">Notes</p>
+                                            <p class="text-sm text-gray-700 truncate">
+                                                {{ $appointment->notes ?? 'Aucune note disponible' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Actions -->
+                                    <div class="md:w-1/6 flex md:justify-end mt-4 md:mt-0 space-x-2">
+                                        <a href="{{ route('doctor.appointments.show', $appointment->id) }}" 
+                                            class="p-2 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if($appointment->status !== 'completed')
+                                            <form action="{{ route('doctor.appointments.change-status', $appointment->id) }}" method="POST" class="inline-block">
+                                                @csrf
+                                                <input type="hidden" name="status" value="completed">
+                                                <button type="submit" class="p-2 bg-green-50 text-green-600 rounded-full hover:bg-green-100 transition-colors">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @if($appointment->status !== 'canceled')
+                                            <form action="{{ route('doctor.appointments.change-status', $appointment->id) }}" method="POST" class="inline-block">
+                                                @csrf
+                                                <input type="hidden" name="status" value="canceled">
+                                                <button type="submit" class="p-2 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="p-8 text-center text-gray-500">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                                        <i class="fas fa-calendar-day text-gray-400 text-xl"></i>
+                                    </div>
+                                    <p>Aucun rendez-vous trouvé</p>
+                                    <a href="{{ route('doctor.appointments.create',$appointment->id) }}" class="mt-3 text-indigo-600 hover:text-indigo-800">
+                                        + Créer un nouveau rendez-vous
+                                    </a>
+                                </div>
+                            </li>
+                        @endforelse
+                    </ul>
+                </div>
+                
+                <div class="bg-gray-50 px-6 py-4 flex justify-between items-center rounded-b-xl border-t border-gray-200">
+                    <div class="text-sm text-gray-600">
+                        Affichage de {{ count($todayAppointments) }} rendez-vous
+                    </div>
+                    <a href="" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                        Voir tous les rendez-vous <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -1728,7 +1876,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Current date and time
             function updateDateTime() {
                 const now = new Date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1738,11 +1885,9 @@
                         now.toLocaleTimeString('fr-FR');
                 }
             }
-
             updateDateTime();
             setInterval(updateDateTime, 1000);
 
-            // Toggle sidebar on mobile
             const sidebarToggle = document.getElementById("sidebar-toggle");
             const sidebar = document.getElementById("sidebar");
             const overlay = document.getElementById("overlay");
@@ -1758,8 +1903,7 @@
                     overlay.classList.remove("active");
                 });
             }
-
-            // Navigation between sections
+            
             const sidebarItems = document.querySelectorAll(".sidebar-item");
             const sections = document.querySelectorAll(".dashboard-section");
 
@@ -1768,12 +1912,9 @@
                     if (this.getAttribute("href").startsWith("#")) {
                         e.preventDefault();
                         const targetSection = this.getAttribute("data-section");
-
-                        // Update active sidebar item
                         sidebarItems.forEach(i => i.classList.remove("active"));
                         this.classList.add("active");
 
-                        // Show target section, hide others
                         sections.forEach(section => {
                             if (section.id === targetSection + "-section") {
                                 section.classList.remove("hidden");
@@ -1784,7 +1925,6 @@
                             }
                         });
 
-                        // Hide sidebar on mobile after navigation
                         if (window.innerWidth < 768) {
                             sidebar.classList.remove("open");
                             overlay.classList.remove("active");
@@ -1793,24 +1933,16 @@
                 });
             });
 
-            // Tab switching
             const tabButtons = document.querySelectorAll(".tab-button");
             tabButtons.forEach(button => {
                 button.addEventListener("click", function () {
                     const tabId = this.getAttribute("id") || this.getAttribute("data-tab");
                     const tabGroup = this.closest("div").querySelectorAll(".tab-button");
                     const panels = document.querySelectorAll(".panel");
-
-                    // Remove active class from all tabs in this group
                     tabGroup.forEach(tab => tab.classList.remove("active"));
-
-                    // Add active class to clicked tab
                     this.classList.add("active");
-
-                    // Hide all panels
                     panels.forEach(panel => panel.classList.add("hidden"));
 
-                    // Show the corresponding panel
                     if (tabId === "tab-activity") {
                         document.getElementById("panel-activity").classList.remove("hidden");
                     } else if (tabId === "tab-tasks") {
@@ -1826,18 +1958,14 @@
                 });
             });
 
-            // Task checkbox toggle
             const taskCheckboxes = document.querySelectorAll(".task-checkbox");
             taskCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener("click", function () {
                     const taskId = this.getAttribute("data-id");
                     this.classList.toggle("checked");
-
-                    // Toggle the task text style
                     const taskText = this.closest(".task-item").querySelector(".task-text");
                     taskText.classList.toggle("checked");
 
-                    // Update task status via AJAX
                     fetch(`/api/tasks/${taskId}/toggle`, {
                         method: 'POST',
                         headers: {
@@ -1855,7 +1983,6 @@
                 });
             });
 
-            // Filter appointments by status
             const statusFilter = document.getElementById("appointment-status-filter");
             if (statusFilter) {
                 statusFilter.addEventListener("change", function () {
@@ -1872,8 +1999,6 @@
                 });
             }
 
-           
-            // Sort patients
             const patientSort = document.getElementById("patient-sort");
             if (patientSort) {
                 patientSort.addEventListener("change", function () {
@@ -1881,11 +2006,8 @@
                     window.location.href = ``;
                 });
             }
-
-            // Initialize charts
             initializeCharts();
 
-            // Add task button
             const addTaskBtn = document.getElementById("add-task-btn");
             if (addTaskBtn) {
                 addTaskBtn.addEventListener("click", function () {
@@ -1918,7 +2040,6 @@
                 });
             }
 
-            // Export revenue data
             const exportRevenueBtn = document.getElementById("export-revenue");
             if (exportRevenueBtn) {
                 exportRevenueBtn.addEventListener("click", function () {
@@ -1926,13 +2047,10 @@
                 });
             }
 
-            // Chart period buttons
             const chartPeriodBtns = document.querySelectorAll(".chart-period");
             chartPeriodBtns.forEach(btn => {
                 btn.addEventListener("click", function () {
                     const period = this.getAttribute("data-period");
-
-                    // Update active state
                     chartPeriodBtns.forEach(b => {
                         b.classList.remove("active", "bg-indigo-600", "text-white");
                         b.classList.add("bg-white", "text-gray-700");
@@ -1941,7 +2059,6 @@
                     this.classList.add("active", "bg-indigo-600", "text-white");
                     this.classList.remove("bg-white", "text-gray-700");
 
-                    // Fetch new data and update chart
                     fetch(`/api/analytics/patient-visits?period=${period}`)
                         .then(response => response.json())
                         .then(data => {
@@ -1955,7 +2072,6 @@
         });
 
         function initializeCharts() {
-            // Patient Visits Chart
             const patientVisitsCtx = document.getElementById('patientVisitsChart');
             if (patientVisitsCtx) {
                 const patientVisitsChart = new Chart(patientVisitsCtx, {
@@ -2021,7 +2137,6 @@
                 window.patientVisitsChart = patientVisitsChart;
             }
 
-            // Revenue Chart
             const revenueCtx = document.getElementById('revenueChart');
             if (revenueCtx) {
                 const revenueChart = new Chart(revenueCtx, {
@@ -2089,7 +2204,6 @@
                 window.patientVisitsChart.data.datasets[0].data = data.values;
                 window.patientVisitsChart.update();
 
-                // Update total visits text
                 const totalVisitsElement = document.querySelector('.text-gray-600:contains("Total des visites")');
                 if (totalVisitsElement) {
                     totalVisitsElement.textContent = `Total des visites: ${data.total}`;

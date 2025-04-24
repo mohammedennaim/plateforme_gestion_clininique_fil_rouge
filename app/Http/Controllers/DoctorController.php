@@ -225,6 +225,7 @@ class DoctorController extends Controller
         try {
             $doctor = auth()->user();
             $patient = Patient::findOrFail($id);
+            // dd(($patient->user->id));
             
             return view('doctor.patients.show', compact('patient'));
         } catch (\Exception $e) {
@@ -561,6 +562,24 @@ class DoctorController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erreur lors de la mise à jour du statut: ' . $e->getMessage());
         }
+    }
+    public function updatePatient(Request $request, $id)
+    {
+        
+        try {
+            $patient = Patient::findOrFail($id);
+            $user = User::findOrFail($patient->user_id);
+            $user->update($request->all());
+            $patient->update($request->all());
+            
+            return redirect()->back()->with('success', 'Patient mis à jour avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de la mise à jour du patient: ' . $e->getMessage());
+        }
+    }
+    public function editPatient($id){
+        $patient = Patient::findOrFail($id);
+        return view('doctor.patients.edit', compact('patient'));
     }
 }
 

@@ -14,6 +14,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     
+    <!-- Tailwind CSS pour la compatibilité avec certaines pages -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            important: true, // Pour s'assurer que Tailwind a la priorité lorsque nécessaire
+            corePlugins: {
+                preflight: false, // Désactive le reset CSS de Tailwind pour éviter les conflits avec Bootstrap
+            }
+        }
+    </script>
+    
     <style>
         :root {
             --primary: #4e73df;
@@ -272,6 +283,43 @@
         
         .card .card-header[data-toggle="collapse"].collapsed::after {
             content: "\f105";
+        }
+        
+        /* Styles spécifiques pour éviter les conflits entre Bootstrap et Tailwind */
+        .tailwind-section [class*="bg-"] {
+            background-color: var(--tw-bg-opacity) !important;
+        }
+        
+        .tailwind-section .flex,
+        .tailwind-section .grid {
+            display: var(--tw-display) !important;
+        }
+        
+        /* Correction pour les cartes et les bordures */
+        .tailwind-section .rounded-xl {
+            border-radius: 0.75rem !important;
+        }
+        
+        .tailwind-section .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        }
+        
+        /* Correction pour les badges */
+        .tailwind-section .rounded-full {
+            border-radius: 9999px !important;
+        }
+        
+        /* Reset de quelques styles Bootstrap qui pourraient interférer */
+        .tailwind-section a {
+            text-decoration: none !important;
+        }
+        
+        .tailwind-section h1, 
+        .tailwind-section h2,
+        .tailwind-section h3,
+        .tailwind-section h4,
+        .tailwind-section p {
+            margin-bottom: 0 !important;
         }
     </style>
 
