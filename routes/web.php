@@ -97,10 +97,11 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(
     Route::get('/appointments/create/{doctor}', [DoctorController::class, 'createAppointment'])->name('appointments.create');
     Route::post('/appointments', [DoctorController::class, 'storeAppointment'])->name('appointments.store');
     Route::get('/appointments/{id}', [DoctorController::class, 'showAppointment'])->name('appointments.show');
+    Route::get('/appointments/{id}/edit', [DoctorController::class, 'edit'])->name('appointments.edit');
     Route::put('/appointments/{id}', [DoctorController::class, 'updateAppointment'])->name('appointments.update');
     Route::get('/appointments/check/{id}', [DoctorController::class, 'checkInAppointment'])->name('appointments.check');
-    Route::post('/appointments/{id}/change-status', [DoctorController::class, 'changeStatus'])->name('appointments.change-status');
-    Route::delete('/appointments/{id}',[DoctorController::class, 'destroyAppointment'])->name('appointments.destroy');
+    Route::post('/appointments/{id}', [DoctorController::class, 'changeStatus'])->name('appointments.change-status');
+    Route::delete('/appointments/{id}', [DoctorController::class, 'destroyAppointment'])->name('appointments.destroy');
     Route::post('/appointments/{id}/cancel', [DoctorController::class, 'cancelAppointment'])->name('appointments.cancel');
     
 

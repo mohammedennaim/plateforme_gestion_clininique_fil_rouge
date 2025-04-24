@@ -882,92 +882,133 @@
                 </div>
             </div>
 
-            <!-- Next appointment & Calendar -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Next appointment -->
-                @if (count($todayAppointments) > 0)
-                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl" style="height: 50.2vh;">
-                        <div class="md:flex h-full">
-                            <div class="bg-gradient-to-r from-indigo-700 to-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center relative overflow-hidden">
-                                <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full transform translate-x-16 -translate-y-16"></div>
-                                
-                                <div class="text-center z-10">
-                                    <p class="text-indigo-200 font-medium mb-1">Messages</p>
-                                    <p class="text-4xl font-bold mb-0 font-mono">{{ $unreadMessagesCount ?? 'N/A' }}</p>
-                                    <p class="text-xs uppercase tracking-wider bg-white/20 rounded-full px-2 py-1 mt-1 backdrop-blur-sm">Non lus</p>
+                @if(isset($todayAppointmentsConfirmed) && $todayAppointmentsConfirmed)
+                    <!-- Next appointment (affiché seulement s'il existe un prochain rendez-vous) -->
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div
+                            class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-4 flex justify-between items-center">
+                            <h2 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-star text-yellow-300 mr-2"></i>
+                                Prochain Rendez-vous
+                            </h2>
+                            <div
+                                class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                                <i class="fas fa-clock mr-1.5"></i>
+                                <span id="appointment-countdown">{{ $stats["nextAppointment"] }}</span>
+                            </div>
+                        </div>
+                        <div class="md:flex">
+                            <!-- Date column -->
+                            <div
+                                class="bg-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center">
+                                <div class="text-center">
+                                    <p class="text-indigo-200 text-sm">{{ $nextAppointment->day_name ?? 'Aujourd\'hui' }}
+                                    </p>
+                                    <p class="text-3xl font-bold">{{ $nextAppointment->formatted_time ?? '09:30' }}</p>
+                                    <p class="text-xs">{{ $nextAppointment->am_pm ?? 'AM' }}</p>
                                 </div>
-                                
-                                <div class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center mt-4 z-10 border border-white/30">
-                                    <i class="fas fa-envelope mr-2"></i>
-                                    <span>Dernière: {{ $lastMessageTime ?? 'Aujourd\'hui' }}</span>
+                                <div class="md:mt-4 text-center">
+                                    <span class="px-2 py-1 bg-indigo-700 rounded-lg text-xs">Salle
+                                        {{ $nextAppointment->room ?? '204' }}</span>
                                 </div>
                             </div>
 
-                            <div class="p-6 flex-grow overflow-hidden">
-                                <div class="flex flex-col h-full">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
-                                            <i class="fas fa-comments text-indigo-500 mr-2"></i>
-                                            Messages récents
-                                        </h3>
-                                        <div class="flex gap-2">
-                                            <button class="px-3 py-1 text-xs bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors">
-                                                Tous
-                                            </button>
-                                            <button class="px-3 py-1 text-xs bg-white text-gray-600 rounded-full hover:bg-gray-50 transition-colors border border-gray-200">
-                                                Non lus
-                                            </button>
+                            <!-- Content -->
+                            <div class="p-6 flex-grow">
+                                <div class="flex flex-wrap">
+                                    <div class="w-full lg:w-2/3">
+                                        <div class="flex items-center">
+                                            <img class="h-12 w-12 rounded-full mr-4"
+                                                src="{{ $nextAppointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($nextAppointment->patient->name ?? 'Patient') . '&background=6366F1&color=ffffff' }}"
+                                                alt="{{ $nextAppointment->patient->name ?? 'Patient' }}">
+                                            <div>
+                                                <h3 class="text-lg font-medium text-indigo-700">
+                                                    {{ $nextAppointment->patient->name ?? 'Mohammed Alami' }}
+                                                </h3>
+                                                <div class="flex flex-wrap text-sm text-gray-600">
+                                                    <span class="mr-3">{{ $nextAppointment->patient->gender ?? 'Homme' }} •
+                                                        {{ $nextAppointment->patient->age ?? '42' }} ans</span>
+                                                    <span>Patient ID:
+                                                        #{{ $nextAppointment->patient->id_number ?? 'MED-12345' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                            <div>
+                                                <p class="text-gray-500">Type de rendez-vous</p>
+                                                <p class="font-medium flex items-center mt-1">
+                                                    <i class="fas fa-heartbeat text-indigo-500 mr-2"></i>
+                                                    {{ $nextAppointment->type ?? 'Contrôle de routine' }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Médecin</p>
+                                                <p class="font-medium flex items-center mt-1">
+                                                    <i class="fas fa-user-md text-indigo-500 mr-2"></i>
+                                                    Dr. {{ $details->user->name }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Département</p>
+                                                <p class="font-medium flex items-center mt-1">
+                                                    <i class="fas fa-stethoscope text-indigo-500 mr-2"></i>
+                                                    {{ $details->department ?? 'Cardiologie' }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 pt-4 border-t border-gray-100">
+                                            <div class="flex items-center text-sm">
+                                                <div class="w-24 text-gray-500">Dernière visite:</div>
+                                                <div class="font-medium">
+                                                    {{ $nextAppointment->patient->last_visit_date ?? '12 Mars 2025' }}
+                                                    ({{ $nextAppointment->patient->days_since_last_visit ?? '24' }} jours)
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center text-sm mt-1.5">
+                                                <div class="w-24 text-gray-500">Téléphone:</div>
+                                                <div class="font-medium">
+                                                    {{ $nextAppointment->patient->phone ?? '+212 661-234567' }}
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center text-sm mt-1.5">
+                                                <div class="w-24 text-gray-500">Email:</div>
+                                                <div class="font-medium">{{ $nextAppointment->patient->email ??
+                                                    'm.alami@example.com' }}</div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="overflow-y-auto flex-grow pr-2" style="max-height: calc(50.2vh - 140px);">
-                                        @forelse($messages as $message)
-                                            <div class="message-item p-3 hover:bg-gray-50 rounded-lg mb-2 border border-gray-100 cursor-pointer transition-all duration-200">
-                                                <div class="flex items-start">
-                                                    <div class="flex-shrink-0 relative">
-                                                        <img class="h-10 w-10 rounded-full object-cover border-2 border-indigo-100"
-                                                            src="{{ $message->sender->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($message->sender->name) . '&background=6366F1&color=ffffff' }}"
-                                                            alt="{{ $message->sender->name }}">
-                                                        @if($message->unread_count > 0)
-                                                            <span class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
-                                                        @endif
-                                                    </div>
-                                                    <div class="ml-3 flex-grow">
-                                                        <div class="flex justify-between items-start">
-                                                            <p class="text-sm font-semibold text-gray-900">{{ $message->sender->name }}</p>
-                                                            <span class="text-xs text-gray-500">{{ $message->time }}</span>
-                                                        </div>
-                                                        <p class="text-sm text-gray-600 line-clamp-1">{{ $message->preview }}</p>
-                                                        
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <div class="flex flex-col items-center justify-center h-full py-6 text-center">
-                                                <div class="h-16 w-16 rounded-full bg-indigo-50 flex items-center justify-center mb-3">
-                                                    <i class="fas fa-inbox text-indigo-400 text-2xl"></i>
-                                                </div>
-                                                <p class="text-gray-600 mb-1">Aucun message récent</p>
-                                                <p class="text-sm text-gray-500">Votre boîte de réception est vide</p>
-                                            </div>
-                                        @endforelse
-                                    </div>
+                                    <div class="w-full lg:w-1/3 mt-4 lg:mt-0 lg:border-l lg:pl-6 border-gray-100">
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 pulse"></span>
+                                            {{ $nextAppointment->status ?? 'Confirmé' }}
+                                        </span>
+                                        <div class="mt-4">
+                                            <p class="text-sm font-medium text-gray-700">Notes:</p>
+                                            <p class="text-sm text-gray-600 mt-1">
+                                                {{ $nextAppointment->notes ?? 'Le patient a mentionné des douleurs thoraciques lors de la dernière visite. Suivi de l\'efficacité des médicaments.' }}
+                                            </p>
+                                        </div>
 
-                                    <div class="mt-4 pt-4 border-t border-gray-100">
-                                        <div class="flex justify-between">
-                                            <div class="flex gap-2">
-                                                <a href="#" class="flex items-center px-3 py-2 text-sm border border-indigo-300 text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 transition-colors">
-                                                    <i class="fas fa-sync-alt mr-2"></i>
-                                                    Actualiser
-                                                </a>
-                                                <a href="#" class="flex items-center px-3 py-2 text-sm border border-gray-300 text-gray-700 bg-white rounded-md hover:bg-gray-50 transition-colors">
-                                                    <i class="fas fa-archive mr-2"></i>
-                                                    Archiver
-                                                </a>
-                                            </div>
-                                            <a href="" class="flex items-center px-4 py-2 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors shadow-sm">
-                                                <i class="fas fa-comment-alt mr-2"></i>
-                                                Nouveau message
+                                        <div class="mt-6 flex flex-wrap gap-2">
+                                            <a href=""
+                                                class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-file-medical text-indigo-500 mr-2"></i>
+                                                Dossier médical
+                                            </a>
+                                            <a href=""
+                                                class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-history text-amber-500 mr-2"></i>
+                                                Historique
+                                            </a>
+                                            <a href=""
+                                                class="flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
+                                                <i class="fas fa-check-circle mr-2"></i>
+                                                Enregistrer
                                             </a>
                                         </div>
                                     </div>
@@ -1000,7 +1041,7 @@
                                         <i class="fas fa-calendar-alt mr-2"></i>
                                         Voir mon agenda
                                     </a>
-                                    <a href="{{ route('doctor.appointments.create', $doctorId) }}"
+                                    <a href="{{ route('doctor.appointments.create') }}"
                                         class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         <i class="fas fa-user-plus mr-2"></i>
                                         Créer un rendez-vous
@@ -1012,7 +1053,7 @@
                 @endif
 
                 <!-- Mini Calendar -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden" style="height: 50.2vh;">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                         <h3 class="text-lg font-medium text-gray-900 flex items-center">
                             <i class="fas fa-calendar-alt text-indigo-500 mr-2"></i>
@@ -1051,10 +1092,15 @@
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-indigo-600 rounded-full mr-1"></div>
-                                <span class="text-xs text-gray-600">{{ count($todayAppointments)  }} aujourd'hui</span>
+                                <span class="text-xs text-gray-600">{{ $stats["totalAppointments"] }} aujourd'hui</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-amber-500 rounded-full mr-1"></div>
+                                <span class="text-xs text-gray-600">{{ $tomorrowAppointmentsCount }} demain</span>
                             </div>
                         </div>
-                        <a href="" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
+                        <a href="{{ route('doctor.appointments') }}"
+                            class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
                     </div>
                 </div>
             </div>
@@ -1233,21 +1279,11 @@
                     <div class="px-6 py-4 flex justify-between items-center border-b border-gray-200">
                         <h3 class="text-lg font-medium text-gray-900 flex items-center">
                             <i class="fas fa-calendar-day text-indigo-500 mr-2"></i>
-                            Rendez-vous d'aujourd'hui
+                            Rendez-vous en attente d'aujourd'hui
                             <span
                                 class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">{{ count($todayAppointments)  }}
                                 Total</span>
                         </h3>
-                        <div>
-                            <select id="appointment-status-filter"
-                                class="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="all">Tous les statuts</option>
-                                <option value="confirmed">Confirmés</option>
-                                <option value="pending">En attente</option>
-                                <option value="completed">Terminés</option>
-                                <option value="cancelled">Annulés</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="max-h-80 overflow-y-auto">
                         <ul class="divide-y divide-gray-200" id="appointments-list">
@@ -1281,14 +1317,27 @@
                                                     class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('doctor.appointments.check', $appointment->id) }}"
-                                                    class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
-                                                    <i class="fas fa-check"></i>
-                                                </a>
-                                                <button data-id="{{ $appointment->id }}"
-                                                    class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors cancel-appointment">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
+                                                <form
+                                                    action="{{ route('doctor.appointments.change-status', $appointment->id) }}"
+                                                    method="POST" class="inline-block">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="completed">
+
+                                                    <button type="submit"
+                                                        class="p-1.5 rounded-full text-green-600 hover:bg-green-50 transition-colors">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                                <form
+                                                    action="{{ route('doctor.appointments.change-status', $appointment->id) }}"
+                                                    method="POST" class="inline-block">
+                                                    @csrf
+                                                    <input type="hidden" name="status" value="canceled">
+                                                    <button type="submit"
+                                                        class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors cancel-appointment">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -1823,36 +1872,7 @@
                 });
             }
 
-            // Cancel appointment
-            const cancelButtons = document.querySelectorAll(".cancel-appointment");
-            cancelButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const appointmentId = this.getAttribute("data-id");
-                    if (confirm("Êtes-vous sûr de vouloir annuler ce rendez-vous?")) {
-                        fetch(`/api/appointments/${appointmentId}/cancel`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    // Update UI or reload
-                                    window.location.reload();
-                                } else {
-                                    alert("Erreur lors de l'annulation du rendez-vous");
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error cancelling appointment:', error);
-                                alert("Une erreur s'est produite lors de l'annulation du rendez-vous");
-                            });
-                    }
-                });
-            });
-
+           
             // Sort patients
             const patientSort = document.getElementById("patient-sort");
             if (patientSort) {

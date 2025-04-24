@@ -37,7 +37,7 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-semibold text-gray-800">Détails du Rendez-vous</h1>
             <div class="flex space-x-2">
-                <a href="#" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                <a href="{{ route('doctor.appointments.edit',$appointment->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                     <i class="fas fa-edit mr-2"></i>Modifier
                 </a>
                 <a href="#" onclick="history.back()"

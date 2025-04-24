@@ -25,124 +25,134 @@ class DoctorController extends Controller
         $this->appointmentService = $appointmentService;
     }
     public function index()
-{
-    try {
-        $doctor = auth()->user();
-        $doctorId = $doctor->doctor->id;
-        $details = $this->doctorService->getDoctorDetails($doctorId);
-        $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId);
-        $appointments = $this->appointmentService->getByDoctorId($doctorId);
-        $patients = $this->appointmentService->getByDoctorId($doctorId) ;
-        // dd($todayAppointments[0]->date->format('d/m/Y'));
-        foreach($appointments as $appointment) {
-            if ($appointment->patient && !$patients->contains('id', $appointment->patient->id)) {
-                $patients->push($appointment->patient);
+    {
+      
+            $doctor = auth()->user();
+            $doctorId = $doctor->doctor->id;
+            $details = $this->doctorService->getDoctorDetails($doctorId);
+            $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'pending');
+            $todayAppointmentsConfirmed = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'confirmed');
+            $appointments = $this->appointmentService->getByDoctorId($doctorId);
+            $patients = $this->appointmentService->getByDoctorId($doctorId) ;
+            // dd($todayAppointments[0]->date->format('d/m/Y'));
+            foreach($appointments as $appointment) {
+                if ($appointment->patient && !$patients->contains('id', $appointment->patient->id)) {
+                    $patients->push($appointment->patient);
+                }
             }
-        }
+            
+            $revenue = $this->appointmentService->getTotalRevenue($doctor->id) ?? 0;
+            $speciality = null;
+            if ($details && isset($details->id_speciality)) {
+                $speciality = Speciality::where('id', $details->id_speciality)->first();
+            }
+            
+            $monthlyRevenue = $revenue;
+            $patientSatisfactionRate = 95;
+            $satisfactionIncreasePercent = 5;
+            $reviewCount = 120;
         
-        $revenue = $this->appointmentService->getTotalRevenue($doctor->id) ?? 0;
-        $speciality = null;
-        if ($details && isset($details->id_speciality)) {
-            $speciality = Speciality::where('id', $details->id_speciality)->first();
-        }
-        
-        $monthlyRevenue = $revenue;
-        $patientSatisfactionRate = 95;
-        $satisfactionIncreasePercent = 5;
-        $reviewCount = 120;
-    
-        $nextAppointment = $todayAppointments->sortBy([
-            ['date', 'asc'],
-            ['time', 'asc'],
-        ])->first();
-        $appointmentDateTime = $nextAppointment->date->setTimeFromTimeString($nextAppointment->time);
-        $diffInMinutes = now()->diffInMinutes($appointmentDateTime);
-        $hours = floor($diffInMinutes / 60);
-        $minutes = $diffInMinutes % 60;
-        $nextAppointmentCountdown = $hours . 'h ' . $minutes . 'm';
-        
-        $currentDateTime = now()->format('l, d F Y | H:i');
-        
-        $now = now();
-        $currentMonth = $now->format('F');
-        $currentYear = $now->format('Y');
-        $prevMonth = $now->copy()->subMonth()->format('m');
-        $prevYear = $now->copy()->subMonth()->format('Y');
-        $nextMonth = $now->copy()->addMonth()->format('m');
-        $nextYear = $now->copy()->addMonth()->format('Y');
-        $calendarDays = $this->generateCalendarDays();
-        
-        $visitsChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $visitsChartData = [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95];
-        $revenueChartLabels = ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'];
-        $revenueChartData = [35, 25, 20, 15, 5];
-        $totalVisitsThisMonth = 145;
-        $visitsIncreasePercent = 12;
-        $totalRevenue = $revenue ?? 5000;
-        $revenueIncreasePercent = 8;
-        
-        $averageWaitTime = 15;
-        $waitTimeImprovement = 20;
-        $averageConsultationTime = 25;
-        $consultationTimeVariance = 5;
-        $noShowRate = 4;
-        $noShowRateImprovement = 25;
-        $onlineBookingRate = 68;
-        $onlineBookingImprovement = 15;
-        
-   
-        $weather = (object) ['temperature' => 22, 'city' => 'Casablanca'];
-        $urgentLabResultsCount = 3;
-        $unreadMessagesCount = 5;
-        $newPatientsThisMonth = 12;
-        $appointmentIncreasePercent = 8;
-        
-        $tasks = collect([
-            (object) ['id' => 1, 'description' => 'Réviser les rapports de laboratoire', 'completed' => false, 'priority_label' => 'Urgent', 'priority_color' => 'red-600', 'priority_icon' => 'exclamation-circle', 'due_label' => "Aujourd'hui"],
-            (object) ['id' => 2, 'description' => 'Appeler les patients de suivi', 'completed' => false, 'priority_label' => 'Moyen', 'priority_color' => 'amber-600', 'priority_icon' => 'clock', 'due_label' => "Demain"]
-        ]);
-        $pendingTasksCount = 2;
-        
-        $recentActivities = collect([
-            (object) ['color' => 'indigo', 'icon' => 'user', 'title' => 'Nouveau patient enregistré', 'highlight' => 'Ahmed Benani', 'description' => 'a été ajouté à votre liste de patients.', 'time_ago' => 'Il y a 30 minutes'],
-            (object) ['color' => 'green', 'icon' => 'check', 'title' => 'Rendez-vous terminé', 'highlight' => 'Consultation avec Fatima Zahra', 'description' => 'a été complétée avec succès.', 'time_ago' => 'Il y a 2 heures']
-        ]);
-        
-        $messages = collect([
-            (object) ['id' => 1, 'sender' => (object) ['name' => 'Dr. Karim', 'avatar_url' => null], 'preview' => 'Pouvez-vous examiner les résultats du patient #12345?', 'time' => '09:45', 'unread_count' => 1],
-            (object) ['id' => 2, 'sender' => (object) ['name' => 'Administration', 'avatar_url' => null], 'preview' => 'Planning de la semaine prochaine disponible', 'time' => 'Hier', 'unread_count' => 0]
-        ]);
-        
-        $activePatientCount = $patients->count();
-        $activePatientPercent = 85;
-        $patientsThisWeek = 24;
-        $patientsWeeklyChangePercent = 15;
-        $followUpsCount = 18;
-        $urgentFollowUpsCount = 3;
+            $nextAppointment = $todayAppointments->sortBy([
+                ['date', 'asc'],
+                ['time', 'asc'],
+            ])->first();
+            // dd($nextAppointment);
+            $appointmentDateTime = $nextAppointment->date->setTimeFromTimeString($nextAppointment->time);
+            $diffInMinutes = now()->diffInMinutes($appointmentDateTime);
+            $hours = floor($diffInMinutes / 60);
+            $minutes = $diffInMinutes % 60;
+            $nextAppointmentCountdown = $hours . 'h ' . $minutes . 'm';
+            
+            $currentDateTime = now()->format('l, d F Y | H:i');
+            
+            $now = now();
+            $currentMonth = $now->format('F');
+            $currentYear = $now->format('Y');
+            $prevMonth = $now->copy()->subMonth()->format('m');
+            $prevYear = $now->copy()->subMonth()->format('Y');
+            $nextMonth = $now->copy()->addMonth()->format('m');
+            $nextYear = $now->copy()->addMonth()->format('Y');
+            $calendarDays = $this->generateCalendarDays();
+            
+            $visitsChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            $visitsChartData = [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95];
+            $revenueChartLabels = ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'];
+            $revenueChartData = [35, 25, 20, 15, 5];
+            $totalVisitsThisMonth = 145;
+            $visitsIncreasePercent = 12;
+            $totalRevenue = $revenue ?? 5000;
+            $revenueIncreasePercent = 8;
+            
+            $averageWaitTime = 15;
+            $waitTimeImprovement = 20;
+            $averageConsultationTime = 25;
+            $consultationTimeVariance = 5;
+            $noShowRate = 4;
+            $noShowRateImprovement = 25;
+            $onlineBookingRate = 68;
+            $onlineBookingImprovement = 15;
+            
+       
+            $weather = (object) ['temperature' => 22, 'city' => 'Casablanca'];
+            $urgentLabResultsCount = 3;
+            $unreadMessagesCount = 5;
+            $newPatientsThisMonth = 12;
+            $appointmentIncreasePercent = 8;
+            $tomorrowAppointmentsCount = 0;
+            $tasks = collect([
+                (object) ['id' => 1, 'description' => 'Réviser les rapports de laboratoire', 'completed' => false, 'priority_label' => 'Urgent', 'priority_color' => 'red-600', 'priority_icon' => 'exclamation-circle', 'due_label' => "Aujourd'hui"],
+                (object) ['id' => 2, 'description' => 'Appeler les patients de suivi', 'completed' => false, 'priority_label' => 'Moyen', 'priority_color' => 'amber-600', 'priority_icon' => 'clock', 'due_label' => "Demain"]
+            ]);
+            $pendingTasksCount = 2;
+            
+            $recentActivities = collect([
+                (object) ['color' => 'indigo', 'icon' => 'user', 'title' => 'Nouveau patient enregistré', 'highlight' => 'Ahmed Benani', 'description' => 'a été ajouté à votre liste de patients.', 'time_ago' => 'Il y a 30 minutes'],
+                (object) ['color' => 'green', 'icon' => 'check', 'title' => 'Rendez-vous terminé', 'highlight' => 'Consultation avec Fatima Zahra', 'description' => 'a été complétée avec succès.', 'time_ago' => 'Il y a 2 heures']
+            ]);
+            
+            $messages = collect([
+                (object) ['id' => 1, 'sender' => (object) ['name' => 'Dr. Karim', 'avatar_url' => null], 'preview' => 'Pouvez-vous examiner les résultats du patient #12345?', 'time' => '09:45', 'unread_count' => 1],
+                (object) ['id' => 2, 'sender' => (object) ['name' => 'Administration', 'avatar_url' => null], 'preview' => 'Planning de la semaine prochaine disponible', 'time' => 'Hier', 'unread_count' => 0]
+            ]);
+            
+            $activePatientCount = $patients->count();
+            $activePatientPercent = 85;
+            $patientsThisWeek = 24;
+            $patientsWeeklyChangePercent = 15;
+            $followUpsCount = 18;
+            $urgentFollowUpsCount = 3;
+            // dd($todayAppointmentsConfirmed->count());
+            $stats = [
+                'totalAppointments' => $appointments ? $appointments->count() : 0,
+                'todayAppointmentsConfirmed' => $todayAppointmentsConfirmed ? $todayAppointmentsConfirmed->count() : 0,
+                'Appointments' => $todayAppointments ?: collect(),
+                'patientsCount' => $patients->count(),
+                'revenue' => $revenue,
+                'patients' => $patients,
+                'patient' => $patients->first(),
+                'nextAppointment' => $nextAppointment ? $nextAppointmentCountdown : 'Aucun rendez-vous prévu'
+            ];
 
-        return view('doctor.dashboard', compact(
-            'details', 'revenue', 'todayAppointments', 'patients',
-            'monthlyRevenue', 'patientSatisfactionRate', 'satisfactionIncreasePercent', 'reviewCount',
-            'nextAppointment', 'nextAppointmentCountdown', 'currentDateTime',
-            'currentMonth', 'currentYear', 'prevMonth', 'prevYear', 'nextMonth', 'nextYear',
-            'calendarDays', 
-            'visitsChartLabels', 'visitsChartData', 'revenueChartLabels', 'revenueChartData',
-            'totalVisitsThisMonth', 'visitsIncreasePercent', 'totalRevenue', 'revenueIncreasePercent',
-            'averageWaitTime', 'waitTimeImprovement', 'averageConsultationTime', 'consultationTimeVariance',
-            'noShowRate', 'noShowRateImprovement', 'onlineBookingRate', 'onlineBookingImprovement',
-            'weather', 'urgentLabResultsCount', 'unreadMessagesCount', 'newPatientsThisMonth',
-            'appointmentIncreasePercent', 'tasks', 'pendingTasksCount', 'recentActivities', 'messages',
-            'activePatientCount', 'activePatientPercent', 'patientsThisWeek',
-            'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount', 'appointments', 'speciality','doctorId'
-        ));
-    } catch (\Exception $e) {
-        return back()->with('error', 'Erreur lors du chargement du tableau de bord: ' . $e->getMessage());
+            return view('doctor.dashboard', compact(
+                'details', 'revenue', 'todayAppointments', 'patients',
+                'monthlyRevenue', 'patientSatisfactionRate', 'satisfactionIncreasePercent', 'reviewCount',
+                'nextAppointment', 'nextAppointmentCountdown', 'currentDateTime',
+                'currentMonth', 'currentYear', 'prevMonth', 'prevYear', 'nextMonth', 'nextYear',
+                'calendarDays', 
+                'visitsChartLabels', 'visitsChartData', 'revenueChartLabels', 'revenueChartData',
+                'totalVisitsThisMonth', 'visitsIncreasePercent', 'totalRevenue', 'revenueIncreasePercent',
+                'averageWaitTime', 'waitTimeImprovement', 'averageConsultationTime', 'consultationTimeVariance',
+                'noShowRate', 'noShowRateImprovement', 'onlineBookingRate', 'onlineBookingImprovement',
+                'weather', 'urgentLabResultsCount', 'unreadMessagesCount', 'newPatientsThisMonth',
+                'appointmentIncreasePercent', 'tasks', 'pendingTasksCount', 'recentActivities', 'messages',
+                'activePatientCount', 'activePatientPercent', 'patientsThisWeek',
+                'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount', 'appointments', 'speciality','doctorId',
+                'stats','tomorrowAppointmentsCount', 'todayAppointmentsConfirmed'
+            ));
+        
+      
     }
-}
-    
-    /**
-     * Generate calendar days for the mini calendar
-     */
+   
     private function generateCalendarDays()
     {
         $days = [];
@@ -151,7 +161,6 @@ class DoctorController extends Controller
         $firstDay = now()->startOfMonth();
         $lastDay = now()->endOfMonth();
         
-        // Previous month days to fill the first week
         $previousMonthDays = $firstDay->dayOfWeek == 1 ? 0 : $firstDay->dayOfWeek - 1;
         for ($i = $previousMonthDays - 1; $i >= 0; $i--) {
             $days[] = [
@@ -162,20 +171,18 @@ class DoctorController extends Controller
             ];
         }
         
-        // Current month days
         for ($day = 1; $day <= $lastDay->day; $day++) {
             $date = \Carbon\Carbon::createFromDate($currentYear, $currentMonth, $day);
             $days[] = [
                 'day' => $day,
                 'isCurrentMonth' => true,
                 'isToday' => $date->isToday(),
-                'hasAppointments' => $day % 3 == 0 // Example: mark every third day as having appointments
+                'hasAppointments' => $day % 3 == 0 
             ];
         }
         
-        // Next month days to complete the grid
         $totalDaysShown = count($days);
-        $remainingDays = 42 - $totalDaysShown; // 6 rows of 7 days
+        $remainingDays = 42 - $totalDaysShown; 
         
         for ($day = 1; $day <= $remainingDays; $day++) {
             $days[] = [
@@ -247,7 +254,6 @@ class DoctorController extends Controller
             $user = User::findOrFail($appointment->patient_id);
             $patient = Patient::where('user_id', $user->id)->first();
             $detailsPatient = User::where('id', $patient->user_id)->first();
-            // dd($patient);
             $speciality = Speciality::where('id', $details->id_speciality)->first();
             if (!$appointment) {
                 return redirect()->back()->with('error', 'Rendez-vous introuvable.');
@@ -275,19 +281,71 @@ class DoctorController extends Controller
         }
     }
     
-    public function updateAppointment(Request $request, $id)
+    public function edit($id)
     {
         try {
             $doctor = auth()->user();
-            $result = $this->appointmentService->updateAppointment($id, $request->all());
+            $appointment = Appointment::findOrFail($id);
             
-            if ($result) {
-                return redirect()->route('doctor.appointments')->with('success', 'Rendez-vous mis à jour avec succès.');
-            } else {
-                return redirect()->back()->with('error', 'Erreur lors de la mise à jour du rendez-vous.');
+            // Check if the appointment belongs to this doctor
+            if ($appointment->doctor_id != $doctor->doctor->id) {
+                return redirect()->back()->with('error', 'Vous n\'avez pas accès à ce rendez-vous.');
             }
+            
+            $patient = $appointment->patient;
+            
+            return view('doctor.appointments.edit', compact('appointment', 'patient'));
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors de la mise à jour du rendez-vous: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors du chargement du rendez-vous: ' . $e->getMessage());
+        }
+    }
+    
+    public function updateAppointment(Request $request, $id)
+    {
+    
+        try {
+            $doctor = auth()->user();
+            $appointment = Appointment::findOrFail($id);
+            
+            // Check if the appointment belongs to this doctor
+            if ($appointment->doctor_id != $doctor->doctor->id) {
+                return redirect()->back()->with('error', 'Vous n\'avez pas accès à ce rendez-vous.');
+            }
+            
+            // Validate the request data
+            $validated = $request->validate([
+                'doctor_id' => $request->patient_id,
+                'patient_id' => $request->doctor_id,
+                'date' => 'required|date',
+                'time' => 'required|date_format:H:i',
+                'status' => 'required|in:pending,confirmed,completed,canceled',
+                'reason' => 'required|string',
+                'price' => 'nullable|numeric'
+            ]);
+            
+            // Prepare data for update
+            $data = [
+                'doctor_id' => $validated['doctor_id'],
+                'patient_id' => $validated['patient_id'],
+                'date' => $validated['date'],
+                'time' => $validated['time'],
+                'status' => $validated['status'],
+                'reason' => $validated['reason'],
+                'price' => $validated['price'] ?? $appointment->price
+            ];
+            
+            // Update the appointment using the service
+            $updatedAppointment = $this->appointmentService->update($id, $data);
+            
+            if (!$updatedAppointment) {
+                return redirect()->back()->with('error', 'Erreur lors de la mise à jour du rendez-vous. Veuillez réessayer.');
+            }
+            
+            return redirect()->route('doctor.appointments.show', $appointment->id)
+                ->with('success', 'Rendez-vous mis à jour avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de la mise à jour du rendez-vous: ' . $e->getMessage())
+                ->withInput();
         }
     }
     
@@ -505,3 +563,5 @@ class DoctorController extends Controller
         }
     }
 }
+
+

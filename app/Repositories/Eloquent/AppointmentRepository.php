@@ -65,7 +65,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     }
     public function getAppointmentsByDoctorId($doctorId)
     {
-        return $this->model->where('doctor_id', $doctorId)->get();
+        return $this->model->where('doctor_id', $doctorId)->where('date', '=', now()->format('Y-m-d'))->get();
     }
     public function getByPatientId($patientId)
     {

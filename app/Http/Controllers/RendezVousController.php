@@ -49,19 +49,12 @@ class RendezVousController extends Controller
         return view('patient.payment');
     }
 
-    /**
-     * Affiche les détails du rendez-vous après le paiement
-     */
     public function showAppointmentDetails($appointment_id)
     {
-        // Récupérer le rendez-vous
         $appointment = Appointment::findOrFail($appointment_id);
-        
-        // Récupérer les informations associées
         $doctor = Doctor::with('user', 'speciality')->findOrFail($appointment->doctor_id);
         $patient = Patient::with('user')->findOrFail($appointment->patient_id);
         
-        // Si l'utilisateur est authentifié, vérifier qu'il est bien le propriétaire du rendez-vous
         if (auth()->check()) {
             $currentPatient = Patient::where('user_id', auth()->id())->first();
             if ($currentPatient && $currentPatient->id !== $appointment->patient_id) {
@@ -72,14 +65,10 @@ class RendezVousController extends Controller
         return view('patient.appointment-details', compact('appointment', 'doctor', 'patient'));
     }
     
-    /**
-     * Annuler un rendez-vous
-     */
     public function cancelAppointment($appointment_id)
     {
         $appointment = Appointment::findOrFail($appointment_id);
         
-        // Vérifier que l'utilisateur peut annuler ce rendez-vous
         if (auth()->check()) {
             $currentPatient = Patient::where('user_id', auth()->id())->first();
             if ($currentPatient && $currentPatient->id !== $appointment->patient_id) {
@@ -87,7 +76,6 @@ class RendezVousController extends Controller
             }
         }
         
-        // Mettre à jour le statut
         $appointment->status = 'canceled';
         $appointment->save();
         
