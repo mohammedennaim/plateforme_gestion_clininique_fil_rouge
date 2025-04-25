@@ -38,12 +38,11 @@ class AdminController extends Controller
 
             $appointments = $this->dashboardService->getAllAppointments();
             $totalPatients = $this->dashboardService->getTotalPatients();
-            $totalDoctors = $this->dashboardService->getTotalDoctors();
+            $totalDoctors = $this->dashboardService->getTotalDoctorsCount();
             $totalAppointments = $this->dashboardService->getTotalAppointments();
             $totalRevenue = $this->dashboardService->getTotalRevenue();
             $todayAppointments = $this->dashboardService->getTodayAppointments();
             $pendingRequests = $this->dashboardService->getPendingRequests();
-
             return view('admin.dashboard', compact(
                 'patients',
                 'doctors',

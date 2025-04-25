@@ -25,6 +25,11 @@ class DoctorRepository implements DoctorRepositoryInterface
         ];
     }
 
+    public function getCountAllDoctors()
+    {
+        return Doctor::All()->count();
+    }
+
     public function getById($id)
     {
         return Doctor::findOrFail($id);

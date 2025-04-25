@@ -78,6 +78,10 @@ class DashboardService
     {
         return $this->doctorRepository->getAll();
     }
+    public function getTotalDoctorsCount()
+    {
+        return $this->doctorRepository->getCountAllDoctors();
+    }
     public function getTotalAppointments()
     {
         return $this->appointmentRepository->getAll()->count();

@@ -1466,249 +1466,74 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Script pour initialiser les graphiques et gérer les fonctionnalités -->
     <script>
-        // Configuration CSRF pour les requêtes AJAX
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        
-        // Fonction pour afficher/masquer les modals
-        function toggleModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            } else {
-                modal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }
-        }
-        
-        // Fonction pour afficher les alertes toast
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            const toastIcon = document.getElementById('toast-icon');
-            
-            toastMessage.textContent = message;
-            
-            // Set icon and border color based on type
-            if (type === 'success') {
-                toast.classList.remove('border-danger-500', 'border-warning-500');
-                toast.classList.add('border-success-500');
-                toastIcon.classList.remove('fa-exclamation-circle', 'text-danger-500', 'fa-exclamation-triangle', 'text-warning-500');
-                toastIcon.classList.add('fa-check-circle', 'text-success-500');
-            } else if (type === 'error') {
-                toast.classList.remove('border-success-500', 'border-warning-500');
-                toast.classList.add('border-danger-500');
-                toastIcon.classList.remove('fa-check-circle', 'text-success-500', 'fa-exclamation-triangle', 'text-warning-500');
-                toastIcon.classList.add('fa-exclamation-circle', 'text-danger-500');
-            } else if (type === 'warning') {
-                toast.classList.remove('border-success-500', 'border-danger-500');
-                toast.classList.add('border-warning-500');
-                toastIcon.classList.remove('fa-check-circle', 'text-success-500', 'fa-exclamation-circle', 'text-danger-500');
-                toastIcon.classList.add('fa-exclamation-triangle', 'text-warning-500');
+        // Récupérer les données du contrôleur
+        const dashboardData = {
+            patients: @json($patients ?? []),
+            doctors: @json($doctors ?? []),
+            appointments: @json($appointments ?? []),
+            totalPatients: @json($totalPatients ?? 0),
+            totalDoctors: @json($totalDoctors ?? 0),
+            totalAppointments: @json($totalAppointments ?? 0),
+            totalRevenue: @json($totalRevenue ?? 0),
+            todayAppointments: @json($todayAppointments ?? []),
+            pendingRequests: @json($pendingRequests ?? [])
+        };
+        console.log(@json($totalAppointments ?? 0));
+
+        // Mettre à jour les compteurs dans les cartes de statistiques
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mettre à jour les stats
+            if (document.getElementById('total-doctors')) {
+                document.getElementById('total-doctors').textContent = dashboardData.totalDoctors;
             }
             
-            // Show toast
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.remove('translate-y-10', 'opacity-0');
-            }, 10);
-            
-            // Hide toast after 5 seconds
-            setTimeout(hideToast, 5000);
-        }
-        
-        // Fonction pour masquer le toast
-        function hideToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.add('translate-y-10', 'opacity-0');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 300);
-        }
-        
-        // Fonction pour changer de section
-        function switchSection(sectionId) {
-            // Masquer toutes les sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Afficher la section demandée
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.classList.add('active');
-                
-                // Mettre à jour le titre de la page
-                const sectionTitle = document.getElementById('section-title');
-                switch(sectionId) {
-                    case 'dashboard-section':
-                        sectionTitle.textContent = 'Dashboard Admin';
-                        break;
-                    case 'doctors-section':
-                        sectionTitle.textContent = 'Gestion des médecins';
-                        break;
-                    case 'patients-section':
-                        sectionTitle.textContent = 'Gestion des patients';
-                        break;
-                    case 'appointments-section':
-                        sectionTitle.textContent = 'Gestion des rendez-vous';
-                        break;
-                    case 'settings-section':
-                        sectionTitle.textContent = 'Paramètres';
-                        break;
-                    case 'users-section':
-                        sectionTitle.textContent = 'Gestion des utilisateurs';
-                        break;
-                    case 'logs-section':
-                        sectionTitle.textContent = 'Logs d\'activité';
-                        break;
-                    case 'profile-section':
-                        sectionTitle.textContent = 'Mon profil';
-                        break;
-                    default:
-                        sectionTitle.textContent = 'Dashboard Admin';
-                }
+            if (document.getElementById('pending-doctors') && dashboardData.pendingRequests) {
+                document.getElementById('pending-doctors').textContent = dashboardData.pendingRequests.length;
             }
-        }
-        
-        // Initialiser les dropdowns
-        function initDropdowns() {
-            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
             
-            dropdownToggles.forEach(toggle => {
-                toggle.addEventListener('click', function() {
-                    const dropdown = this.closest('.dropdown');
-                    dropdown.classList.toggle('active');
-                    
-                    // Fermer les autres dropdowns
-                    dropdownToggles.forEach(otherToggle => {
-                        if (otherToggle !== toggle) {
-                            otherToggle.closest('.dropdown').classList.remove('active');
-                        }
-                    });
+            if (document.getElementById('inactive-doctors')) {
+                const inactiveDoctors = dashboardData.doctors.filter(doctor => doctor.status === 'not active').length;
+                document.getElementById('inactive-doctors').textContent = inactiveDoctors;
+            }
+
+            // Initialiser les graphiques
+            initStatusChart();
+            initRegistrationChart();
+        });
+
+        // Fonction pour initialiser le graphique de distribution des statuts
+        function initStatusChart() {
+            const statusCtx = document.getElementById('status-chart');
+            if (!statusCtx) return;
+
+            // Compter les médecins par statut
+            const statusData = {
+                active: 0,
+                pending: 0,
+                inactive: 0
+            };
+
+            if (dashboardData.doctors && dashboardData.doctors.length > 0) {
+                dashboardData.doctors.forEach(doctor => {
+                    if (doctor.status === 'active') statusData.active++;
+                    else if (doctor.status === 'pending') statusData.pending++;
+                    else if (doctor.status === 'not active') statusData.inactive++;
                 });
-            });
-            
-            // Fermer les dropdowns en cliquant ailleurs
-            document.addEventListener('click', function(event) {
-                if (!event.target.closest('.dropdown')) {
-                    document.querySelectorAll('.dropdown').forEach(dropdown => {
-                        dropdown.classList.remove('active');
-                    });
-                }
-            });
-        }
-        
-        // Initialiser la sidebar
-        function initSidebar() {
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const sidebar = document.querySelector('.sidebar');
-            
-            sidebarToggle.addEventListener('click', function() {
-                document.body.classList.toggle('sidebar-collapsed');
-                sidebar.classList.toggle('md:w-16');
-                sidebar.classList.toggle('md:w-64');
-            });
-            
-            mobileMenuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('hidden');
-            });
-            
-            // Gérer la navigation dans la sidebar
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            
-            sidebarItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    // Empêcher le comportement par défaut du lien
-                    e.preventDefault();
-                    
-                    // Retirer la classe active de tous les éléments
-                    sidebarItems.forEach(i => i.classList.remove('active'));
-                    
-                    // Ajouter la classe active à l'élément cliqué
-                    this.classList.add('active');
-                    
-                    // Changer de section
-                    const sectionId = this.getAttribute('data-section');
-                    if (sectionId) {
-                        switchSection(sectionId);
-                    }
-                    
-                    // Fermer la sidebar sur mobile
-                    if (window.innerWidth < 768) {
-                        sidebar.classList.add('hidden');
-                    }
-                });
-            });
-        }
-        
-        // Initialiser le thème
-        function initThemeToggle() {
-            const themeToggle = document.getElementById('theme-toggle');
-            const htmlElement = document.documentElement;
-            
-            // Vérifier les préférences sauvegardées ou utiliser les préférences système
-            const savedTheme = localStorage.getItem('theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-                htmlElement.classList.add('dark');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            } else {
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             }
-            
-            themeToggle.addEventListener('click', function() {
-                htmlElement.classList.toggle('dark');
-                
-                if (htmlElement.classList.contains('dark')) {
-                    localStorage.setItem('theme', 'dark');
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                } else {
-                    localStorage.setItem('theme', 'light');
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                }
-                
-                // Mettre à jour les graphiques pour une meilleure visibilité en mode sombre
-                if (window.statusChart && window.registrationChart) {
-                    if (htmlElement.classList.contains('dark')) {
-                        window.statusChart.options.plugins.legend.labels.color = '#f1f5f9';
-                        window.registrationChart.options.scales.x.ticks.color = '#f1f5f9';
-                        window.registrationChart.options.scales.y.ticks.color = '#f1f5f9';
-                    } else {
-                        window.statusChart.options.plugins.legend.labels.color = '#1e293b';
-                        window.registrationChart.options.scales.x.ticks.color = '#1e293b';
-                        window.registrationChart.options.scales.y.ticks.color = '#1e293b';
-                    }
-                    
-                    window.statusChart.update();
-                    window.registrationChart.update();
-                }
-            });
-        }
-        
-        // Initialiser les graphiques
-        function initCharts() {
-            // Status Distribution Chart
-            const statusCtx = document.getElementById('status-chart').getContext('2d');
-            window.statusChart = new Chart(statusCtx, {
+
+            // Créer le graphique
+            new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Actifs', 'En attente', 'Inactifs'],
+                    labels: ['Active', 'En attente', 'Not Active'],
                     datasets: [{
-                        data: [98, 18, 8],
+                        data: [statusData.active, statusData.pending, statusData.inactive],
                         backgroundColor: [
-                            'rgba(16, 185, 129, 0.7)',  // success
-                            'rgba(245, 158, 11, 0.7)',  // warning
-                            'rgba(239, 68, 68, 0.7)'    // danger
-                        ],
-                        borderColor: [
-                            'rgba(16, 185, 129, 1)',
-                            'rgba(245, 158, 11, 1)',
-                            'rgba(239, 68, 68, 1)'
+                            'rgba(16, 185, 129, 0.8)',  // Vert pour actifs
+                            'rgba(245, 158, 11, 0.8)',  // Orange pour en attente
+                            'rgba(239, 68, 68, 0.8)'    // Rouge pour inactifs
                         ],
                         borderWidth: 1
                     }]
@@ -1720,35 +1545,88 @@
                         legend: {
                             position: 'bottom'
                         }
-                    },
-                    cutout: '65%'
+                    }
                 }
             });
+        }
+
+        // Fonction pour initialiser le graphique de tendance des inscriptions
+        function initRegistrationChart() {
+            const regCtx = document.getElementById('registration-chart');
+            if (!regCtx) return;
+
+            // Créer des données fictives pour l'exemple
+            // Dans un vrai scénario, vous devriez calculer ces données à partir de dashboardData
+            const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+            const currentMonth = new Date().getMonth();
             
-            // Registration Trend Chart
-            const registrationCtx = document.getElementById('registration-chart').getContext('2d');
+            // Organiser les données par mois (pour les 6 derniers mois)
+            const registrationData = {
+                doctors: Array(6).fill(0),
+                patients: Array(6).fill(0)
+            };
             
-            // Données mensuelles
-            const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-            const currentYear = new Date().getFullYear();
+            // Si vous avez des dates d'inscription dans vos données, vous pouvez les utiliser
+            if (dashboardData.doctors && dashboardData.doctors.length > 0) {
+                dashboardData.doctors.forEach(doctor => {
+                    // Supposons que doctor_details contient une date created_at
+                    if (doctor.doctor_details && doctor.doctor_details.created_at) {
+                        const createdDate = new Date(doctor.doctor_details.created_at);
+                        const monthDiff = currentMonth - createdDate.getMonth();
+                        if (monthDiff >= 0 && monthDiff < 6) {
+                            registrationData.doctors[5 - monthDiff]++;
+                        }
+                    }
+                });
+            }
+            if (dashboardData.patients && dashboardData.patients.length > 0) {
+                dashboardData.patients.forEach(patient => {
+                    if (patient['patient_details'].created_at) {
+                        const createdDate = new Date(patient['patient_details'].created_at);
+                        const monthDiff = currentMonth - createdDate.getMonth();
+                        if (monthDiff >= 0 && monthDiff < 6) {
+                            registrationData.patients[5 - monthDiff]++;
+                        }
+                    }
+                });
+            }
             
-            window.registrationChart = new Chart(registrationCtx, {
+            // Récupérer les 6 derniers mois
+            const lastSixMonths = [];
+            for (let i = 5; i >= 0; i--) {
+                const monthIndex = (currentMonth - i + 12) % 12;
+                lastSixMonths.push(months[monthIndex]);
+            }
+
+            // Créer le graphique
+            new Chart(regCtx, {
                 type: 'line',
                 data: {
-                    labels: months,
+                    labels: lastSixMonths,
                     datasets: [{
-                        label: 'Nouveaux médecins',
-                        data: [5, 8, 12, 15, 10, 7, 14, 18, 12, 9, 6, 8],
-                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
-                        borderColor: 'rgba(14, 165, 233, 1)',
-                        borderWidth: 2,
-                        tension: 0.3,
+                        label: 'Médecins',
+                        data: registrationData.doctors,
+                        borderColor: 'rgba(59, 130, 246, 0.8)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Patients',
+                        data: registrationData.patients,
+                        borderColor: 'rgba(16, 185, 129, 0.8)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
                         fill: true
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -1756,54 +1634,64 @@
                                 precision: 0
                             }
                         }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                title: function(tooltipItems) {
-                                    return tooltipItems[0].label + ' ' + currentYear;
-                                }
-                            }
-                        }
                     }
                 }
             });
         }
-        
-        // Initialiser l'application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialiser les dropdowns
-            initDropdowns();
+
+        // Fonction pour afficher un toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
             
-            // Initialiser la sidebar
-            initSidebar();
-            
-            // Initialiser le thème
-            initThemeToggle();
-            
-            // Initialiser les graphiques
-            initCharts();
-            
-            // Ajouter des animations aux cartes
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.classList.add('shadow-lg');
-                });
+            if (toast && toastMessage && toastIcon) {
+                // Configurer le message et l'icône
+                toastMessage.textContent = message;
                 
-                card.addEventListener('mouseleave', function() {
-                    this.classList.remove('shadow-lg');
-                });
-            });
-            
-            // Exemple de notification de succès
-            // Décommentez pour tester
-            // setTimeout(() => {
-            //     showToast('Opération réussie', 'success');
-            // }, 1000);
-        });
+                // Configurer l'icône et la couleur de la bordure en fonction du type
+                if (type === 'success') {
+                    toast.classList.remove('border-danger-500', 'border-warning-500');
+                    toast.classList.add('border-success-500');
+                    toastIcon.classList.remove('text-danger-500', 'text-warning-500');
+                    toastIcon.classList.add('text-success-500');
+                    toastIcon.classList.remove('fa-times-circle', 'fa-exclamation-circle');
+                    toastIcon.classList.add('fa-check-circle');
+                } else if (type === 'error') {
+                    toast.classList.remove('border-success-500', 'border-warning-500');
+                    toast.classList.add('border-danger-500');
+                    toastIcon.classList.remove('text-success-500', 'text-warning-500');
+                    toastIcon.classList.add('text-danger-500');
+                    toastIcon.classList.remove('fa-check-circle', 'fa-exclamation-circle');
+                    toastIcon.classList.add('fa-times-circle');
+                } else if (type === 'warning') {
+                    toast.classList.remove('border-success-500', 'border-danger-500');
+                    toast.classList.add('border-warning-500');
+                    toastIcon.classList.remove('text-success-500', 'text-danger-500');
+                    toastIcon.classList.add('text-warning-500');
+                    toastIcon.classList.remove('fa-check-circle', 'fa-times-circle');
+                    toastIcon.classList.add('fa-exclamation-circle');
+                }
+                
+                // Afficher le toast
+                toast.classList.remove('hidden');
+                toast.classList.remove('translate-y-10', 'opacity-0');
+                
+                // Masquer automatiquement après 3 secondes
+                setTimeout(hideToast, 3000);
+            }
+        }
+
+        // Fonction pour masquer le toast
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 300);
+            }
+        }
     </script>
 </body>
 </html>
