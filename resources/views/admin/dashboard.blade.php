@@ -1,3029 +1,1809 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Système de Gestion de Clinique - Dashboard Administrateur">
-    <meta name="author" content="Votre Nom">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Gestion de Clinique') }} - Dashboard Administrateur</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link
-        href="https://f</div>onts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet">
+    <title>Dashboard Admin | MediClinic</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49'
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            500: '#64748b',
+                            700: '#334155',
+                            900: '#0f172a'
+                        },
+                        success: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669'
+                        },
+                        danger: {
+                            50: '#fef2f2',
+                            500: '#ef4444',
+                            600: '#dc2626'
+                        },
+                        warning: {
+                            50: '#fffbeb',
+                            500: '#f59e0b',
+                            600: '#d97706'
+                        },
+                        info: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        card: '0 4px 25px 0 rgba(0, 0, 0, 0.1)',
+                        nav: '0 2px 10px 0 rgba(0, 0, 0, 0.05)',
+                        'card-hover': '0 10px 40px 0 rgba(0, 0, 0, 0.15)'
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem'
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        :root {
-            --primary: #4e73df;
-            --secondary: #5a5c69;
-            --success: #1cc88a;
-            --info: #36b9cc;
-            --warning: #f6c23e;
-            --danger: #e74a3b;
-            --light: #f8f9fc;
-            --dark: #5a5c69;
-            --sidebar-width: 250px;
-            --sidebar-collapsed-width: 90px;
-            --transition-speed: 0.35s;
-        }
-
         body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f</div>8f9fc;
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
         }
-
-        /* Sidebar améliorée */
-        .sidebar {
-            width: var(--sidebar-width);
-            min-height: 100vh;
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-            position: fixed;
-            z-index: 100;
-            transition: width var(--transition-speed) ease;
-            overflow-x: hidden;
-            box-shadow: 0 0.25rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .sidebar.toggled {
-            width: var(--sidebar-collapsed-width);
-        }
-
-        .sidebar-brand {
-            height: 5rem;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: 800;
-            text-align: center;
+        
+        .badge {
+            padding: 0.3em 0.8em;
+            font-size: 0.75em;
+            font-weight: 600;
+            border-radius: 9999px;
+            letter-spacing: 0.025em;
             text-transform: uppercase;
-            letter-spacing: 0.05rem;
-            z-index: 1;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem 1rem;
-            white-space: nowrap;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
         }
-
-        .sidebar-brand .sidebar-brand-icon {
-            margin-right: 0.5rem;
-            font-size: 1.5rem;
-        }
-
-        .sidebar hr {
-            margin: 0 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .sidebar .nav-item {
-            position: relative;
-        }
-
-        .sidebar .nav-item .nav-link {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            text-align: left;
-            padding: 1rem 1.5rem;
-            color: rgba(255, 255, 255, 0.8);
-            white-space: nowrap;
-            border-radius: 0.25rem;
-            margin: 0 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .sidebar .nav-item .nav-link:hover,
-        .sidebar .nav-item .nav-link.active {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-left: 5px solid #fff;
-            padding-left: calc(1.5rem - 5px);
-        }
-
-        .sidebar .nav-item .nav-link i {
-            margin-right: 0.75rem;
-            width: 1.25rem;
-            font-size: 1.1rem;
-            text-align: center;
-        }
-
-        .sidebar .sidebar-heading {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.5);
-            white-space: nowrap;
-        }
-
-        .sidebar.toggled .sidebar-brand .sidebar-brand-text {
-            display: none;
-        }
-
-        .sidebar.toggled .nav-item .nav-link span,
-        .sidebar.toggled .sidebar-heading {
-            width: 0;
-            visibility: hidden;
-            opacity: 0;
-            display: none;
-        }
-
-        .sidebar.toggled .nav-item .nav-link {
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .sidebar.toggled .nav-item .nav-link i {
-            margin-right: 0;
-            font-size: 1.2rem;
-        }
-
-        .sidebar.toggled #sidebarToggle::after {
-            content: '\f105';
-        }
-
-        .sidebar #sidebarToggle {
-            width: 2.5rem;
-            height: 2.5rem;
-            text-align: center;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 1rem auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sidebar #sidebarToggle:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .sidebar #sidebarToggle::after {
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            content: '\f104';
-            transition: all 0.3s;
-        }
-
-        /* Content-wrapper amélioré */
-        .content-wrapper {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-            background-color: #f8f9fc;
-            transition: margin-left var(--transition-speed) ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        body.sidebar-toggled .content-wrapper {
-            margin-left: var(--sidebar-collapsed-width);
-        }
-
-        /* Topbar amélioré */
-        .topbar {
-            height: 4.5rem;
-            background-color: #fff;
-            box-shadow: 0 0.25rem 1rem 0 rgba(58, 59, 69, 0.1);
-            z-index: 99;
-        }
-
-        .topbar .nav-item .nav-link {
-            position: relative;
-            height: 4.5rem;
-            display: flex;
-            align-items: center;
-            color: #d1d3e2;
-            padding: 0 0.75rem;
-        }
-
-        .topbar .nav-item .nav-link:hover {
-            color: #4e73df;
-        }
-
-        .topbar .dropdown-menu {
-            border: none;
-            box-shadow: 0 0.25rem 1rem 0 rgba(58, 59, 69, 0.1);
-            border-radius: 0.5rem;
-            padding: 0.8rem 0;
-            min-width: 16rem;
-        }
-
-        .topbar .dropdown-menu .dropdown-header {
-            background-color: #4e73df;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem 0.5rem 0 0;
-            font-weight: 700;
-            margin-top: -0.8rem;
-        }
-
-        .topbar .dropdown-menu .dropdown-item {
-            padding: 0.6rem 1.5rem;
-            display: flex;
-            align-items: center;
-        }
-
-        .topbar .dropdown-menu .dropdown-item:hover {
-            background-color: #f8f9fc;
-        }
-
-        .topbar .dropdown-menu .dropdown-item i {
-            margin-right: 0.75rem;
-            width: 1.25rem;
-            text-align: center;
-        }
-
-        .topbar .dropdown-list {
-            width: 20rem;
-            max-height: 25rem;
-            overflow-y: auto;
-        }
-
-        .topbar .dropdown-item:active {
-            background-color: #4e73df;
-            color: white;
-        }
-
-        /* Cards améliorés */
+        
         .card {
-            border: none;
-            border-radius: 0.75rem;
-            box-shadow: 0 0.25rem 1rem 0 rgba(58, 59, 69, 0.1);
-            margin-bottom: 1.5rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: rgba(14, 165, 233, 0.2);
         }
-
-        .card .card-header {
-            background-color: transparent;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            padding: 1.25rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card .card-header h6 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 700;
-            color: #4e73df;
-        }
-
-        .card .card-body {
-            padding: 1.5rem;
-        }
-
-        .border-left-primary {
-            border-left: 0.25rem solid var(--primary) !important;
-        }
-
-        .border-left-success {
-            border-left: 0.25rem solid var(--success) !important;
-        }
-
-        .border-left-info {
-            border-left: 0.25rem solid var(--info) !important;
-        }
-
-        .border-left-warning {
-            border-left: 0.25rem solid var(--warning) !important;
-        }
-
-        .border-left-danger {
-            border-left: 0.25rem solid var(--danger) !important;
-        }
-
-        /* Statistiques améliorées */
-        .stats-card .card-body {
-            padding: 1.25rem;
-        }
-
-        .stats-card .icon-circle {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(78, 115, 223, 0.1);
-            color: #4e73df;
-            font-size: 1.2rem;
-        }
-
-        .stats-card h6 {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .stats-card h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0;
-            color: #5a5c69;
-        }
-
-        /* Onglets améliorés */
-        .nav-tabs {
-            border-bottom: none;
-            margin-bottom: 1.5rem;
-        }
-
-        .nav-tabs .nav-item {
-            margin-right: 0.5rem;
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            color: #5a5c69;
-            background-color: white;
-            box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.1);
+        
+        .sidebar {
             transition: all 0.3s ease;
         }
 
-        .nav-tabs .nav-link:hover {
-            color: #4e73df;
-            transform: translateY(-3px);
-            box-shadow: 0 0.5rem 1rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .nav-tabs .nav-link.active {
-            color: white;
-            background-color: #4e73df;
-            transform: translateY(-3px);
-            box-shadow: 0 0.5rem 1rem 0 rgba(78, 115, 223, 0.25);
-        }
-
-        /* Tableaux améliorés */
-        .table {
-            width: 100%;
-            margin-bottom: 1rem;
-            color: #5a5c69;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        .table thead th {
-            vertical-align: bottom;
-            border-bottom: 2px solid #e3e6f0;
-            background-color: #f8f9fc;
-            padding: 1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.05rem;
-        }
-
-        .table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .table tbody tr:hover {
-            background-color: rgba(78, 115, 223, 0.05);
-        }
-
-        .table td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-top: 1px solid #e3e6f0;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0.25rem 0.5rem;
-            margin-left: 0.25rem;
-            border-radius: 0.35rem;
-            border: 1px solid #e3e6f0;
-            background-color: #fff;
-            color: #5a5c69;
-            transition: all 0.3s;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background-color: #f8f9fc;
-            color: #4e73df !important;
-            border-color: #4e73df;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            background-color: #4e73df;
-            color: #fff !important;
-            border-color: #4e73df;
-        }
-
-        /* Badges améliorés */
-        .badge {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.1);
-        }
-
-        .badge-success {
-            background-color: rgba(28, 200, 138, 0.15);
-            color: #1cc88a;
-        }
-
-        .badge-warning {
-            background-color: rgba(246, 194, 62, 0.15);
-            color: #f6c23e;
-        }
-
-        .badge-danger {
-            background-color: rgba(231, 74, 59, 0.15);
-            color: #e74a3b;
-        }
-
-        .badge-info {
-            background-color: rgba(54, 185, 204, 0.15);
-            color: #36b9cc;
-        }
-
-        /* Progress bars améliorés */
-        .progress {
-            height: 0.8rem;
-            border-radius: 0.5rem;
-            background-color: #eaecf4;
-            overflow: hidden;
-            box-shadow: inset 0 0.1rem 0.2rem rgba(0, 0, 0, 0.1);
-        }
-
-        .progress-bar {
-            border-radius: 0.5rem;
-            box-shadow: none;
-        }
-
-        /* Modals améliorés */
-        .modal-content {
-            border: none;
-            border-radius: 0.75rem;
-            box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.2);
+        .sidebar-item {
+            transition: all 0.2s ease;
+            position: relative;
             overflow: hidden;
         }
-
-        .modal-header {
-            background-color: #f8f9fc;
-            border-bottom: 1px solid #e3e6f0;
-            padding: 1.5rem;
+        
+        .sidebar-item:hover {
+            background-color: rgba(14, 165, 233, 0.1);
         }
-
-        .modal-header .close {
-            padding: 1.5rem;
-            margin: -1.5rem;
-            background-color: transparent;
-            border: none;
-            font-size: 1.5rem;
-            color: #5a5c69;
-            transition: all 0.3s;
+        
+        .sidebar-item.active {
+            background-color: rgba(14, 165, 233, 0.15);
+            border-left: 3px solid #0ea5e9;
         }
-
-        .modal-header .close:hover {
-            color: #4e73df;
-        }
-
-        .modal-title {
-            font-weight: 700;
-            color: #4e73df;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #e3e6f0;
-            padding: 1.25rem 1.5rem;
-        }
-
-        /* Buttons améliorés */
-        .btn {
-            padding: 0.5rem 1.25rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.25rem 0 rgba(58, 59, 69, 0.1);
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1rem 0 rgba(58, 59, 69, 0.15);
-        }
-
-        .btn-primary {
-            background-color: #4e73df;
-            border-color: #4e73df;
-        }
-
-        .btn-primary:hover {
-            background-color: #2653d4;
-            border-color: #2653d4;
-        }
-
-        .btn-success {
-            background-color: #1cc88a;
-            border-color: #1cc88a;
-        }
-
-        .btn-success:hover {
-            background-color: #169b6b;
-            border-color: #169b6b;
-        }
-
-        .btn-danger {
-            background-color: #e74a3b;
-            border-color: #e74a3b;
-        }
-
-        .btn-danger:hover {
-            background-color: #cb2d1d;
-            border-color: #cb2d1d;
-        }
-
-        .btn-info {
-            background-color: #36b9cc;
-            border-color: #36b9cc;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background-color: #258391;
-            border-color: #258391;
-            color: white;
-        }
-
-        /* Formulaires améliorés */
-        .form-control {
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-            border: 1px solid #d1d3e2;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: #4e73df;
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-        }
-
-        label {
-            font-weight: 600;
-            color: #5a5c69;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Footer amélioré */
-        footer.sticky-footer {
-            padding: 2rem 0;
-            flex-shrink: 0;
-            background-color: white;
-            box-shadow: 0 -0.125rem 0.5rem 0 rgba(58, 59, 69, 0.1);
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: var(--sidebar-collapsed-width);
-            }
-
-            .sidebar .nav-item .nav-link span,
-            .sidebar .sidebar-heading,
-            .sidebar-brand .sidebar-brand-text {
-                display: none;
-            }
-
-            .sidebar .nav-item .nav-link {
-                text-align: center;
-                padding: 1rem;
-            }
-
-            .sidebar .nav-item .nav-link i {
-                margin-right: 0;
-                font-size: 1.2rem;
-            }
-
-            .content-wrapper {
-                margin-left: var(--sidebar-collapsed-width);
-            }
-
-            .sidebar #sidebarToggle::after {
-                content: '\f105';
-            }
-        }
-
-        /* User image */
-        .img-profile {
-            height: 3rem;
-            width: 3rem;
-            border: 3px solid #eaecf4;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* Icon circles pour notifications */
-        .icon-circle {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bg-primary {
-            background-color: #4e73df !important;
-        }
-
-        .bg-success {
-            background-color: #1cc88a !important;
-        }
-
-        .bg-warning {
-            background-color: #f6c23e !important;
-        }
-
-        .bg-danger {
-            background-color: #e74a3b !important;
-        }
-
-        .bg-info {
-            background-color: #36b9cc !important;
-        }
-
-        /* Améliorations pour les notifications */
-        .badge-counter {
+        
+        .sidebar-item.active::before {
+            content: '';
             position: absolute;
-            transform: scale(0.7);
-            transform-origin: top right;
-            right: 0.25rem;
-            top: 0.25rem;
-            font-size: 0.75rem;
-            padding: 0.25rem 0.4rem;
-            font-weight: 700;
-            background-color: #e74a3b;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background-color: #0ea5e9;
         }
-
-        /* Styles spécifiques pour les graphiques */
-        .chart-container {
-            height: 300px;
+        
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        
+        .table-row:hover {
+            background-color: #f1f5f9;
+        }
+        
+        .dropdown {
             position: relative;
         }
-
-        /* Styles pour les étoiles de notation */
-        .text-warning {
-            color: #f6c23e !important;
+        
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
         }
-
-        /* Animation pour les éléments du dashboard */
-        .animated--grow-in {
-            animation: growIn 0.2s ease-in-out;
+        
+        .dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
-
-        @keyframes growIn {
-            0% {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Menu contextuel pour les actions rapides */
-        .action-menu {
-            display: flex;
-            gap: 0.5rem;
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
         }
-
-        /* Tableau de bord responsive */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
         }
-
-        /* Styles pour les statistiques détaillées */
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0;
-            color: #5a5c69;
+        
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
-
-        .stat-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: #b7b9cc;
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
         }
-
-        /* Style pour le profil médecin */
-        .doctor-profile {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
-
-        .doctor-profile img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
         }
-
-        .doctor-info h6 {
-            margin-bottom: 0.25rem;
-            font-weight: 700;
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
-
-        .doctor-info span {
-            font-size: 0.8rem;
-            color: #858796;
+        
+        /* Section transitions */
+        .section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-
-        /* Style pour le profil patient */
-        .patient-profile {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+        
+        .section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
-
-        .patient-profile img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
+        
+        /* Card styles */
+        .doctor-card, .patient-card, .appointment-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
-
-        .patient-info h6 {
-            margin-bottom: 0.25rem;
-            font-weight: 600;
+        
+        .doctor-card:hover, .patient-card:hover, .appointment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-
-        .patient-info span {
-            font-size: 0.8rem;
-            color: #858796;
+        
+        .doctor-card .card-header, .patient-card .card-header, .appointment-card .card-header {
+            position: relative;
+            overflow: hidden;
         }
-
-        .loading-overlay {
+        
+        .doctor-card .card-header::after, .patient-card .card-header::after, .appointment-card .card-header::after {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
+            background: linear-gradient(to right, rgba(14, 165, 233, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .doctor-card:hover .card-header::after, .patient-card:hover .card-header::after, .appointment-card:hover .card-header::after {
+            opacity: 1;
+        }
+        
+        .card-actions a, .card-actions button {
+            transition: all 0.2s ease;
+        }
+        
+        .card-actions a:hover, .card-actions button:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Dark mode styles */
+        .dark body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        
+        .dark .card {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+        
+        .dark .card:hover {
+            border-color: rgba(14, 165, 233, 0.4);
+        }
+        
+        .dark .sidebar {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+        
+        .dark .sidebar-item:hover {
+            background-color: rgba(14, 165, 233, 0.1);
+        }
+        
+        .dark .sidebar-item.active {
+            background-color: rgba(14, 165, 233, 0.15);
+        }
+        
+        .dark .table-row:hover {
+            background-color: #1e293b;
+        }
+        
+        .dark .dropdown-menu {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+        
+        .dark .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
         }
     </style>
-
 </head>
 
-<body id="page-top">
-    <!-- Page Wrapper -->
-    <div id="wrapper">
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col md:flex-row">
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-clinic-medical" style="color:rgb(106, 220, 197);"></i>
+        <aside class="sidebar bg-white border-r border-gray-200 w-full md:w-64 md:fixed md:h-screen overflow-y-auto z-10">
+            <!-- Logo -->
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold text-lg mr-2">M</div>
+                    <h1 class="text-xl font-bold text-gray-800">MediClinic</h1>
                 </div>
-                <div class="sidebar-brand-text mx-3">Midi<span style="color:rgb(106, 220, 178);">Dash</span></div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Tableau de bord</span>
-                </a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Gestion
+                <button id="mobile-menu-toggle" class="md:hidden text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
 
-            <!-- Nav Item - Patients -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Patients</span>
-                </a>
-            </li>
+            <!-- Navigation -->
+            <nav class="p-4" id="sidebar-nav">
+                <div class="mb-6">
+                    <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Menu principal</h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="#dashboard" class="sidebar-item active flex items-center px-3 py-2 text-sm font-medium rounded-lg text-primary-700 pl-3" data-section="dashboard-section">
+                                <i class="fas fa-tachometer-alt w-5 h-5 mr-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#doctors" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3" data-section="doctors-section">
+                                <i class="fas fa-user-md w-5 h-5 mr-2"></i>
+                                Médecins
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#patients" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3" data-section="patients-section">
+                                <i class="fas fa-users w-5 h-5 mr-2"></i>
+                                Patients
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#appointments" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3" data-section="appointments-section">
+                                <i class="fas fa-calendar-check w-5 h-5 mr-2"></i>
+                                Rendez-vous
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-            <!-- Nav Item - Médecins -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-user-md"></i>
-                    <span>Médecins</span>
-                </a>
-            </li>
+                <div class="mb-6">
+                    <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Administration</h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="#settings" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3" data-section="settings-section">
+                                <i class="fas fa-cog w-5 h-5 mr-2"></i>
+                                Paramètres
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#users" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3" data-section="users-section">
+                                <i class="fas fa-user-cog w-5 h-5 mr-2"></i>
+                                Utilisateurs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#logs" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3" data-section="logs-section">
+                                <i class="fas fa-history w-5 h-5 mr-2"></i>
+                                Logs d'activité
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-            <!-- Nav Item - Rendez-vous -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-calendar-check"></i>
-                    <span>Rendez-vous</span>
-                </a>
-            </li>
+                <div>
+                    <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Compte</h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="#profile" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3" data-section="profile-section">
+                                <i class="fas fa-user-circle w-5 h-5 mr-2"></i>
+                                Mon profil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#logout" class="sidebar-item flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:text-primary-700 pl-3">
+                                <i class="fas fa-sign-out-alt w-5 h-5 mr-2"></i>
+                                Déconnexion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
 
-            <!-- Nav Item - Spécialités -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-stethoscope"></i>
-                    <span>Spécialités</span>
-                </a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Finance
-            </div>
-
-            <!-- Nav Item - Paiements -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-credit-card"></i>
-                    <span>Paiements</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Factures -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-file-invoice"></i>
-                    <span>Factures</span>
-                </a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Système
-            </div>
-
-            <!-- Nav Item - Statistiques -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Statistiques</span>
-                </a>
-            </li>
-
-            <!-- Nav Item - Paramètres -->
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Paramètres</span>
-                </a>
-            </li>
-
-        </ul>
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div class="content-wrapper">
-            <!-- Main Content -->
-            <div id="content">
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-lg rounded-bottom d-flex justify-content-between"
-                    style="transition: all 0.3s ease; padding: 0.75rem 1.5rem;">
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"
-                        aria-label="Ouvrir le menu latéral"
-                        style="color: #4e73df; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0.125rem 0.25rem rgba(78, 115, 223, 0.2);">
-                        <i class="fa fa-bars fa-lg"></i>
-                    </button>
-
-                    <!-- Date & Time Display -->
-                    <div class="d-none d-xl-flex align-items-center mr-4">
-                        <div class="date-time-display text-center">
-                            <div id="currentDate" class="text-gray-800 font-weight-bold" style="font-size: 0.9rem;">
-                                <!-- Date will be populated via JS -->
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-64 min-h-screen">
+            <!-- Header -->
+            <header class="bg-white shadow-nav sticky top-0 z-10">
+                <div class="px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button id="sidebar-toggle" class="hidden md:block text-gray-500 hover:text-gray-700 mr-4">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-800" id="section-title">Dashboard Admin</h1>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- Theme Toggle -->
+                        <button id="theme-toggle" class="text-gray-500 hover:text-gray-700 bg-gray-100 p-2 rounded-full">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                        
+                        <!-- Notifications -->
+                        <div class="dropdown">
+                            <button class="dropdown-toggle text-gray-500 hover:text-gray-700 relative bg-gray-100 p-2 rounded-full">
+                                <i class="fas fa-bell"></i>
+                                <span class="absolute -top-1 -right-1 bg-danger-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                            </button>
+                            <div class="dropdown-menu mt-2 bg-white rounded-lg shadow-lg border border-gray-200 w-72">
+                                <div class="p-3 border-b border-gray-200">
+                                    <h3 class="text-sm font-semibold text-gray-700">Notifications</h3>
+                                </div>
+                                <div class="max-h-60 overflow-y-auto">
+                                    <a href="#" class="block p-3 hover:bg-gray-50 border-b border-gray-200">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 bg-primary-100 rounded-full p-2">
+                                                <i class="fas fa-user-md text-primary-600"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-900">Nouveau médecin inscrit</p>
+                                                <p class="text-xs text-gray-500">Dr. Martin a créé un compte</p>
+                                                <p class="text-xs text-gray-400 mt-1">Il y a 10 minutes</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="block p-3 hover:bg-gray-50 border-b border-gray-200">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 bg-warning-100 rounded-full p-2">
+                                                <i class="fas fa-exclamation-triangle text-warning-600"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-900">Alerte système</p>
+                                                <p class="text-xs text-gray-500">Maintenance prévue à 22h</p>
+                                                <p class="text-xs text-gray-400 mt-1">Il y a 1 heure</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="block p-3 hover:bg-gray-50">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 bg-success-100 rounded-full p-2">
+                                                <i class="fas fa-check-circle text-success-600"></i>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-900">Mise à jour terminée</p>
+                                                <p class="text-xs text-gray-500">Le système a été mis à jour</p>
+                                                <p class="text-xs text-gray-400 mt-1">Il y a 3 heures</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="p-2 border-t border-gray-200 text-center">
+                                    <a href="#" class="text-xs font-medium text-primary-600 hover:text-primary-800">Voir toutes les notifications</a>
+                                </div>
                             </div>
-                            <div id="currentTime" class="text-primary" style="font-size: 1.1rem; font-weight: 600;">
-                                <!-- Time will be populated via JS -->
+                        </div>
+                        
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <button class="dropdown-toggle flex items-center text-gray-700 hover:text-gray-900">
+                                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Admin" class="h-8 w-8 rounded-full object-cover mr-2 border-2 border-primary-200">
+                                <span class="hidden sm:block text-sm font-medium">Admin</span>
+                                <i class="fas fa-chevron-down text-xs ml-1"></i>
+                            </button>
+                            <div class="dropdown-menu mt-2 bg-white rounded-lg shadow-lg border border-gray-200 w-48">
+                                <a href="#profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                                    <i class="fas fa-user-circle mr-2"></i> Mon profil
+                                </a>
+                                <a href="#settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                                    <i class="fas fa-cog mr-2"></i> Paramètres
+                                </a>
+                                <div class="border-t border-gray-200"></div>
+                                <a href="#logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="section active">
+                    <!-- Page Title -->
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Tableau de bord</h2>
+                        <p class="text-gray-600">Aperçu général et statistiques</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- Total Doctors -->
+                        <div class="bg-gradient-to-br from-white to-primary-50 rounded-xl shadow-card p-6 card animate-fade-in">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-medium text-gray-500">Total Médecins</h3>
+                                <div class="bg-primary-100 text-primary-600 p-2 rounded-lg">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-end">
+                                <p class="text-3xl font-bold text-gray-800" id="total-doctors">124</p>
+                                <p class="text-sm text-success-500 ml-2 flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span>12%</span>
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Depuis le mois dernier</p>
+                        </div>
+                        
+                        <!-- Active Doctors -->
+                        <div class="bg-gradient-to-br from-white to-success-50 rounded-xl shadow-card p-6 card animate-fade-in delay-100">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-medium text-gray-500">Médecins Actifs</h3>
+                                <div class="bg-success-100 text-success-600 p-2 rounded-lg">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-end">
+                                <p class="text-3xl font-bold text-gray-800" id="active-doctors">98</p>
+                                <p class="text-sm text-success-500 ml-2 flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span>8%</span>
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Depuis le mois dernier</p>
+                        </div>
+
+                        <!-- Pending Doctors -->
+                        <div class="bg-gradient-to-br from-white to-warning-50 rounded-xl shadow-card p-6 card animate-fade-in delay-200">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-medium text-gray-500">En attente</h3>
+                                <div class="bg-warning-100 text-warning-600 p-2 rounded-lg">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-end">
+                                <p class="text-3xl font-bold text-gray-800" id="pending-doctors">18</p>
+                                <p class="text-sm text-danger-500 ml-2 flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span>24%</span>
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Depuis le mois dernier</p>
+                        </div>
+                        
+                        <!-- Inactive Doctors -->
+                        <div class="bg-gradient-to-br from-white to-danger-50 rounded-xl shadow-card p-6 card animate-fade-in delay-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-medium text-gray-500">Inactifs</h3>
+                                <div class="bg-danger-100 text-danger-600 p-2 rounded-lg">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                            </div>
+                            <div class="flex items-end">
+                                <p class="text-3xl font-bold text-gray-800" id="inactive-doctors">8</p>
+                                <p class="text-sm text-success-500 ml-2 flex items-center">
+                                    <i class="fas fa-arrow-down mr-1"></i>
+                                    <span>5%</span>
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Depuis le mois dernier</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Status Distribution Chart -->
+                        <div class="bg-white rounded-xl shadow-card p-6 card animate-fade-in">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Distribution des statuts</h3>
+                            <div class="h-64">
+                                <canvas id="status-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Registration Trend Chart -->
+                        <div class="bg-white rounded-xl shadow-card p-6 card animate-fade-in delay-100">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tendance des inscriptions</h3>
+                            <div class="h-64">
+                                <canvas id="registration-chart"></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                        <li class="nav-item dropdown no-arrow d-inline-block d-lg-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
-                                <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                                <span class="sr-only">Rechercher</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown"
-                                style="width: 20rem; border-radius: 0.75rem; border: none; margin-top: 1rem;">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text bg-transparent border-0">
-                                                <i class="fas fa-search fa-sm text-primary" aria-hidden="true"></i>
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Activité récente</h3>
+                            <a href="#" class="text-sm text-primary-600 hover:text-primary-700 font-medium">Voir tout</a>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex-shrink-0 bg-primary-100 rounded-full p-2">
+                                    <i class="fas fa-user-md text-primary-600"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <div class="flex justify-between">
+                                        <p class="text-sm font-medium text-gray-900">Dr. Martin a été ajouté</p>
+                                        <span class="text-xs text-gray-500">Il y a 10 minutes</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Un nouveau médecin spécialiste en cardiologie a été ajouté au système.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex-shrink-0 bg-success-100 rounded-full p-2">
+                                    <i class="fas fa-calendar-check text-success-600"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <div class="flex justify-between">
+                                        <p class="text-sm font-medium text-gray-900">Rendez-vous confirmé</p>
+                                        <span class="text-xs text-gray-500">Il y a 30 minutes</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Le rendez-vous de Mme Dubois avec Dr. Bernard a été confirmé pour demain à 14h30.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex-shrink-0 bg-warning-100 rounded-full p-2">
+                                    <i class="fas fa-exclamation-triangle text-warning-600"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <div class="flex justify-between">
+                                        <p class="text-sm font-medium text-gray-900">Alerte système</p>
+                                        <span class="text-xs text-gray-500">Il y a 1 heure</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Maintenance planifiée du système ce soir à 22h. Durée estimée: 30 minutes.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Doctors Section -->
+                <section id="doctors-section" class="section">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Gestion des médecins</h2>
+                        <p class="text-gray-600">Liste et gestion des comptes médecins</p>
+                    </div>
+
+                    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <div class="relative">
+                                <input type="text" placeholder="Rechercher un médecin..." class="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <select class="w-full md:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                                    <option value="all">Tous</option>
+                                    <option value="active">Actifs</option>
+                                    <option value="pending">En attente</option>
+                                    <option value="inactive">Inactifs</option>
+                                </select>
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-filter text-gray-400"></i>
+                                </div>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            Ajouter un médecin
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Doctor Card 1 -->
+                        <div class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-primary-50 to-white border-b border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-primary-100">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Dr. Jean Dupont" class="h-full w-full object-cover">
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">Dr. Jean Dupont</h3>
+                                                <p class="text-sm text-gray-600">Cardiologie</p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                Actif
                                             </span>
                                         </div>
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Rechercher..." aria-label="Rechercher"
-                                            style="border-radius: 2rem; padding-left: 2.5rem;">
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-
-                        <!-- Nav Item - Notifications -->
-                        <li class="nav-item dropdown no-arrow mx-1 mt-3">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                aria-label="Notifications (3 nouvelles)"
-                                style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
-                                <i class="fas fa-bell fa-fw" aria-hidden="true"></i>
-                                <span class="badge badge-pill badge-danger"
-                                    style="position: absolute; top: 0.25rem; right: 0.1rem; font-size: 0.6rem; padding: 0.2rem 0.4rem; transform: scale(0.85); transition: all 0.3s ease;">3</span>
-                                <span class="sr-only">3 nouvelles notifications</span>
-                            </a>
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown"
-                                style="width: 22rem; border: none; border-radius: 0.75rem; overflow: hidden; margin-top: 1rem;">
-                                <div class="dropdown-header d-flex justify-content-between align-items-center"
-                                    style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); color: white; padding: 1rem 1.5rem;">
-                                    <h6 class="m-0" style="font-size: 1rem; font-weight: 700;">Notifications</h6>
-                                    <div class="dropdown-actions">
-                                        <button class="btn btn-sm btn-light-outline text-white"
-                                            style="font-size: 0.7rem; padding: 0.25rem 0.5rem; background-color: rgba(255,255,255,0.1); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.2);">
-                                            Tout marquer comme lu
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="notification-list" style="max-height: 350px; overflow-y: auto;">
-                                    <a class="dropdown-item d-flex align-items-center p-3 unread" href="#"
-                                        style="border-left: 3px solid #4e73df; transition: background-color 0.2s ease; background-color: rgba(78, 115, 223, 0.05);">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-primary"
-                                                style="width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-calendar-check text-white fa-lg"
-                                                    aria-hidden="true"></i>
-                                            </div>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h6 class="font-weight-bold text-gray-800 mb-1">Nouveau rendez-vous</h6>
-                                            <div class="text-truncate">Rendez-vous confirmé avec Dr. Martin</div>
-                                            <div class="small text-primary">
-                                                <i class="fas fa-clock mr-1" aria-hidden="true"></i> Il y a 10 minutes
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center p-3 unread" href="#"
-                                        style="border-left: 3px solid #4e73df; transition: background-color 0.2s ease; background-color: rgba(78, 115, 223, 0.05);">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-success"
-                                                style="width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-user-md text-white fa-lg" aria-hidden="true"></i>
-                                            </div>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h6 class="font-weight-bold text-gray-800 mb-1">Médecin disponible</h6>
-                                            <div class="text-truncate">Dr. Sophie Laurent est maintenant disponible
-                                            </div>
-                                            <div class="small text-primary">
-                                                <i class="fas fa-clock mr-1" aria-hidden="true"></i> Il y a 1 heure
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center p-3" href="#"
-                                        style="border-left: 3px solid transparent; transition: background-color 0.2s ease;">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-warning"
-                                                style="width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-exclamation-triangle text-white fa-lg"
-                                                    aria-hidden="true"></i>
-                                            </div>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h6 class="font-weight-bold text-gray-800 mb-1">Rappel important</h6>
-                                            <div class="text-truncate">N'oubliez pas la réunion d'équipe demain à 10h
-                                            </div>
-                                            <div class="small text-gray-500">
-                                                <i class="fas fa-clock mr-1" aria-hidden="true"></i> Il y a 3 heures
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <a class="dropdown-item text-center small text-primary font-weight-bold py-3" href="#"
-                                    style="background-color: #f8f9fc; transition: background-color 0.2s ease;">
-                                    <i class="fas fa-angle-double-down mr-1" aria-hidden="true"></i> Voir toutes les
-                                    notifications
-                                </a>
-                            </div>
-                        </li>
-
-                        <!-- Nav Item - Messages -->
-                        <li class="nav-item dropdown no-arrow mx-1 mt-3">
-                            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                aria-label="Messages (5 nouveaux)"
-                                style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">
-                                <i class="fas fa-envelope fa-fw" aria-hidden="true"></i>
-                                <span class="badge badge-pill badge-danger"
-                                    style="position: absolute; top: 0.25rem; right: 0.1rem; font-size: 0.6rem; padding: 0.2rem 0.4rem; transform: scale(0.85); transition: all 0.3s ease;">5</span>
-                                <span class="sr-only">5 nouveaux messages</span>
-                            </a>
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="messagesDropdown"
-                                style="width: 22rem; border: none; border-radius: 0.75rem; overflow: hidden; margin-top: 1rem;">
-                                <div class="dropdown-header d-flex justify-content-between align-items-center"
-                                    style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); color: white; padding: 1rem 1.5rem;">
-                                    <h6 class="m-0" style="font-size: 1rem; font-weight: 700;">Messages</h6>
-                                    <div class="dropdown-actions">
-                                        <button class="btn btn-sm btn-light-outline text-white"
-                                            style="font-size: 0.7rem; padding: 0.25rem 0.5rem; background-color: rgba(255,255,255,0.1); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.2);">
-                                            <i class="fas fa-plus fa-sm mr-1" aria-hidden="true"></i> Nouveau
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="messages-list" style="max-height: 350px; overflow-y: auto;">
-                                    <a class="dropdown-item d-flex align-items-center p-3 unread" href="#"
-                                        style="border-left: 3px solid #1cc88a; transition: background-color 0.2s ease; background-color: rgba(28, 200, 138, 0.05);">
-                                        <div class="mr-3 position-relative">
-                                            <img class="rounded-circle"
-                                                src="https://ui-avatars.com/api/?name=Marie+Dupont&background=4e73df&color=ffffff&size=60"
-                                                alt="Marie Dupont"
-                                                style="width: 45px; height: 45px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                            <span class="status-indicator bg-success"
-                                                style="width: 10px; height: 10px; border-radius: 50%; position: absolute; bottom: 0; right: 0; border: 2px solid #fff;"></span>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h6 class="font-weight-bold text-gray-800 mb-1">Marie Dupont</h6>
-                                            <div class="text-truncate font-weight-bold text-primary">Pouvez-vous
-                                                confirmer l'heure ?</div>
-                                            <div class="small text-gray-500">
-                                                <i class="fas fa-clock mr-1" aria-hidden="true"></i> Il y a 15 minutes
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center p-3 unread" href="#"
-                                        style="border-left: 3px solid #1cc88a; transition: background-color 0.2s ease; background-color: rgba(28, 200, 138, 0.05);">
-                                        <div class="mr-3 position-relative">
-                                            <img class="rounded-circle"
-                                                src="https://ui-avatars.com/api/?name=Dr+Robert&background=1cc88a&color=ffffff&size=60"
-                                                alt="Dr. Robert"
-                                                style="width: 45px; height: 45px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                            <span class="status-indicator bg-success"
-                                                style="width: 10px; height: 10px; border-radius: 50%; position: absolute; bottom: 0; right: 0; border: 2px solid #fff;"></span>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h6 class="font-weight-bold text-gray-800 mb-1">Dr. Robert</h6>
-                                            <div class="text-truncate font-weight-bold text-primary">J'ai besoin des
-                                                dossiers médicaux...</div>
-                                            <div class="small text-gray-500">
-                                                <i class="fas fa-clock mr-1" aria-hidden="true"></i> Il y a 1 heure
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center p-3" href="#"
-                                        style="border-left: 3px solid transparent; transition: background-color 0.2s ease;">
-                                        <div class="mr-3 position-relative">
-                                            <img class="rounded-circle"
-                                                src="https://ui-avatars.com/api/?name=Support&background=36b9cc&color=ffffff&size=60"
-                                                alt="Support Technique"
-                                                style="width: 45px; height: 45px; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                            <span class="status-indicator bg-warning"
-                                                style="width: 10px; height: 10px; border-radius: 50%; position: absolute; bottom: 0; right: 0; border: 2px solid #fff;"></span>
-                                        </div>
-                                        <div style="flex: 1;">
-                                            <h6 class="font-weight-bold text-gray-800 mb-1">Support Technique</h6>
-                                            <div class="text-truncate">Mise à jour disponible pour le système</div>
-                                            <div class="small text-gray-500">
-                                                <i class="fas fa-clock mr-1" aria-hidden="true"></i> Il y a 5 heures
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <a class="dropdown-item text-center small text-primary font-weight-bold py-3" href="#"
-                                    style="background-color: #f8f9fc; transition: background-color 0.2s ease;">
-                                    <i class="fas fa-envelope-open mr-1" aria-hidden="true"></i> Voir tous les messages
-                                </a>
-                            </div>
-                        </li>
-
-                        <!-- Divider -->
-                        <div class="topbar-divider d-none d-sm-block"
-                            style="height: 1.5rem; margin: auto 1rem; width: 0; border-right: 1px solid #e3e6f0;"></div>
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                style="transition: all 0.2s ease;">
-                                <div class="d-flex align-items-center position-relative">
-                                    <div class="mr-3 d-none d-lg-block text-right pe-2">
-                                        <div class="text-gray-800 font-weight-bold mb-0"
-                                            style="font-size: 0.95rem; line-height: 1.2;">
-                                            {{ Auth::user()->name }}
-                                        </div>
-                                        <div class="text-primary small"
-                                            style="font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em;">
-                                            Administrateur
-                                        </div>
-                                    </div>
-                                    <div class="position-relative user-avatar-container"
-                                        style="transition: all 0.3s ease;">
-                                        <img class="img-profile rounded-circle border border-3 shadow-sm"
-                                            style="width: 44px; height: 44px; object-fit: cover; transition: all 0.3s ease; border-color: rgba(78, 115, 223, 0.6) !important; filter: contrast(1.05);"
-                                            src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&color=7F9CF5&background=EBF4FF' }}"
-                                            alt="Photo de profil">
-                                        <div class="status-indicator bg-success border border-white"
-                                            style="width: 12px; height: 12px; border-radius: 50%; position: absolute; bottom: 0; right: 0; border-width: 2px !important;">
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown"
-                                style="width: 16rem; border: none; border-radius: 0.75rem; overflow: hidden; margin-top: 1rem;">
-                                <div class="dropdown-user-info text-center py-4 px-3 bg-gradient-light">
-                                    <img class="img-profile rounded-circle mb-2 border border-3 border-white shadow"
-                                        style="width: 70px; height: 70px; object-fit: cover;"
-                                        src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&color=7F9CF5&background=EBF4FF' }}"
-                                        alt="Photo de profil">
-                                    <h6 class="font-weight-bold text-gray-800 mb-0">{{ Auth::user()->name }}</h6>
-                                    <p class="text-gray-600 mb-2">{{ Auth::user()->email }}</p>
-                                    <div class="badge badge-primary py-1 px-2"
-                                        style="border-radius: 1rem; font-weight: 500;">
-                                        Administrateur</div>
-                                </div>
-                                <div class="dropdown-divider my-0"></div>
-                                <a class="dropdown-item d-flex align-items-center py-2 px-4"
-                                    href="{{ route('admin.profile') }}">
-                                    <div class="dropdown-item-icon" style="width: 2rem; text-align: center;">
-                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400" aria-hidden="true"></i>
-                                    </div>
-                                    <span>Mon profil</span>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center py-2 px-4"
-                                    href="{{ route('admin.settings') }}">
-                                    <div class="dropdown-item-icon" style="width: 2rem; text-align: center;">
-                                        <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400" aria-hidden="true"></i>
-                                    </div>
-                                    <span>Paramètres</span>
-                                </a>
-                                <div class="dropdown-divider my-0"></div>
-                                <a class="dropdown-item d-flex align-items-center py-2 px-4" href="#"
-                                    data-bs-toggle="modal" data-bs-target="#logoutModal">
-                                    <div class="dropdown-item-icon" style="width: 2rem; text-align: center;">
-                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
-                                            aria-hidden="true"></i>
-                                    </div>
-                                    <span>Déconnexion</span>
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-                <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Prêt à partir?</h5>
-                                <button class="close" type="button" data-bs-dismiss="modal" aria-label="Fermer">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à mettre fin
-                                à votre session actuelle.</div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Annuler</button>
-                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="btn btn-primary">Déconnexion</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Tableau de bord administrateur</h1>
-                        <div>
-                            <button id="refreshDashboard"
-                                class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
-                                <i class="fas fa-sync-alt fa-sm text-white-50"></i> Actualiser
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Content Row - Cards statistiques -->
-                    <div class="row mb-4">
-                        <!-- Card - Total Patients -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-80 py-2 stats-card">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Total Patients</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalPatients }}
-                                            </div>
-                                            <div class="text-xs text-success mt-2">
-                                                <i class="fas fa-arrow-up"></i> {{ rand(3, 15) }}% depuis le mois
-                                                dernier
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon-circle bg-primary">
-                                                <i class="fas fa-users text-white"></i>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Card - Total Médecins -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-80 py-2 stats-card">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Total Médecins</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                {{ count($doctors) }}
-                                            </div>
-                                            <div class="text-xs text-success mt-2">
-                                                <i class="fas fa-arrow-up"></i> {{ rand(1, 5) }}% depuis le mois dernier
-                                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Email</p>
+                                        <p class="font-medium text-gray-800">jean.dupont@example.com</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Téléphone</p>
+                                        <p class="font-medium text-gray-800">+33 6 12 34 56 78</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-500 text-sm">Patients</p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-primary-600 h-2.5 rounded-full" style="width: 75%"></div>
                                         </div>
-                                        <div class="col-auto">
-                                            <div class="icon-circle bg-success">
-                                                <i class="fas fa-user-md text-white"></i>
-                                            </div>
-                                        </div>
+                                        <span class="ml-2 text-sm font-medium text-gray-700">42</span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Card - Rendez-vous aujourd'hui -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-80 py-2 stats-card">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                Rendez-vous Aujourd'hui</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                {{ count($todayAppointments) }}
-                                            </div>
-                                            <div class="text-xs text-info mt-2">
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon-circle bg-info">
-                                                <i class="fas fa-calendar-check text-white"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card - Revenu Total -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-80 py-2 stats-card">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Revenu Total</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                {{ number_format($totalRevenue, 2) }} Dh
-                                            </div>
-                                            <div class="text-xs text-success mt-2">
-                                                <i class="fas fa-arrow-up"></i> {{ rand(5, 20) }}% depuis le mois
-                                                dernier
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <div class="icon-circle bg-warning">
-                                                <i class="fas fa-euro-sign text-white"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Nav tabs -->
-                    <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="patients-tab" data-bs-toggle="tab" href="#patients"
-                                role="tab">
-                                <i class="fas fa-users me-2"></i>Patients
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="doctors-tab" data-bs-toggle="tab" href="#doctors" role="tab">
-                                <i class="fas fa-user-md me-2"></i>Médecins
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="appointments-tab" data-bs-toggle="tab" href="#appointments"
-                                role="tab">
-                                <i class="fas fa-calendar-check me-2"></i>Rendez-vous
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="statistics-tab" data-bs-toggle="tab" href="#statistics" role="tab">
-                                <i class="fas fa-chart-line me-2"></i>Statistiques détaillées
-                            </a>
-                        </li>
-                    </ul>
-
-                    <!-- Tab content -->
-                    <div class="tab-content" id="dashboardContent">
-                        <!-- Patients Tab -->
-                        <div class="tab-pane fade show active" id="patients" role="tabpanel">
-                            <div class="card shadow mb-4"
-                                style="border-radius: 0.75rem; overflow: hidden; border: none;">
-                                <div class="card-header py-3 d-flex justify-content-between align-items-center"
-                                    style="background-color: white; border-bottom: 1px solid rgba(0, 0, 0, 0.05);">
-                                    <h6 class="m-0 font-weight-bold text-primary d-flex align-items-center">
-                                        <i class="fas fa-users mr-2"
-                                            style="font-size: 1rem; background-color: rgba(78, 115, 223, 0.1); color: #4e73df; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%;"></i>
-                                        Gestion des patients
-                                    </h6>
-
-                                    <div class="d-flex align-items-center">
-                                        <div class="input-group input-group-sm mr-3" style="width: 250px;">
-                                            <input type="text" class="form-control border-0 bg-light" id="patientSearch"
-                                                placeholder="Rechercher un patient..."
-                                                style="border-radius: 1.5rem 0 0 1.5rem; padding-left: 1rem;">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary" type="button" id="searchPatientBtn"
-                                                    style="border-radius: 0 1.5rem 1.5rem 0;">
-                                                    <i class="fas fa-search"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#addPatientModal">
-                                            <i class="fas fa-plus mr-2"></i> Nouveau patient
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover" id="patientsTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Nom</th>
-                                                    <th>gender</th>
-                                                    <th>Age</th>
-                                                    <th>Date de naissance</th>
-                                                    <th>blood</th>
-                                                    <th>Assurance</th>
-                                                    <th>Number_Assurance</th>
-                                                    <th>Statut</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($patients as $patient)
-                                                    <tr>
-                                                        <td>{{ $patient['name'] }}</td>
-                                                        <td>{{ $patient['gender'] ?? 'N/A' }}</td>
-                                                        <td>{{ $patient['age'] ?? 'N/A' }}</td>
-                                                        <td>{{ $patient["date_of_birth"] ?? 'N/A' }}</td>
-                                                        <td>{{ $patient['patient_details']->blood_type ?? 'N/A' }}</td>
-                                                        <td>
-                                                            <span class="badge bg-info">
-                                                                {{ $patient['patient_details']->name_assurance ?? 'N/A' }}
-                                                            </span>
-                                                        </td>
-                                                        <td>{{ $patient['patient_details']->assurance_number ?? 'N/A' }}
-                                                        </td>
-                                                        <td>
-                                                            <span class="badge bg-success">Actif</span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="btn-group">
-                                                                <a href="" class="btn btn-sm btn-info">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </a>
-                                                                <button type="button"
-                                                                    class="btn btn-sm btn-primary edit-patient-btn"
-                                                                    data-id="{{ $patient['id'] }}"
-                                                                    data-patient='{"name": "{{ $patient["name"] }}", "email": "{{ $patient["email"] }}", "phone": "{{ $patient["phone"]}}", 
-                                                                                                    "birth_date": "{{ $patient["patient_details"]->date_of_birth ?? "N/A"}}", "has_insurance": {{ $patient["patient_details"]->name_assurance ?? "N/A" ? 'true' : 'false' }}}'>
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                                <button type="button"
-                                                                    class="btn btn-sm btn-danger delete-patient-btn"
-                                                                    data-id="{{ $patient['id'] }}"
-                                                                    data-name="{{ $patient['name'] }}">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add Patient Modal -->
-                        <div class="modal fade" id="addPatientModal" tabindex="-1"
-                            aria-labelledby="addPatientModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="addPatientModalLabel">Ajouter un nouveau patient
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <form id="addPatientForm" action="" method="POST">
-                                        @csrf
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="name" class="form-label">Nom complet</label>
-                                                    <input type="text" class="form-control" id="name" name="name"
-                                                        required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="email" class="form-label">Email</label>
-                                                    <input type="email" class="form-control" id="email" name="email"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="phone" class="form-label">Téléphone</label>
-                                                    <input type="tel" class="form-control" id="phone" name="phone"
-                                                        required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="birth_date" class="form-label">Date de naissance</label>
-                                                    <input type="date" class="form-control" id="birth_date"
-                                                        name="birth_date" required>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="password" class="form-label">Mot de passe</label>
-                                                    <input type="password" class="form-control" id="password"
-                                                        name="password" required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="password_confirmation" class="form-label">Confirmer le
-                                                        mot de passe</label>
-                                                    <input type="password" class="form-control"
-                                                        id="password_confirmation" name="password_confirmation"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" id="has_insurance"
-                                                        name="has_insurance">
-                                                    <label class="form-check-label" for="has_insurance">
-                                                        Le patient a une assurance
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Edit Patient Modal -->
-                        <div class="modal fade" id="editPatientModal" tabindex="-1"
-                            aria-labelledby="editPatientModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editPatientModalLabel">Modifier le patient</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <form id="editPatientForm" method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="edit_name" class="form-label">Nom complet</label>
-                                                    <input type="text" class="form-control" id="edit_name" name="name"
-                                                        required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="edit_email" class="form-label">Email</label>
-                                                    <input type="email" class="form-control" id="edit_email"
-                                                        name="email" required>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="edit_phone" class="form-label">Téléphone</label>
-                                                    <input type="tel" class="form-control" id="edit_phone" name="phone"
-                                                        required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label for="edit_birth_date" class="form-label">Date de
-                                                        naissance</label>
-                                                    <input type="date" class="form-control" id="edit_birth_date"
-                                                        name="birth_date" required>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="edit_has_insurance" name="has_insurance">
-                                                    <label class="form-check-label" for="edit_has_insurance">
-                                                        Le patient a une assurance
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Annuler</button>
-                                            <button type="submit" class="btn btn-primary">Enregistrer les
-                                                modifications</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Delete Patient Modal -->
-                        <div class="modal fade" id="deletePatientModal" tabindex="-1"
-                            aria-labelledby="deletePatientModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deletePatientModalLabel">Confirmer la suppression
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Êtes-vous sûr de vouloir supprimer le patient <span
-                                            id="patientNameToDelete"></span> ?
-                                        Cette action est irréversible.
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Annuler</button>
-                                        <form id="deletePatientForm" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Supprimer</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Doctors Tab -->
-                        <div class="tab-pane fade" id="doctors" role="tabpanel">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                    <h6 class="m-0 font-weight-bold text-primary">Gestion des médecins</h6>
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#addDoctorModal">
-                                        <i class="fas fa-plus me-1"></i> Nouveau médecin
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-warning-600 hover:text-warning-800 transition-colors">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="doctorsTable" width="100%"
-                                            cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Médecin</th>
-                                                    <th>Spécialité</th>
-                                                    <th>Disponibilité</th>
-                                                    <th>Nombre de Cabinet</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($doctors as $doctor)
-                                                    <tr>
-                                                        <td>
-                                                            <div class="doctor-profile">
-                                                                <img src="{{ $doctor['profile_photo_url'] ?? 'https://ui-avatars.com/api/?name=' . urlencode($doctor['name']) . '&color=7F9CF5&background=EBF4FF' }}"
-                                                                    alt="Doctor Photo">
-                                                                <div class="doctor-info">
-                                                                    <h6>Dr. {{ $doctor['name'] }}</h6>
-                                                                    <span>{{ $doctor['email'] }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div>{{ $doctor['speciality'] ?? 'N/A' }}</div>
-                                                            <div>{{ $doctor['phone'] ?? 'N/A' }}</div>
-                                                        </td>
-                                                        <td>
-                                                            @if($doctor['is_available'])
-                                                                <span class="badge badge-success">Disponible</span>
-                                                            @else
-                                                                <span class="badge badge-warning">Non disponible</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>{{ $doctor['nombre_cabinet'] ?? 'N/A' }}</td>
-                                                        <td>
-                                                            <div class="action-menu">
-                                                                <a href="{{ route('admin.doctor.show', $doctor['id']) }}"
-                                                                    class="btn btn-info btn-sm">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </a>
-                                                                <button class="btn btn-primary btn-sm edit-doctor-btn"
-                                                                    data-id="{{ $doctor['id'] }}"
-                                                                    data-name="{{ $doctor['name'] }}"
-                                                                    data-email="{{ $doctor['email'] }}"
-                                                                    data-phone="{{ $doctor['phone'] }}"
-                                                                    data-speciality="{{ $doctor['speciality'] ?? 'N/A' }}"
-                                                                    data-nombre-cabinet="{{ $doctor['nombre_cabinet'] ?? 'N/A' }}"
-                                                                    data-qualification="{{ $doctor['qualification'] ?? 'N/A' }}"
-                                                                    data-is-available="{{ $doctor['is_available'] ? '1' : '0' }}"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#editDoctorModal">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                                <button class="btn btn-danger btn-sm deleteDoctorBtn"
-                                                                    data-id="{{ $doctor['id'] }}" data-bs-toggle="modal"
-                                                                    data-bs-target="#deleteDoctorModal">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Appointments Tab -->
-                        <div class="tab-pane fade" id="appointments" role="tabpanel">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                    <h6 class="m-0 font-weight-bold text-primary">Gestion des rendez-vous</h6>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#addAppointmentModal">
-                                        <i class="fas fa-plus me-1"></i> Nouveau rendez-vous
+                        <!-- Doctor Card 2 -->
+                        <div class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-primary-50 to-white border-b border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-primary-100">
+                                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Dr. Marie Martin" class="h-full w-full object-cover">
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">Dr. Marie Martin</h3>
+                                                <p class="text-sm text-gray-600">Pédiatrie</p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                Actif
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Email</p>
+                                        <p class="font-medium text-gray-800">marie.martin@example.com</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Téléphone</p>
+                                        <p class="font-medium text-gray-800">+33 6 23 45 67 89</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-500 text-sm">Patients</p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-primary-600 h-2.5 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                        <span class="ml-2 text-sm font-medium text-gray-700">56</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-warning-600 hover:text-warning-800 transition-colors">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="appointmentsTable" width="100%"
-                                            cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Patient</th>
-                                                    <th>Médecin</th>
-                                                    <th>Date & Heure</th>
-                                                    <th>Statut</th>
-                                                    <th>Paiement</th>
-                                                    <th>Reason</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($appointments as $appointment)
-                                                    <tr>
-                                                        <td>{{ $appointment->id }}</td>
-                                                        <td>
-                                                            @if($appointment->patient && $appointment->patient->user)
-                                                                {{ $appointment->patient->user->name }}
-                                                            @else
-                                                                <span class="text-danger">Patient supprimé</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($appointment->doctor && $appointment->doctor->user)
-                                                                Dr. {{ $appointment->doctor->user->name }}
-                                                            @else
-                                                                <span class="text-danger">Médecin supprimé</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>{{ $appointment->date }}, {{ $appointment->time }}</td>
-                                                        <td>
-                                                            @if($appointment->statut == 'confirmed')
-                                                                <span class="badge badge-success">Confirmé</span>
-                                                            @elseif($appointment->status == 'pending')
-                                                                <span class="badge badge-warning">En attente</span>
-                                                            @elseif($appointment->status == 'cenceled')
-                                                                <span class="badge badge-danger">Annulé</span>
-                                                            @elseif($appointment->status == 'terminé')
-                                                                <span class="badge badge-info">Terminé</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if($appointment->paiement)
-                                                                <span class="badge badge-success">Payé</span>
-                                                            @else
-                                                                <span class="badge badge-danger">Non payé</span>
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            <div class="action-menu">
-                                                                <a href="" class="btn btn-info btn-sm">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </a>
-                                                                <a href="" class="btn btn-primary btn-sm">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </a>
-                                                                <button class="btn btn-danger btn-sm deleteAppointmentBtn"
-                                                                    data-id="{{ $appointment->id }}" data-bs-toggle="modal"
-                                                                    data-bs-target="#deleteAppointmentModal">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Statistics Tab -->
-                        <div class="tab-pane fade" id="statistics" role="tabpanel">
-                            <!-- Graphiques -->
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="card shadow mb-4">
-                                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                                            <h6 class="m-0 font-weight-bold text-primary">Évolution des rendez-vous</h6>
-                                            <div class="dropdown no-arrow">
-                                                <a class="dropdown-toggle" href="#" role="button"
-                                                    id="appointmentsDropdown" data-bs-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                    aria-labelledby="appointmentsDropdown">
-                                                    <div class="dropdown-header">Options du graphique:</div>
-                                                    <a class="dropdown-item" href="#" id="toggleChartType">Changer le
-                                                        type de graphique</a>
-                                                    <a class="dropdown-item" href="#" id="downloadChartPNG">Télécharger
-                                                        PNG</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item" href="#" id="refreshChart">Actualiser les
-                                                        données</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="chart-container">
-                                                <canvas id="appointmentsChart"></canvas>
-                                            </div>
-                                        </div>
+                        <!-- Doctor Card 3 -->
+                        <div class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-warning-100">
+                                        <img src="https://randomuser.me/api/portraits/men/59.jpg" alt="Dr. Pierre Lefebvre" class="h-full w-full object-cover">
                                     </div>
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="card shadow mb-4">
-                                        <div class="card-header py-3">
-                                            <h6 class="m-0 font-weight-bold text-primary">Répartition par genre</h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="chart-container">
-                                                <canvas id="genderChart"></canvas>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">Dr. Pierre Lefebvre</h3>
+                                                <p class="text-sm text-gray-600">Généraliste</p>
                                             </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
+                                                <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
+                                                En attente
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="card shadow mb-4">
-                                        <div class="card-header py-3">
-                                            <h6 class="m-0 font-weight-bold text-primary">Rendez-vous par spécialité
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="chart-container">
-                                                <canvas id="specialtyChart"></canvas>
-                                            </div>
-                                        </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Email</p>
+                                        <p class="font-medium text-gray-800">pierre.lefebvre@example.com</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Téléphone</p>
+                                        <p class="font-medium text-gray-800">+33 6 34 56 78 90</p>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
-                                    <div class="card shadow mb-4">
-                                        <div class="card-header py-3">
-                                            <h6 class="m-0 font-weight-bold text-primary">Revenus mensuels</h6>
+                                <div class="mt-4">
+                                    <p class="text-gray-500 text-sm">Patients</p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-warning-500 h-2.5 rounded-full" style="width: 10%"></div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="chart-container">
-                                                <canvas id="revenueChart"></canvas>
-                                            </div>
-                                        </div>
+                                        <span class="ml-2 text-sm font-medium text-gray-700">5</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Performance des médecins -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Performance des médecins</h6>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-success-600 hover:text-success-800 transition-colors">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Médecin</th>
-                                                    <th>Spécialité</th>
-                                                    <th>Rendez-vous (Mensuel)</th>
-                                                    <th>Taux de complétion</th>
-                                                    <th>Évaluation moyenne</th>
-                                                    <th>Revenus générés</th>
-                                                </tr>
-                                            </thead>
-
-                                        </table>
-                                    </div>
-                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="flex justify-center">
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Précédent</span>
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary-50 text-sm font-medium text-primary-600 hover:bg-primary-100">
+                                1
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                2
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                3
+                            </a>
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                ...
+                            </span>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                8
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Suivant</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </nav>
+                    </div>
+                </section>
+
+                <!-- Patients Section -->
+                <section id="patients-section" class="section">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Gestion des patients</h2>
+                        <p class="text-gray-600">Liste et gestion des dossiers patients</p>
+                    </div>
+
+                    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <div class="relative">
+                                <input type="text" placeholder="Rechercher un patient..." class="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <select class="w-full md:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                                    <option value="all">Tous</option>
+                                    <option value="active">Actifs</option>
+                                    <option value="inactive">Inactifs</option>
+                                </select>
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-filter text-gray-400"></i>
+                                </div>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            Ajouter un patient
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Patient Card 1 -->
+                        <div class="patient-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-info-50 to-white border-b border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-info-100">
+                                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Jean Dupont" class="h-full w-full object-cover">
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">Jean Dupont</h3>
+                                                <p class="text-sm text-gray-600">ID: #12345</p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                Actif
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-3 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Âge</p>
+                                        <p class="font-medium text-gray-800">42 ans</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Genre</p>
+                                        <p class="font-medium text-gray-800">Homme</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Téléphone</p>
+                                        <p class="font-medium text-gray-800">+33 6 12 34 56 78</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Dernière visite</p>
+                                        <p class="font-medium text-gray-800">15/04/2023</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Prochain RDV</p>
+                                        <p class="font-medium text-primary-600">28/05/2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-file-medical"></i>
+                                    </button>
+                                    <button class="text-success-600 hover:text-success-800 transition-colors">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </button>
+                                    <button class="text-info-600 hover:text-info-800 transition-colors">
+                                        <i class="fas fa-comments"></i>
+                                    </button>
+                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Patient Card 2 -->
+                        <div class="patient-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-info-50 to-white border-b border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-info-100">
+                                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Marie Martin" class="h-full w-full object-cover">
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">Marie Martin</h3>
+                                                <p class="text-sm text-gray-600">ID: #12346</p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                Actif
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-3 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Âge</p>
+                                        <p class="font-medium text-gray-800">35 ans</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Genre</p>
+                                        <p class="font-medium text-gray-800">Femme</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Téléphone</p>
+                                        <p class="font-medium text-gray-800">+33 6 23 45 67 89</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Dernière visite</p>
+                                        <p class="font-medium text-gray-800">22/04/2023</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Prochain RDV</p>
+                                        <p class="font-medium text-primary-600">10/06/2023</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-file-medical"></i>
+                                    </button>
+                                    <button class="text-success-600 hover:text-success-800 transition-colors">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </button>
+                                    <button class="text-info-600 hover:text-info-800 transition-colors">
+                                        <i class="fas fa-comments"></i>
+                                    </button>
+                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Patient Card 3 -->
+                        <div class="patient-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-info-50 to-white border-b border-gray-100">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-info-100">
+                                        <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Pierre Dubois" class="h-full w-full object-cover">
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">Pierre Dubois</h3>
+                                                <p class="text-sm text-gray-600">ID: #12347</p>
+                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
+                                                <span class="w-1.5 h-1.5 bg-danger-500 rounded-full mr-1.5"></span>
+                                                Inactif
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-3 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Âge</p>
+                                        <p class="font-medium text-gray-800">58 ans</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Genre</p>
+                                        <p class="font-medium text-gray-800">Homme</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Téléphone</p>
+                                        <p class="font-medium text-gray-800">+33 6 34 56 78 90</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Dernière visite</p>
+                                        <p class="font-medium text-gray-800">05/03/2023</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Prochain RDV</p>
+                                        <p class="font-medium text-gray-500">Non planifié</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-file-medical"></i>
+                                    </button>
+                                    <button class="text-success-600 hover:text-success-800 transition-colors">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </button>
+                                    <button class="text-info-600 hover:text-info-800 transition-colors">
+                                        <i class="fas fa-comments"></i>
+                                    </button>
+                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Précédent</span>
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary-50 text-sm font-medium text-primary-600 hover:bg-primary-100">
+                                1
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                2
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                3
+                            </a>
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                ...
+                            </span>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                10
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Suivant</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </nav>
+                    </div>
+                </section>
+
+                <!-- Appointments Section -->
+                <section id="appointments-section" class="section">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Gestion des rendez-vous</h2>
+                        <p class="text-gray-600">Planification et suivi des rendez-vous</p>
+                    </div>
+
+                    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <div class="relative">
+                                <input type="text" placeholder="Rechercher un rendez-vous..." class="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <select class="w-full md:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                                    <option value="all">Tous</option>
+                                    <option value="upcoming">À venir</option>
+                                    <option value="completed">Terminés</option>
+                                    <option value="cancelled">Annulés</option>
+                                </select>
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-filter text-gray-400"></i>
+                                </div>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            Nouveau rendez-vous
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Appointment Card 1 -->
+                        <div class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-primary-700">Jean Dupont</h3>
+                                        <p class="text-sm text-gray-600">Avec Dr. Marie Martin</p>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
+                                        <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
+                                        À venir
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Date</p>
+                                        <p class="font-medium text-gray-800">28/05/2023</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Heure</p>
+                                        <p class="font-medium text-gray-800">10:15</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-500">Motif</p>
+                                    <p class="font-medium text-gray-800">Contrôle tension artérielle</p>
+                                </div>
+                                <div class="mt-4 flex items-center">
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-warning-500 h-1.5 rounded-full" style="width: 100%"></div>
+                                    </div>
+                                    <span class="ml-2 text-xs font-medium text-gray-500">3 jours</span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-success-600 hover:text-success-800 transition-colors">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Appointment Card 2 -->
+                        <div class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-success-50 to-white border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-primary-700">Marie Martin</h3>
+                                        <p class="text-sm text-gray-600">Avec Dr. Jean Dupont</p>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                        <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                        Terminé
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Date</p>
+                                        <p class="font-medium text-gray-800">15/04/2023</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Heure</p>
+                                        <p class="font-medium text-gray-800">14:30</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-500">Motif</p>
+                                    <p class="font-medium text-gray-800">Consultation de suivi</p>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-500">Notes</p>
+                                    <p class="text-sm text-gray-600 line-clamp-2">Patient en bonne santé générale. Tension artérielle normale. Prochain rendez-vous dans 3 mois.</p>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-file-medical"></i>
+                                    </button>
+                                    <button class="text-info-600 hover:text-info-800 transition-colors">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Appointment Card 3 -->
+                        <div class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                            <div class="card-header px-6 py-4 bg-gradient-to-r from-danger-50 to-white border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-primary-700">Pierre Dubois</h3>
+                                        <p class="text-sm text-gray-600">Avec Dr. Pierre Lefebvre</p>
+                                    </div>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
+                                        <span class="w-1.5 h-1.5 bg-danger-500 rounded-full mr-1.5"></span>
+                                        Annulé
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p class="text-gray-500">Date</p>
+                                        <p class="font-medium text-gray-800">10/03/2023</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500">Heure</p>
+                                        <p class="font-medium text-gray-800">09:00</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-500">Motif</p>
+                                    <p class="font-medium text-gray-800">Consultation générale</p>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="text-gray-500">Raison d'annulation</p>
+                                    <p class="text-sm text-danger-600">Annulé par le patient</p>
+                                </div>
+                            </div>
+                            <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <div class="card-actions flex space-x-3">
+                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </button>
+                                </div>
+                                <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                    Voir détails
+                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Précédent</span>
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary-50 text-sm font-medium text-primary-600 hover:bg-primary-100">
+                                1
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                2
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                3
+                            </a>
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                ...
+                            </span>
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                5
+                            </a>
+                            <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                <span class="sr-only">Suivant</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </nav>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="section">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Paramètres</h2>
+                        <p class="text-gray-600">Configuration du système</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Paramètres généraux</h3>
+                        <div class="space-y-4">
+                            <!-- Contenu des paramètres -->
+                            <p class="text-gray-600">Cette section est en cours de développement.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Section -->
+                <section id="users-section" class="section">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Gestion des utilisateurs</h2>
+                        <p class="text-gray-600">Administration des comptes utilisateurs</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Liste des utilisateurs</h3>
+                        <div class="space-y-4">
+                            <!-- Contenu des utilisateurs -->
+                            <p class="text-gray-600">Cette section est en cours de développement.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Logs Section -->
+                <section id="logs-section" class="section">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Logs d'activité</h2>
+                        <p class="text-gray-600">Historique des actions système</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Journal d'activité</h3>
+                        <div class="space-y-4">
+                            <!-- Contenu des logs -->
+                            <p class="text-gray-600">Cette section est en cours de développement.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Profile Section -->
+                <section id="profile-section" class="section">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Mon profil</h2>
+                        <p class="text-gray-600">Gestion de votre compte</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Informations personnelles</h3>
+                        <div class="space-y-4">
+                            <!-- Contenu du profil -->
+                            <p class="text-gray-600">Cette section est en cours de développement.</p>
+                        </div>
+                    </div>
+                </section>
             </div>
-
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Système de Gestion de Clinique {{ date('Y') }}</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-        </div>
-        <!-- End of Content Wrapper -->
+        </main>
     </div>
-    <!-- End of Page Wrapper -->
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Prêt à partir?</h5>
-                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg border-l-4 border-success-500 p-4 transform translate-y-10 opacity-0 transition-all duration-300 z-50 hidden">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i id="toast-icon" class="fas fa-check-circle text-success-500 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <p id="toast-message" class="text-sm font-medium text-gray-900">Opération réussie</p>
+            </div>
+            <div class="ml-auto pl-3">
+                <div class="-mx-1.5 -my-1.5">
+                    <button onclick="hideToast()" class="inline-flex text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body">Sélectionnez "Déconnexion" ci-dessous si vous êtes prêt à mettre fin à votre
-                    session actuelle.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Annuler</button>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-primary">Déconnexion</button>
-                    </form>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Doctor Modal -->
-    <div class="modal fade" id="addDoctorModal" tabindex="-1" role="dialog" aria-labelledby="addDoctorModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addDoctorModalLabel">Ajouter un nouveau médecin</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="addDoctorForm" method="POST" action="">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="doctor_name">Nom complet</label>
-                                    <input type="text" class="form-control" id="doctor_name" name="name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="doctor_email">Email</label>
-                                    <input type="email" class="form-control" id="doctor_email" name="email" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="doctor_telephone">Téléphone</label>
-                                    <input type="tel" class="form-control" id="doctor_telephone" name="phone" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="speciality">Spécialité</label>
-                                    <select class="form-control" id="speciality" name="speciality" required>
-                                        <option value="">Sélectionnez une spécialité</option>
-                                        <option value="Cardiologue">Cardiologue</option>
-                                        <option value="Dermatologue">Dermatologue</option>
-                                        <option value="Généraliste">Généraliste</option>
-                                        <option value="Gynécologue">Gynécologue</option>
-                                        <option value="Ophtalmologue">Ophtalmologue</option>
-                                        <option value="Pédiatre">Pédiatre</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="nombre_cabinet">Numéro de cabinet</label>
-                                    <input type="text" class="form-control" id="nombre_cabinet" name="nombre_cabinet"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="qualification">Qualifications</label>
-                                    <textarea class="form-control" id="qualification" name="qualification"
-                                        rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="doctor_password">Mot de passe</label>
-                                    <input type="password" class="form-control" id="doctor_password" name="password"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="doctor_password_confirmation">Confirmer le mot de passe</label>
-                                    <input type="password" class="form-control" id="doctor_password_confirmation"
-                                        name="password_confirmation" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Ajouter le médecin</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Doctor Modal -->
-    <div class="modal fade" id="editDoctorModal" tabindex="-1" role="dialog" aria-labelledby="editDoctorModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editDoctorModalLabel">Modifier le médecin</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="editDoctorForm" method="POST" action="">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" id="edit_doctor_id" name="doctor_id">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="edit_doctor_name">Nom complet</label>
-                                    <input type="text" class="form-control" id="edit_doctor_name" name="name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_doctor_email">Email</label>
-                                    <input type="email" class="form-control" id="edit_doctor_email" name="email"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_doctor_telephone">Téléphone</label>
-                                    <input type="tel" class="form-control" id="edit_doctor_telephone" name="phone"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="speciality">Spécialité</label>
-                                    <select class="form-control" id="speciality" name="speciality" required>
-                                        <option value="">Sélectionnez une spécialité</option>
-                                        <option value="Cardiologue">Cardiologue</option>
-                                        <option value="Dermatologue">Dermatologue</option>
-                                        <option value="Généraliste">Généraliste</option>
-                                        <option value="Gynécologue">Gynécologue</option>
-                                        <option value="Ophtalmologue">Ophtalmologue</option>
-                                        <option value="Pédiatre">Pédiatre</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="edit_nombre_cabinet">Numéro de cabinet</label>
-                                    <input type="text" class="form-control" id="edit_nombre_cabinet"
-                                        name="nombre_cabinet" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_qualification">Qualifications</label>
-                                    <textarea class="form-control" id="edit_qualification" name="qualification"
-                                        rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_doctor_password">Mot de passe (laisser vide pour ne pas
-                                        modifier)</label>
-                                    <input type="password" class="form-control" id="edit_doctor_password"
-                                        name="password">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="edit_doctor_password_confirmation">Confirmer le mot de passe</label>
-                                    <input type="password" class="form-control" id="edit_doctor_password_confirmation"
-                                        name="password_confirmation">
-                                </div>
-                                <div class="mb-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="edit_is_available"
-                                            name="is_available">
-                                        <label class="form-check-label" for="edit_is_available">
-                                            Disponible
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Doctor Modal -->
-    <div class="modal fade" id="deleteDoctorModal" tabindex="-1" role="dialog" aria-labelledby="deleteDoctorModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteDoctorModalLabel">Supprimer un médecin</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="deleteDoctorForm" method="POST" action="">
-                    @csrf
-                    @method('DELETE')
-                    <input type="hidden" id="delete_doctor_id" name="doctor_id">
-                    <div class="modal-body">
-                        <p>Êtes-vous sûr de vouloir supprimer ce médecin? Cette action est irréversible et supprimera
-                            également tous les rendez-vous associés.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Add Doctor Modal -->
-
-
-    <div class="modal fade" id="editScheduleModal" tabindex="-1" role="dialog" aria-labelledby="editScheduleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editScheduleModalLabel">Modifier le rendez-vous</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="editAppointmentForm" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="doctor_id" class="form-label">Doctor</label>
-                                <select class="form-select" id="doctor_id" name="doctor_id" required>
-                                    @foreach($doctors as $doctor)
-                                        <option value="{{ $doctor['id'] }}" class="color-primary">
-                                            {{ $doctor['name'] }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Patient Selection -->
-                            <div class="col-md-6 mb-3">
-                                <label for="doctor_speciality" class="form-label">speciality</label>
-                                <input type="text" class="form-control" id="doctor_speciality" name="doctor_speciality"
-                                    readonly>
-                            </div>
-
-                            <!-- Date Input -->
-                            <div class="col-md-6 mb-3">
-                                <label for="date" class="form-label">Date</label>
-                                <input type="date" class="form-control" id="date" name="date" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Doctor Modal -->
-
-
-    <!-- Add Appointment Modal -->
-    <div class="modal fade" id="addAppointmentModal" tabindex="-1" role="dialog"
-        aria-labelledby="addAppointmentModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addAppointmentModalLabel">Ajouter un nouveau rendez-vous</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="addAppointmentForm" method="POST" action="">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="patient_id">Patient</label>
-                            <select class="form-control" id="patient_id" name="patient_id" required>
-                                <option value="">Sélectionner un patient</option>
-                                @foreach($patients as $patient)
-                                    <option value="{{ $patient['patient_details']->id ?? 'N/A'}}">{{ $patient['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="doctor_id">Médecin</label>
-                            <select class="form-control" id="doctor_id" name="doctor_id" required>
-                                <option value="">Sélectionner un médecin</option>
-                                @foreach($doctors as $doctor)
-                                    <option value="{{ $doctor['id'] }}">Dr.
-                                        {{ $doctor['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="date">Date</label>
-                            <input type="date" class="form-control" id="date" name="date" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="time">Heure</label>
-                            <input type="time" class="form-control" id="time" name="time" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="statut">Statut</label>
-                            <select class="form-control" id="statut" name="statut" required>
-                                <option value="en attente">En attente</option>
-                                <option value="confirmé">Confirmé</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="reason">Notes</label>
-                            <textarea class="form-control" id="reason" name="reason" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="price">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" required>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                            <button type="submit" class="btn btn-primary">Ajouter le rendez-vous</button>
-                        </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Patient Modal -->
-    <div class="modal fade" id="deletePatientModal" tabindex="-1" role="dialog"
-        aria-labelledby="deletePatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deletePatientModalLabel">Supprimer un patient</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="deletePatientForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-body">
-                        <p>Êtes-vous sûr de vouloir supprimer ce patient? Cette action est irréversible et supprimera
-                            également tous les rendez-vous associés.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Doctor Modal -->
-
-
-    <!-- Delete Appointment Modal -->
-    <div class="modal fade" id="deleteAppointmentModal" tabindex="-1" role="dialog"
-        aria-labelledby="deleteAppointmentModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteAppointmentModalLabel">Supprimer un rendez-vous</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="deleteAppointmentForm" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-body">
-                        <p>Êtes-vous sûr de vouloir supprimer ce rendez-vous? Cette action est irréversible.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
-
+    <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebarToggleTop = document.getElementById('sidebarToggleTop');
-            const body = document.querySelector('body');
+        // Configuration CSRF pour les requêtes AJAX
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        // Fonction pour afficher/masquer les modals
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Fonction pour afficher les alertes toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastMessage.textContent = message;
+            
+            // Set icon and border color based on type
+            if (type === 'success') {
+                toast.classList.remove('border-danger-500', 'border-warning-500');
+                toast.classList.add('border-success-500');
+                toastIcon.classList.remove('fa-exclamation-circle', 'text-danger-500', 'fa-exclamation-triangle', 'text-warning-500');
+                toastIcon.classList.add('fa-check-circle', 'text-success-500');
+            } else if (type === 'error') {
+                toast.classList.remove('border-success-500', 'border-warning-500');
+                toast.classList.add('border-danger-500');
+                toastIcon.classList.remove('fa-check-circle', 'text-success-500', 'fa-exclamation-triangle', 'text-warning-500');
+                toastIcon.classList.add('fa-exclamation-circle', 'text-danger-500');
+            } else if (type === 'warning') {
+                toast.classList.remove('border-success-500', 'border-danger-500');
+                toast.classList.add('border-warning-500');
+                toastIcon.classList.remove('fa-check-circle', 'text-success-500', 'fa-exclamation-circle', 'text-danger-500');
+                toastIcon.classList.add('fa-exclamation-triangle', 'text-warning-500');
+            }
+            
+            // Show toast
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+            
+            // Hide toast after 5 seconds
+            setTimeout(hideToast, 5000);
+        }
+        
+        // Fonction pour masquer le toast
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 300);
+        }
+        
+        // Fonction pour changer de section
+        function switchSection(sectionId) {
+            // Masquer toutes les sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Afficher la section demandée
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.add('active');
+                
+                // Mettre à jour le titre de la page
+                const sectionTitle = document.getElementById('section-title');
+                switch(sectionId) {
+                    case 'dashboard-section':
+                        sectionTitle.textContent = 'Dashboard Admin';
+                        break;
+                    case 'doctors-section':
+                        sectionTitle.textContent = 'Gestion des médecins';
+                        break;
+                    case 'patients-section':
+                        sectionTitle.textContent = 'Gestion des patients';
+                        break;
+                    case 'appointments-section':
+                        sectionTitle.textContent = 'Gestion des rendez-vous';
+                        break;
+                    case 'settings-section':
+                        sectionTitle.textContent = 'Paramètres';
+                        break;
+                    case 'users-section':
+                        sectionTitle.textContent = 'Gestion des utilisateurs';
+                        break;
+                    case 'logs-section':
+                        sectionTitle.textContent = 'Logs d\'activité';
+                        break;
+                    case 'profile-section':
+                        sectionTitle.textContent = 'Mon profil';
+                        break;
+                    default:
+                        sectionTitle.textContent = 'Dashboard Admin';
+                }
+            }
+        }
+        
+        // Initialiser les dropdowns
+        function initDropdowns() {
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const dropdown = this.closest('.dropdown');
+                    dropdown.classList.toggle('active');
+                    
+                    // Fermer les autres dropdowns
+                    dropdownToggles.forEach(otherToggle => {
+                        if (otherToggle !== toggle) {
+                            otherToggle.closest('.dropdown').classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            // Fermer les dropdowns en cliquant ailleurs
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
+        }
+        
+        // Initialiser la sidebar
+        function initSidebar() {
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
             const sidebar = document.querySelector('.sidebar');
-
-            function toggleSidebar() {
-                body.classList.toggle('sidebar-toggled');
-                sidebar.classList.toggle('toggled');
-                localStorage.setItem('sidebarState', sidebar.classList.contains('toggled') ? 'toggled' : 'expanded');
-            }
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', toggleSidebar);
-            }
-
-            if (sidebarToggleTop) {
-                sidebarToggleTop.addEventListener('click', toggleSidebar);
-            }
-
-            const sidebarState = localStorage.getItem('sidebarState');
-            if (sidebarState === 'toggled') {
-                body.classList.add('sidebar-toggled');
-                sidebar.classList.add('toggled');
-            }
-
-            document.querySelectorAll('.deletePatientBtn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    document.getElementById('deletePatientForm').setAttribute('action', `/admin/patients/${id}`);
+            
+            sidebarToggle.addEventListener('click', function() {
+                document.body.classList.toggle('sidebar-collapsed');
+                sidebar.classList.toggle('md:w-16');
+                sidebar.classList.toggle('md:w-64');
+            });
+            
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('hidden');
+            });
+            
+            // Gérer la navigation dans la sidebar
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // Empêcher le comportement par défaut du lien
+                    e.preventDefault();
+                    
+                    // Retirer la classe active de tous les éléments
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Ajouter la classe active à l'élément cliqué
+                    this.classList.add('active');
+                    
+                    // Changer de section
+                    const sectionId = this.getAttribute('data-section');
+                    if (sectionId) {
+                        switchSection(sectionId);
+                    }
+                    
+                    // Fermer la sidebar sur mobile
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('hidden');
+                    }
                 });
             });
-
-            document.querySelectorAll('.deleteDoctorBtn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    document.getElementById('delete_doctor_id').value = id;
-                    document.getElementById('deleteDoctorForm').action = `/admin/doctors/${id}`; // Correction ici
-                });
+        }
+        
+        // Initialiser le thème
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const htmlElement = document.documentElement;
+            
+            // Vérifier les préférences sauvegardées ou utiliser les préférences système
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                htmlElement.classList.add('dark');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            themeToggle.addEventListener('click', function() {
+                htmlElement.classList.toggle('dark');
+                
+                if (htmlElement.classList.contains('dark')) {
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+                
+                // Mettre à jour les graphiques pour une meilleure visibilité en mode sombre
+                if (window.statusChart && window.registrationChart) {
+                    if (htmlElement.classList.contains('dark')) {
+                        window.statusChart.options.plugins.legend.labels.color = '#f1f5f9';
+                        window.registrationChart.options.scales.x.ticks.color = '#f1f5f9';
+                        window.registrationChart.options.scales.y.ticks.color = '#f1f5f9';
+                    } else {
+                        window.statusChart.options.plugins.legend.labels.color = '#1e293b';
+                        window.registrationChart.options.scales.x.ticks.color = '#1e293b';
+                        window.registrationChart.options.scales.y.ticks.color = '#1e293b';
+                    }
+                    
+                    window.statusChart.update();
+                    window.registrationChart.update();
+                }
             });
-
-            document.querySelectorAll('.deleteAppointmentBtn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    document.getElementById('deleteAppointmentForm').setAttribute('action', `/admin/rendez-vous/${id}`);
-                });
-            });
-
-            const genderChart = new Chart(
-                document.getElementById('genderChart').getContext('2d'),
-                {
-                    type: 'pie',
-                    data: {
-                        labels: ['Hommes', 'Femmes'],
-                        datasets: [{
-                            backgroundColor: [
-                                'rgba(54, 162, 235, 0.7)',
-                                'rgba(255, 99, 132, 0.7)'
-                            ],
-                            borderColor: [
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 99, 132, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
+        }
+        
+        // Initialiser les graphiques
+        function initCharts() {
+            // Status Distribution Chart
+            const statusCtx = document.getElementById('status-chart').getContext('2d');
+            window.statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Actifs', 'En attente', 'Inactifs'],
+                    datasets: [{
+                        data: [98, 18, 8],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',  // success
+                            'rgba(245, 158, 11, 0.7)',  // warning
+                            'rgba(239, 68, 68, 0.7)'    // danger
+                        ],
+                        borderColor: [
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
                     },
-                    options: {
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
+                    cutout: '65%'
+                }
+            });
+            
+            // Registration Trend Chart
+            const registrationCtx = document.getElementById('registration-chart').getContext('2d');
+            
+            // Données mensuelles
+            const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+            const currentYear = new Date().getFullYear();
+            
+            window.registrationChart = new Chart(registrationCtx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Nouveaux médecins',
+                        data: [5, 8, 12, 15, 10, 7, 14, 18, 12, 9, 6, 8],
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                        borderColor: 'rgba(14, 165, 233, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label + ' ' + currentYear;
+                                }
                             }
                         }
                     }
                 }
-            );
-
-            document.getElementById('toggleChartType').addEventListener('click', function () {
-                if (appointmentsChart.config.type === 'bar') {
-                    appointmentsChart.config.type = 'line';
-                    appointmentsChart.data.datasets[0].tension = 0.4;
-                    appointmentsChart.data.datasets[0].fill = true;
-                } else {
-                    appointmentsChart.config.type = 'bar';
-                    appointmentsChart.data.datasets[0].tension = 0;
-                    appointmentsChart.data.datasets[0].fill = false;
-                }
-                appointmentsChart.update();
             });
-
-            document.getElementById('downloadChartPNG').addEventListener('click', function () {
-                const link = document.createElement('a');
-                link.href = appointmentsChart.toBase64Image();
-                link.download = 'evolution_rendez_vous.png';
-                link.click();
-            });
-
-            document.getElementById('refreshDashboard').addEventListener('click', function () {
-                // Ajouter une classe de rotation pour l'icône
-                const icon = this.querySelector('i');
-                icon.classList.add('fa-spin');
-                this.disabled = true;
-                this.querySelector('.text-white-50').textContent = ' Actualisation...';
-
-                // Simuler une actualisation des données
-                setTimeout(() => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Tableau de bord actualisé',
-                        text: 'Les données ont été mises à jour avec succès!',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-
-                    // Restaurer l'état du bouton
-                    icon.classList.remove('fa-spin');
-                    this.disabled = false;
-                    this.innerHTML = '<i class="fas fa-sync-alt fa-sm text-white-50"></i> Actualiser';
-                }, 1500);
-            });
-
-            document.getElementById('refreshChart').addEventListener('click', function () {
-                const loadingToast = Swal.fire({
-                    title: 'Actualisation...',
-                    html: 'Mise à jour des données en cours',
-                    timer: 1500,
-                    timerProgressBar: true,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                loadingToast.then(() => {
-                    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin'];
-                    const newData = months.map(() => Math.floor(Math.random() * 50) + 50);
-
-                    appointmentsChart.data.datasets[0].data = newData;
-                    appointmentsChart.update();
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Données actualisées',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                });
-            });
-
-            document.addEventListener('click', function (e) {
-                if (e.target && e.target.classList.contains('toggle-availability')) {
-                    e.preventDefault();
-                    const doctorId = e.target.getAttribute('data-doctor-id');
-                    const currentStatus = e.target.getAttribute('data-status');
-                    const newStatus = currentStatus === 'available' ? 'unavailable' : 'available';
-
-                    // Simuler une mise à jour de la disponibilité
-                    Swal.fire({
-                        title: 'Changer la disponibilité?',
-                        text: `Voulez-vous marquer ce médecin comme ${newStatus === 'available' ? 'disponible' : 'indisponible'}?`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#1cc88a',
-                        cancelButtonColor: '#e74a3b',
-                        confirmButtonText: 'Oui, changer',
-                        cancelButtonText: 'Annuler'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            setTimeout(() => {
-                                e.target.setAttribute('data-status', newStatus);
-                                e.target.textContent = newStatus === 'available' ? 'Marquer comme indisponible' : 'Marquer comme disponible';
-
-                                const badge = document.querySelector(`#availability-badge-${doctorId}`);
-                                if (badge) {
-                                    badge.className = newStatus === 'available' ? 'badge badge-success' : 'badge badge-warning';
-                                    badge.textContent = newStatus === 'available' ? 'Disponible' : 'Non disponible';
-                                }
-
-                                Swal.fire({
-                                    title: 'Mise à jour réussie!',
-                                    text: `Le médecin est maintenant ${newStatus === 'available' ? 'disponible' : 'indisponible'}.`,
-                                    icon: 'success',
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                            }, 800);
-                        }
-                    });
-                }
-            });
-
-            const forms = document.querySelectorAll('.needs-validation');
-            Array.from(forms).forEach(form => {
-                form.addEventListener('submit', event => {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-
-            window.confirmAppointment = function (id) {
-                Swal.fire({
-                    title: 'Confirmer ce rendez-vous?',
-                    text: "Cette action enverra une notification au patient.",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#1cc88a',
-                    cancelButtonColor: '#e74a3b',
-                    confirmButtonText: 'Oui, confirmer',
-                    cancelButtonText: 'Annuler'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = `/admin/rendez-vous/${id}/confirm`;
-
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                        const csrfInput = document.createElement('input');
-                        csrfInput.type = 'hidden';
-                        csrfInput.name = '_token';
-                        csrfInput.value = csrfToken;
-
-                        const methodInput = document.createElement('input');
-                        methodInput.type = 'hidden';
-                        methodInput.name = '_method';
-                        methodInput.value = 'PUT';
-
-                        form.appendChild(csrfInput);
-                        form.appendChild(methodInput);
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-                });
-            };
-
-            window.cancelAppointment = function (id) {
-                Swal.fire({
-                    title: 'Annuler ce rendez-vous?',
-                    text: "Cette action enverra une notification au patient et libérera ce créneau horaire.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e74a3b',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Oui, annuler',
-                    cancelButtonText: 'Retour'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = `/admin/rendez-vous/${id}/cancel`;
-
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                        const csrfInput = document.createElement('input');
-                        csrfInput.type = 'hidden';
-                        csrfInput.name = '_token';
-                        csrfInput.value = csrfToken;
-
-                        const methodInput = document.createElement('input');
-                        methodInput.type = 'hidden';
-                        methodInput.name = '_method';
-                        methodInput.value = 'PUT';
-
-                        form.appendChild(csrfInput);
-                        form.appendChild(methodInput);
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-                });
-            };
-
-            @if(session('success'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Succès!',
-                    text: "{{ session('success') }}",
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            @endif
-
-            @if(session('error'))
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur!',
-                    text: "{{ session('error') }}",
-                    confirmButtonColor: '#4e73df'
-                });
-            @endif
+        }
+        
+        // Initialiser l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les dropdowns
+            initDropdowns();
             
-            const scrollTopButton = document.querySelector('.scroll-to-top');
-
-            window.addEventListener('scroll', function () {
-                if (window.scrollY > 100) {
-                    scrollTopButton.style.display = 'block';
-                    setTimeout(() => scrollTopButton.style.opacity = 1, 50);
-                } else {
-                    scrollTopButton.style.opacity = 0;
-                    setTimeout(() => {
-                        if (scrollTopButton.style.opacity === '0') {
-                            scrollTopButton.style.display = 'none';
-                        }
-                    }, 300);
-                }
-            });
-
-            scrollTopButton.addEventListener('click', function (e) {
-                e.preventDefault();
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
+            // Initialiser la sidebar
+            initSidebar();
+            
+            // Initialiser le thème
+            initThemeToggle();
+            
+            // Initialiser les graphiques
+            initCharts();
+            
+            // Ajouter des animations aux cartes
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.classList.add('shadow-lg');
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.classList.remove('shadow-lg');
                 });
             });
-
-            document.getElementById('specialite_filter')?.addEventListener('change', function () {
-                const specialiteId = this.value;
-                const rows = document.querySelectorAll('#doctorsTable tbody tr');
-
-                rows.forEach(row => {
-                    const specialiteCell = row.querySelector('td:nth-child(2)').getAttribute('data-specialite-id');
-                    if (specialiteId === '' || specialiteCell === specialiteId) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            });
-
-            document.getElementById('doctor_id')?.addEventListener('change', checkDoctorAvailability);
-            document.getElementById('date')?.addEventListener('change', checkDoctorAvailability);
-            document.getElementById('heure')?.addEventListener('change', checkDoctorAvailability);
-
-            function checkDoctorAvailability() {
-                const doctorId = document.getElementById('doctor_id')?.value;
-                const date = document.getElementById('date')?.value;
-                const time = document.getElementById('heure')?.value;
-                const availabilityMessage = document.getElementById('availability_message');
-
-                if (doctorId && date && time && availabilityMessage) {
-                    availabilityMessage.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Vérification de la disponibilité...';
-                    availabilityMessage.className = 'text-info mt-2';
-
-                    setTimeout(() => {
-                        const isAvailable = Math.random() > 0.3;
-
-                        if (isAvailable) {
-                            availabilityMessage.innerHTML = '<i class="fas fa-check-circle"></i> Ce créneau est disponible!';
-                            availabilityMessage.className = 'text-success mt-2';
-                        } else {
-                            availabilityMessage.innerHTML = '<i class="fas fa-times-circle"></i> Ce créneau n\'est pas disponible. Veuillez choisir un autre horaire.';
-                            availabilityMessage.className = 'text-danger mt-2';
-                        }
-                    }, 1000);
-                }
-            }
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            function updateDateTime() {
-                const now = new Date();
-
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const dateElement = document.getElementById('currentDate');
-                if (dateElement) {
-                    dateElement.textContent = now.toLocaleDateString('fr-FR', options);
-                }
-
-                const timeElement = document.getElementById('currentTime');
-                if (timeElement) {
-                    timeElement.textContent = now.toLocaleTimeString('fr-FR', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                }
-            }
-
-            updateDateTime();
-            setInterval(updateDateTime, 60000);
-
-            const searchInput = document.getElementById('globalSearch');
-            const searchDropdown = document.querySelector('.search-dropdown');
-
-            if (searchInput && searchDropdown) {
-                searchInput.addEventListener('focus', function () {
-                    searchDropdown.classList.remove('d-none');
-                });
-
-                document.addEventListener('click', function (event) {
-                    if (!searchInput.contains(event.target) && !searchDropdown.contains(event.target)) {
-                        searchDropdown.classList.add('d-none');
-                    }
-                });
-            }
-
-            const notificationItems = document.querySelectorAll('.notification-list .dropdown-item');
-            notificationItems.forEach(item => {
-                item.addEventListener('mouseenter', function () {
-                    this.style.backgroundColor = 'rgba(78, 115, 223, 0.05)';
-                    const actionButtons = this.querySelector('.action-buttons');
-                    if (actionButtons) actionButtons.style.opacity = '1';
-                });
-
-                item.addEventListener('mouseleave', function () {
-                    if (!this.classList.contains('unread')) {
-                        this.style.backgroundColor = '';
-                    }
-                    const actionButtons = this.querySelector('.action-buttons');
-                    if (actionButtons) actionButtons.style.opacity = '0';
-                });
-            });
-
-            const quickActionButtons = document.querySelectorAll('.quick-actions .btn');
-            quickActionButtons.forEach(button => {
-                button.addEventListener('mouseenter', function () {
-                    this.style.transform = 'translateY(-2px)';
-                    this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                });
-
-                button.addEventListener('mouseleave', function () {
-                    this.style.transform = '';
-                    this.style.boxShadow = '';
-                });
-            });
-
-            const userMenuItems = document.querySelectorAll('.dropdown-menu .dropdown-item');
-            userMenuItems.forEach(item => {
-                item.addEventListener('mouseenter', function () {
-                    this.style.backgroundColor = 'rgba(78, 115, 223, 0.05)';
-                });
-
-                item.addEventListener('mouseleave', function () {
-                    this.style.backgroundColor = '';
-                });
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Configuration pour le modal de suppression des médecins
-            document.querySelectorAll('.deleteDoctorBtn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    document.getElementById('delete_doctor_id').value = id;
-                    document.getElementById('deleteDoctorForm').action = `/admin/doctors/${id}`;
-                });
-            });
-            // Configuration pour le modal d'édition des médecins
-            document.querySelectorAll('.edit-doctor-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    const name = this.getAttribute('data-name');
-                    const email = this.getAttribute('data-email');
-                    const phone = this.getAttribute('data-phone');
-                    const speciality = this.getAttribute('data-speciality');
-                    const nombreCabinet = this.getAttribute('data-nombre-cabinet');
-                    const qualification = this.getAttribute('data-qualification');
-                    const isAvailable = this.getAttribute('data-is-available');
-
-                    // Mise à jour de l'ID dans le formulaire
-                    document.getElementById('edit_doctor_id').value = id;
-                    document.getElementById('editDoctorForm').action = `/admin/doctors/${id}`;
-
-                    // Remplissage des champs du formulaire
-                    document.getElementById('edit_doctor_name').value = name;
-                    document.getElementById('edit_doctor_email').value = email;
-                    document.getElementById('edit_doctor_telephone').value = phone;
-
-                    // Sélection de la spécialité
-                    const specialitySelect = document.getElementById('edit_speciality');
-                    for (let i = 0; i < specialitySelect.options.length; i++) {
-                        if (specialitySelect.options[i].text === speciality) {
-                            specialitySelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-
-                    document.getElementById('edit_nombre_cabinet').value = nombreCabinet;
-                    document.getElementById('edit_qualification').value = qualification;
-
-                    // Gestion de la disponibilité
-                    document.getElementById('edit_is_available').checked = isAvailable === '1';
-
-                    // Réinitialisation des champs de mot de passe
-                    document.getElementById('edit_doctor_password').value = '';
-                    document.getElementById('edit_doctor_password_confirmation').value = '';
-                });
-            });
-
-
-
-            // Validation des formulaires
-            function validateForm(formId) {
-                const form = document.getElementById(formId);
-                if (!form) return true;
-
-                let isValid = true;
-
-                // Vérification des champs requis
-                const requiredFields = form.querySelectorAll('[required]');
-                requiredFields.forEach(field => {
-                    if (!field.value.trim()) {
-                        isValid = false;
-                        field.classList.add('is-invalid');
-
-                        // Création d'un message d'erreur si absent
-                        let feedbackDiv = field.nextElementSibling;
-                        if (!feedbackDiv || !feedbackDiv.classList.contains('invalid-feedback')) {
-                            feedbackDiv = document.createElement('div');
-                            feedbackDiv.className = 'invalid-feedback';
-                            feedbackDiv.textContent = 'Ce champ est requis';
-                            field.parentNode.insertBefore(feedbackDiv, field.nextSibling);
-                        }
-                    } else {
-                        field.classList.remove('is-invalid');
-                    }
-                });
-
-                // Vérification de la correspondance des mots de passe
-                if (formId === 'addDoctorForm' || formId === 'editDoctorForm') {
-                    const passwordField = form.querySelector('[name="password"]');
-                    const confirmField = form.querySelector('[name="password_confirmation"]');
-
-                    if (passwordField.value && passwordField.value !== confirmField.value) {
-                        isValid = false;
-                        confirmField.classList.add('is-invalid');
-
-                        let feedbackDiv = confirmField.nextElementSibling;
-                        if (!feedbackDiv || !feedbackDiv.classList.contains('invalid-feedback')) {
-                            feedbackDiv = document.createElement('div');
-                            feedbackDiv.className = 'invalid-feedback';
-                            feedbackDiv.textContent = 'Les mots de passe ne correspondent pas';
-                            confirmField.parentNode.insertBefore(feedbackDiv, confirmField.nextSibling);
-                        }
-                    }
-                }
-
-                return isValid;
-            }
-
-            // Association de la validation aux formulaires
-            const addDoctorForm = document.getElementById('addDoctorForm');
-            if (addDoctorForm) {
-                addDoctorForm.addEventListener('submit', function (e) {
-                    if (!validateForm('addDoctorForm')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                });
-            }
-
-            const editDoctorForm = document.getElementById('editDoctorForm');
-            if (editDoctorForm) {
-                editDoctorForm.addEventListener('submit', function (e) {
-                    if (!validateForm('editDoctorForm')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                });
-            }
-
-            // Réinitialisation des formulaires lors de la fermeture des modals
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('hidden.bs.modal', function () {
-                    const form = this.querySelector('form');
-                    if (form) {
-                        form.reset();
-                        form.querySelectorAll('.is-invalid').forEach(field => {
-                            field.classList.remove('is-invalid');
-                        });
-                        form.querySelectorAll('.invalid-feedback').forEach(feedback => {
-                            feedback.remove();
-                        });
-                    }
-                });
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Gérer le clic sur le bouton d'édition
-            document.querySelectorAll('.edit-appointment-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const appointmentId = this.getAttribute('data-id');
-                    const appointmentData = JSON.parse(this.getAttribute('data-appointment'));
-
-                    // Mettre à jour l'action du formulaire
-                    document.getElementById('editAppointmentForm').action = `/admin/appointments/${appointmentId}`;
-
-                    // Remplir les champs du formulaire
-                    document.getElementById('doctor_id').value = appointmentData.doctor_id;
-                    document.getElementById('doctor_speciality').value = appointmentData.doctor_speciality;
-                    document.getElementById('date').value = appointmentData.date;
-
-                    // Afficher la modal
-                    new bootstrap.Modal(document.getElementById('editScheduleModal')).show();
-                });
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Gestion de la recherche
-            const patientSearch = document.getElementById('patientSearch');
-            const searchPatientBtn = document.getElementById('searchPatientBtn');
-            const patientsTable = document.getElementById('patientsTable');
-
-            searchPatientBtn.addEventListener('click', function () {
-                const searchTerm = patientSearch.value.toLowerCase();
-                const rows = patientsTable.getElementsByTagName('tr');
-
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    const cells = row.getElementsByTagName('td');
-                    let found = false;
-
-                    for (let j = 0; j < cells.length; j++) {
-                        const cell = cells[j];
-                        if (cell.textContent.toLowerCase().indexOf(searchTerm) > -1) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    row.style.display = found ? '' : 'none';
-                }
-            });
-
-            // Gestion des boutons d'édition
-            document.querySelectorAll('.edit-patient-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const patientData = JSON.parse(this.getAttribute('data-patient'));
-                    const patientId = this.getAttribute('data-id');
-
-                    // Remplir le formulaire d'édition
-                    document.getElementById('edit_name').value = patientData.name;
-                    document.getElementById('edit_email').value = patientData.email;
-                    document.getElementById('edit_phone').value = patientData.phone;
-                    document.getElementById('edit_birth_date').value = patientData.birth_date;
-                    document.getElementById('edit_has_insurance').checked = patientData.has_insurance;
-
-                    // Mettre à jour l'action du formulaire
-                    document.getElementById('editPatientForm').action = `/admin/patients/${patientId}`;
-
-                    // Afficher la modal
-                    new bootstrap.Modal(document.getElementById('editPatientModal')).show();
-                });
-            });
-
-            // Gestion des boutons de suppression
-            document.querySelectorAll('.delete-patient-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const patientId = this.getAttribute('data-id');
-                    const patientName = this.getAttribute('data-name');
-
-                    document.getElementById('patientNameToDelete').textContent = patientName;
-                    document.getElementById('deletePatientForm').action = `/admin/patients/${patientId}`;
-
-                    new bootstrap.Modal(document.getElementById('deletePatientModal')).show();
-                });
-            });
-
-            // Validation du formulaire d'ajout
-            document.getElementById('addPatientForm').addEventListener('submit', function (e) {
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('password_confirmation').value;
-
-                if (password !== confirmPassword) {
-                    e.preventDefault();
-                    alert('Les mots de passe ne correspondent pas');
-                }
-            });
-        });
-        function showLoading(element) {
-            const loadingOverlay = document.createElement('div');
-            loadingOverlay.className = 'loading-overlay';
-            loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div>';
-            element.style.position = 'relative';
-            element.appendChild(loadingOverlay);
-            return loadingOverlay;
-        }
-
-        function hideLoading(overlay) {
-            overlay.remove();
-        }
-        // Ajouter ce code au sein de votre document.addEventListener('DOMContentLoaded', function() {...})
-        // Pour que les onglets fonctionnent correctement
-        const tabLinks = document.querySelectorAll('#dashboardTabs a[data-bs-toggle="tab"]');
-        tabLinks.forEach(tabLink => {
-            tabLink.addEventListener('click', function (event) {
-                event.preventDefault();
-                const tabContent = document.querySelector(this.getAttribute('href'));
-
-                // Cacher tous les contenus d'onglets
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
-                });
-
-                // Afficher le contenu de l'onglet sélectionné
-                tabContent.classList.add('show', 'active');
-
-                // Marquer l'onglet comme actif
-                tabLinks.forEach(link => link.classList.remove('active'));
-                this.classList.add('active');
-            });
+            
+            // Exemple de notification de succès
+            // Décommentez pour tester
+            // setTimeout(() => {
+            //     showToast('Opération réussie', 'success');
+            // }, 1000);
         });
     </script>
 </body>
-
 </html>

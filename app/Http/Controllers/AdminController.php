@@ -28,12 +28,12 @@ class AdminController extends Controller
                     'doctor_details' => $doctor,
                     'status' => $doctor->user->status,
                     'is_available' => $doctor->is_available,
-                    'speciality' => $doctor->speciality,
+                    'speciality' => $doctor->id_speciality,
                     'nombre_cabinet' => $doctor->nombre_cabinet,
                     'qualification' => $doctor->qualification
                 ];
             });
-            
+            // dd($doctors);
             
 
             $appointments = $this->dashboardService->getAllAppointments();
