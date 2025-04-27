@@ -94,7 +94,6 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(
     Route::get('/patients/{id}', [DoctorController::class, 'editPatient'])->name('patients.edit');
     
     // Appointments routes
-    Route::get('/appointments', [DoctorController::class, 'appointments'])->name('appointments');
     Route::get('/appointments/create/{doctor}', [DoctorController::class, 'createAppointment'])->name('appointments.create');
     Route::post('/appointments', [DoctorController::class, 'storeAppointment'])->name('appointments.store');
     Route::get('/appointments/{id}', [DoctorController::class, 'showAppointment'])->name('appointments.show');

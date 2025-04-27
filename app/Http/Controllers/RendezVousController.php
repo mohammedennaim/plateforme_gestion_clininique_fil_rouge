@@ -82,37 +82,29 @@ class RendezVousController extends Controller
         return redirect()->back()->with('success', 'Votre rendez-vous a été annulé avec succès');
     }
 
-    /**
-     * Enregistre une nouvelle réservation dans la base de données
-     */
+
     public function store(Request $request)
     {
-        // Valider les données du formulaire
         $validatedData = $request->validate([
             'doctor_id' => 'required|exists:doctors,id',
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required',
-            'reason' => 'nullable|string|max:255',
-            'urgency' => 'nullable|string|in:normal,soon,urgent',
-            'notes' => 'nullable|string',
+            'reason' => 'nullable|string|max:255',            
         ]);
 
-        // Créer un nouveau rendez-vous
         $appointment = new Appointment();
         $appointment->doctor_id = $validatedData['doctor_id'];
         $appointment->date = $validatedData['date'];
         $appointment->time = $validatedData['time'];
         $appointment->reason = $validatedData['reason'] ?? null;
-        $appointment->status = 'pending'; // Définir un statut par défaut
-        $appointment->price = 0; // Vous pouvez définir un prix par défaut ou le calculer plus tard
-
-        // Si l'utilisateur est authentifié, associer le patient
+        $appointment->status = 'pending';
+        $appointment->price = 0;
+        
         if (auth()->check()) {
             $patient = Patient::where('user_id', auth()->id())->first();
             if ($patient) {
                 $appointment->patient_id = $patient->id;
             } else {
-                // Créer un nouveau patient si nécessaire
                 if ($request->has('patient_info')) {
                     $patientInfo = $request->input('patient_info');
                     $patient = $this->createOrUpdatePatient($patientInfo);
@@ -122,7 +114,6 @@ class RendezVousController extends Controller
                 }
             }
         } else {
-            // Pour les utilisateurs non authentifiés, créer un patient temporaire
             if ($request->has('patient_info')) {
                 $patientInfo = $request->input('patient_info');
                 $patient = $this->createOrUpdatePatient($patientInfo);
@@ -132,40 +123,31 @@ class RendezVousController extends Controller
             }
         }
 
-        // Sauvegarder le rendez-vous
         $appointment->save();
 
-        // Rediriger vers la page de paiement avec l'ID du rendez-vous
         return redirect()->route('patient.payment', ['patient' => $appointment->patient_id])
             ->with('appointment_id', $appointment->id)
             ->with('success', 'Votre rendez-vous a été enregistré. Procédez au paiement pour confirmer.');
     }
 
-    /**
-     * Créer ou mettre à jour un patient à partir des données du formulaire
-     */
     private function createOrUpdatePatient($patientInfo)
     {
-        // Vérifier si un utilisateur avec cet email existe déjà
         $user = User::where('email', $patientInfo['email'])->first();
-        
         if (!$user) {
-            // Créer un nouvel utilisateur si aucun n'existe
             $user = new User();
             $user->name = $patientInfo['name'];
             $user->email = $patientInfo['email'];
             $user->phone = $patientInfo['phone'] ?? null;
             $user->date_of_birth = $patientInfo['birthdate'] ?? null;
-            $user->password = bcrypt('123456'); // Mot de passe par défaut
+            $randomPassword = bin2hex(random_bytes(4));
+            $user->password = bcrypt($randomPassword);
             $user->role = 'patient';
             $user->save();
         }
         
-        // Vérifier si un patient associé à cet utilisateur existe
         $patient = Patient::where('user_id', $user->id)->first();
         
         if (!$patient) {
-            // Créer un nouveau patient
             $patient = new Patient();
             $patient->user_id = $user->id;
             $patient->name_assurance = $patientInfo['name_assurance'] ?? null;
@@ -178,23 +160,15 @@ class RendezVousController extends Controller
         return $patient;
     }
 
-    /**
-     * Traite les données après un paiement réussi
-     */
     public function processAfterPayment($appointment_id)
     {
-        // Récupérer le rendez-vous
         $appointment = Appointment::findOrFail($appointment_id);
-        
-        // Mettre à jour le statut du rendez-vous
         $appointment->status = 'confirmed';
         $appointment->paiement = true;
         $appointment->save();
         
-        // Envoyer une notification par email (vous pouvez implémenter cette fonctionnalité plus tard)
-        // $this->sendAppointmentConfirmationEmail($appointment);
+        $this->sendAppointmentConfirmationEmail($appointment);
         
-        // Rediriger vers la page de détails du rendez-vous
         return redirect()->route('patient.appointment.details', ['appointment_id' => $appointment->id])
             ->with('success', 'true');
     }

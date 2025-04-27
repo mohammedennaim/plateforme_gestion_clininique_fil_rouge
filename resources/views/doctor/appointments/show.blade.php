@@ -66,9 +66,9 @@
                                 <i class="fas fa-user"></i>
                             </div>
                             <div>
-                                <h4 class="text-base font-medium">Jean Dupont</h4>
-                                <div class="text-sm text-gray-600">jean.dupont@email.com</div>
-                                <div class="text-sm text-gray-600">+33 6 12 34 56 78</div>
+                                <h4 class="text-base font-medium">{{ $user->name }}</h4>
+                                <div class="text-sm text-gray-600">{{ $user->email }}</div>
+                                <div class="text-sm text-gray-600">{{ $user->phone }}</div>
                             </div>
                         </div>
 

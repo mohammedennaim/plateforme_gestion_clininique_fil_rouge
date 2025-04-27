@@ -19,7 +19,6 @@ class AuthController extends Controller
     public function __construct(AuthRepository $authRepository)
     {
         $this->authRepository = $authRepository;
-        // Appliquer le middleware guest uniquement aux méthodes qui doivent être accessibles aux utilisateurs non connectés
         $this->middleware('guest')->only([
             'login', 'register', 'authenticate', 'store', 
             'showForgotPasswordForm', 'sendResetLinkEmail',
@@ -27,28 +26,18 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Afficher la page de connexion
-     */
     public function login()
     {
         return view('auth.login');
     }
 
-    /**
-     * Afficher la page d'inscription
-     */
     public function register()
     {
         return view('auth.register');
     }
 
-    /**
-     * Traiter la demande d'authentification
-     */
     public function authenticate(Request $request)
     {
-        // Valider les données de la requête
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -60,13 +49,11 @@ class AuthController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
-            // Cas spécial pour les médecins en attente
             if ($user->isDoctor() && $user->isPending()) {
                 return redirect()->route('doctor.pending')
                     ->with('warning', 'Votre compte est en attente de validation par un administrateur.');
             }
             
-            // Utiliser la méthode getHomeRoute pour déterminer la redirection
             return redirect(RouteServiceProvider::getHomeRoute($user->role))
             ->with('success', 'Connexion réussie. Bienvenue !');
         } else {
@@ -78,12 +65,8 @@ class AuthController extends Controller
     
     }
 
-    /**
-     * Enregistrer un nouvel utilisateur
-     */
     public function store(Request $request)
     {
-        // Valider les données de la requête
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
@@ -99,7 +82,6 @@ class AuthController extends Controller
                     ->with('info', 'Votre compte a été créé mais il doit être validé par un administrateur avant que vous puissiez vous connecter.');
             }
             
-            // Pour les autres types d'utilisateurs, connexion automatique
             Auth::login($user);
             return redirect(RouteServiceProvider::getHomeRoute($user->role))
             ->with('success', 'Votre compte a été créé avec succès.');
@@ -110,24 +92,17 @@ class AuthController extends Controller
             ->withErrors(['error' => 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.']);
     }
 
-    /**
-     * Afficher le formulaire de demande de réinitialisation de mot de passe
-     */
     public function showForgotPasswordForm()
     {
         return view('auth.passwords.email');
     }
 
-    /**
-     * Envoyer le lien de réinitialisation du mot de passe
-     */
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
         ]);
 
-        // On utilise le système de réinitialisation de mot de passe intégré à Laravel
         $status = Password::sendResetLink(
             $request->only('email')
         );
@@ -137,17 +112,11 @@ class AuthController extends Controller
                     : back()->withErrors(['email' => __($status)]);
     }
 
-    /**
-     * Afficher le formulaire de réinitialisation de mot de passe
-     */
     public function showResetPasswordForm(Request $request, $token)
     {
         return view('auth.passwords.reset', ['token' => $token, 'email' => $request->email]);
     }
 
-    /**
-     * Réinitialiser le mot de passe
-     */
     public function resetPassword(Request $request)
     {
         $request->validate([
@@ -156,7 +125,6 @@ class AuthController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
-        // Ici on procède à la réinitialisation du mot de passe
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
@@ -170,15 +138,11 @@ class AuthController extends Controller
             }
         );
 
-        // Redirection après la réinitialisation
         return $status === Password::PASSWORD_RESET
                     ? redirect()->route('login')->with('status', __($status))
                     : back()->withErrors(['email' => [__($status)]]);
     }
 
-    /**
-     * Déconnecter l'utilisateur
-     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -189,11 +153,4 @@ class AuthController extends Controller
             ->with('success', 'Vous avez été déconnecté avec succès.');
     }
 
-    /**
-     * Afficher la page d'attente pour les médecins
-     */
-    public function doctorPending()
-    {
-        return view('auth.doctor-pending');
-    }
 }

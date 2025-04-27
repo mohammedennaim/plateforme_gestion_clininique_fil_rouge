@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\DashboardService;
 use App\Services\DoctorService;
 use App\Services\AppointmentService;
+use App\Services\PatientService;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -19,10 +20,13 @@ class DoctorController extends Controller
 
     protected $doctorService;
     protected $appointmentService;
-    public function __construct(DoctorService $doctorService, AppointmentService $appointmentService)
+
+    protected $patientService;
+    public function __construct(DoctorService $doctorService, AppointmentService $appointmentService, PatientService $patientService)
     {
         $this->doctorService = $doctorService;
         $this->appointmentService = $appointmentService;
+        $this->patientService = $patientService;
     }
     public function index()
     {
@@ -33,8 +37,12 @@ class DoctorController extends Controller
             $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'pending');
             $todayAppointmentsConfirmed = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'confirmed');
             $appointments = $this->appointmentService->getByDoctorId($doctorId);
-            $patients = $this->appointmentService->getByDoctorId($doctorId) ;
+            // dd($appointments);
+            $patients = $this->appointmentService->getByDoctorId($doctorId);
+            $countPatients = $this->appointmentService->getCountByPatientsByDoctorId($doctorId);
             // dd($todayAppointments[0]->date->format('d/m/Y'));
+            // dd($countPatients);
+  
             foreach($appointments as $appointment) {
                 if ($appointment->patient && !$patients->contains('id', $appointment->patient->id)) {
                     $patients->push($appointment->patient);
@@ -147,7 +155,7 @@ class DoctorController extends Controller
                 'appointmentIncreasePercent', 'tasks', 'pendingTasksCount', 'recentActivities', 'messages',
                 'activePatientCount', 'activePatientPercent', 'patientsThisWeek',
                 'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount', 'appointments', 'speciality','doctorId',
-                'stats','tomorrowAppointmentsCount', 'todayAppointmentsConfirmed'
+                'stats','tomorrowAppointmentsCount', 'todayAppointmentsConfirmed', 'countPatients'
             ));
         
       
@@ -196,18 +204,6 @@ class DoctorController extends Controller
         return collect($days);
     }
 
-    public function appointments()
-    {
-        try {
-            $doctor = auth()->user();
-            $appointments = $this->appointmentService->getByDoctorId($doctor->id);
-            
-            return view('doctor.appointments', compact('appointments'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while loading appointments.');
-        }
-    }
-
     public function patients()
     {
         try {
@@ -224,8 +220,7 @@ class DoctorController extends Controller
     {
         try {
             $doctor = auth()->user();
-            $patient = Patient::findOrFail($id);
-            // dd(($patient->user->id));
+            $patient = $this->patientService->findPatientById($id);
             
             return view('doctor.patients.show', compact('patient'));
         } catch (\Exception $e) {
@@ -233,28 +228,34 @@ class DoctorController extends Controller
         }
     }
 
-    public function patientHistory($id)
+    public function updatePatient(Request $request, $id)
     {
         try {
-            $doctor = auth()->user();
-            $patient = Patient::findOrFail($id);
-            $appointments = $this->appointmentService->getByPatientId($id);
+            $patient = $this->patientService->getPatientById($id)->first();
+            // $user = $this->patientService->getUserById($patient->user_id);
+            // $user->update($request->all());
+            $patient->update($request->all());
+            $patient->user->update($request->all());
             
-            return view('doctor.patients.history', compact('patient', 'appointments'));
+            return redirect()->back()->with('success', 'Patient mis à jour avec succès.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors du chargement de l\'historique du patient: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de la mise à jour du patient: ' . $e->getMessage());
         }
+    }
+    public function editPatient($id){
+        $patient = $this->patientService->getPatientById($id)->first();
+        return view('doctor.patients.edit', compact('patient'));
     }
     
     public function showAppointment($id)
     {
         try {
             $doctor = auth()->user();
-            $details = Doctor::where('user_id',$doctor->id)->first();
+            $details = $this->doctorService->getDoctorDetails($doctor->doctor->id);
             $appointment = $this->appointmentService->getById($id);
-            $user = User::findOrFail($appointment->patient_id);
-            $patient = Patient::where('user_id', $user->id)->first();
-            $detailsPatient = User::where('id', $patient->user_id)->first();
+            $user = $this->patientService->getUserById($appointment->patient_id);
+            $patient = $this->patientService->getPatientById($user->id)->first();
+            $detailsPatient = $this->patientService->getPatientById($user->id);
             $speciality = Speciality::where('id', $details->id_speciality)->first();
             if (!$appointment) {
                 return redirect()->back()->with('error', 'Rendez-vous introuvable.');
@@ -288,7 +289,6 @@ class DoctorController extends Controller
             $doctor = auth()->user();
             $appointment = Appointment::findOrFail($id);
             
-            // Check if the appointment belongs to this doctor
             if ($appointment->doctor_id != $doctor->doctor->id) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à ce rendez-vous.');
             }
@@ -308,12 +308,10 @@ class DoctorController extends Controller
             $doctor = auth()->user();
             $appointment = Appointment::findOrFail($id);
             
-            // Check if the appointment belongs to this doctor
             if ($appointment->doctor_id != $doctor->doctor->id) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à ce rendez-vous.');
             }
             
-            // Validate the request data
             $validated = $request->validate([
                 'doctor_id' => $request->patient_id,
                 'patient_id' => $request->doctor_id,
@@ -324,7 +322,6 @@ class DoctorController extends Controller
                 'price' => 'nullable|numeric'
             ]);
             
-            // Prepare data for update
             $data = [
                 'doctor_id' => $validated['doctor_id'],
                 'patient_id' => $validated['patient_id'],
@@ -335,7 +332,6 @@ class DoctorController extends Controller
                 'price' => $validated['price'] ?? $appointment->price
             ];
             
-            // Update the appointment using the service
             $updatedAppointment = $this->appointmentService->update($id, $data);
             
             if (!$updatedAppointment) {
@@ -350,155 +346,11 @@ class DoctorController extends Controller
         }
     }
     
-    public function destroyAppointment($id)
-    {
-        try {
-            $result = $this->appointmentService->deleteAppointment($id);
-            
-            if ($result) {
-                return redirect()->route('doctor.dashboard')->with('success', 'Rendez-vous supprimé avec succès.');
-            } else {
-                return redirect()->back()->with('error', 'Erreur lors de la suppression du rendez-vous.');
-            }
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors de la suppression du rendez-vous: ' . $e->getMessage());
-        }
-    }
-    
-    public function searchPatients(Request $request)
-    {
-        try {
-            $doctor = auth()->user();
-            $query = $request->input('query');
-            $patients = $this->appointmentService->searchPatients($query);
-            
-            return view('doctor.patients.index', compact('patients', 'query'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors de la recherche: ' . $e->getMessage());
-        }
-    }
-    
-    public function calendar()
-    {
-        try {
-            $doctor = auth()->user();
-            $appointments = $this->appointmentService->getByDoctorId($doctor->id);
-            
-            $month = request('month', now()->month);
-            $year = request('year', now()->year);
-            
-            return view('doctor.calendar.index', compact('appointments', 'month', 'year'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors du chargement du calendrier: ' . $e->getMessage());
-        }
-    }
-    
-    public function messages()
-    {
-        try {
-            $doctor = auth()->user();
-            $messages = Message::where('recipient_id', $doctor->id)
-                ->orWhere('sender_id', $doctor->id)
-                ->orderBy('created_at', 'desc')
-                ->get();
-            
-            return view('doctor.messages.index', compact('messages'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors du chargement des messages: ' . $e->getMessage());
-        }
-    }
-    
-    public function createMessage()
-    {
-        try {
-            $doctor = auth()->user();
-            $patients = Patient::all();
-            
-            return view('doctor.messages.create', compact('patients'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors de la création du message: ' . $e->getMessage());
-        }
-    }
-    
-    public function activities()
-    {
-        try {
-            $doctor = auth()->user();
-            
-            // This is a placeholder for actual activity logging system
-            $activities = [];
-            
-            return view('doctor.activities.index', compact('activities'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors du chargement des activités: ' . $e->getMessage());
-        }
-    }
-    
-    public function exportRevenue()
-    {
-        try {
-            $doctor = auth()->user();
-            $revenue = $this->appointmentService->getTotalRevenue();
-            
-            // This would normally generate a CSV or Excel file for download
-            $filename = 'revenue_' . now()->format('Y-m-d') . '.csv';
-            
-            return response()->download(storage_path('app/' . $filename), $filename, [
-                'Content-Type' => 'text/csv',
-            ]);
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors de l\'exportation des données: ' . $e->getMessage());
-        }
-    }
-
-    public function showMedicalRecord($id)
-    {
-        try {
-            $doctor = auth()->user();
-            $patient = Patient::findOrFail($id);
-            
-            // Vérifier que ce médecin a accès au dossier de ce patient
-            $hasAccess = $this->appointmentService->getByPatientId($id)
-                ->where('doctor_id', $doctor->id)
-                ->count() > 0;
-                
-            if (!$hasAccess) {
-                return redirect()->back()->with('error', 'Vous n\'avez pas accès au dossier médical de ce patient.');
-            }
-            
-            // Récupérer le dossier médical
-            $medicalRecord = app(\App\Services\DossierMedicalService::class)->getByPatientId($id) ?? null;
-            
-            return view('doctor.medical-records.show', compact('patient', 'medicalRecord'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors du chargement du dossier médical: ' . $e->getMessage());
-        }
-    }
-    
-    public function medicalRecords($id)
-    {
-        try {
-            $doctor = auth()->user();
-            $patient = Patient::findOrFail($id);
-            $hasAccess = $this->appointmentService->getByPatientId($id)
-                ->where('doctor_id', $doctor->id)
-                ->count() > 0;
-                
-            if (!$hasAccess) {
-                return redirect()->back()->with('error', 'Vous n\'avez pas accès aux dossiers médicaux de ce patient.');
-            }
-            
-            $medicalRecords = app(\App\Services\DossierMedicalService::class)->getAllByPatientId($id) ?? collect([]);
-            
-            return view('doctor.medical-records.index', compact('patient', 'medicalRecords'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors du chargement des dossiers médicaux: ' . $e->getMessage());
-        }
-    }
     public function createAppointment(){
         try {
             $detailsDoctor = auth()->user();
-            $doctor = Doctor::where('user_id',$detailsDoctor->id)->first();
+            $doctor = $this->doctorService->getDoctorDetails($detailsDoctor->doctor->id);
+            dd($doctor);
             $patients = Appointment::where('doctor_id',$doctor->id)->with('patient')->get();
             
             $patientUserIds = [];
@@ -544,13 +396,27 @@ class DoctorController extends Controller
             return redirect()->back()->with('error', 'Erreur lors de la création du rendez-vous: ' . $e->getMessage());
         }
     }
-
+    
+    public function destroyAppointment($id)
+    {
+        try {
+            $result = $this->appointmentService->deleteAppointment($id);
+            
+            if ($result) {
+                return redirect()->route('doctor.dashboard')->with('success', 'Rendez-vous supprimé avec succès.');
+            } else {
+                return redirect()->back()->with('error', 'Erreur lors de la suppression du rendez-vous.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de la suppression du rendez-vous: ' . $e->getMessage());
+        }
+    }
+    
     public function changeStatus(Request $request, $id){
         try {
             $doctor = auth()->user();
             $appointment = Appointment::findOrFail($id);
             
-            // Check if the appointment belongs to this doctor
             if ($appointment->doctor_id != $doctor->doctor->id) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à ce rendez-vous.');
             }
@@ -563,24 +429,150 @@ class DoctorController extends Controller
             return redirect()->back()->with('error', 'Erreur lors de la mise à jour du statut: ' . $e->getMessage());
         }
     }
-    public function updatePatient(Request $request, $id)
-    {
-        
-        try {
-            $patient = Patient::findOrFail($id);
-            $user = User::findOrFail($patient->user_id);
-            $user->update($request->all());
-            $patient->update($request->all());
+
+    // public function patientHistory($id)
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $patient = $this->patientService->getPatientById($id);
+    //         $appointments = $this->appointmentService->getByPatientId($id);
             
-            return redirect()->back()->with('success', 'Patient mis à jour avec succès.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Erreur lors de la mise à jour du patient: ' . $e->getMessage());
-        }
-    }
-    public function editPatient($id){
-        $patient = Patient::findOrFail($id);
-        return view('doctor.patients.edit', compact('patient'));
-    }
+    //         return view('doctor.patients.history', compact('patient', 'appointments'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors du chargement de l\'historique du patient: ' . $e->getMessage());
+    //     }
+    // }
+
+    // public function searchPatients(Request $request)
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $query = $request->input('query');
+    //         $patients = $this->appointmentService->searchPatients($query);
+            
+    //         return view('doctor.patients.index', compact('patients', 'query'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors de la recherche: ' . $e->getMessage());
+    //     }
+    // }
+    
+    // public function calendar()
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $appointments = $this->appointmentService->getByDoctorId($doctor->id);
+            
+    //         $month = request('month', now()->month);
+    //         $year = request('year', now()->year);
+            
+    //         return view('doctor.calendar.index', compact('appointments', 'month', 'year'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors du chargement du calendrier: ' . $e->getMessage());
+    //     }
+    // }
+    
+    // public function messages()
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $messages = Message::where('recipient_id', $doctor->id)
+    //             ->orWhere('sender_id', $doctor->id)
+    //             ->orderBy('created_at', 'desc')
+    //             ->get();
+            
+    //         return view('doctor.messages.index', compact('messages'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors du chargement des messages: ' . $e->getMessage());
+    //     }
+    // }
+    
+    // public function createMessage()
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $patients = Patient::all();
+            
+    //         return view('doctor.messages.create', compact('patients'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors de la création du message: ' . $e->getMessage());
+    //     }
+    // }
+    
+    // public function activities()
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+            
+    //         // This is a placeholder for actual activity logging system
+    //         $activities = [];
+            
+    //         return view('doctor.activities.index', compact('activities'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors du chargement des activités: ' . $e->getMessage());
+    //     }
+    // }
+    
+    // public function exportRevenue()
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $revenue = $this->appointmentService->getTotalRevenue();
+            
+    //         // This would normally generate a CSV or Excel file for download
+    //         $filename = 'revenue_' . now()->format('Y-m-d') . '.csv';
+            
+    //         return response()->download(storage_path('app/' . $filename), $filename, [
+    //             'Content-Type' => 'text/csv',
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors de l\'exportation des données: ' . $e->getMessage());
+    //     }
+    // }
+
+    // public function showMedicalRecord($id)
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $patient = $this->patientService->getPatientById($id);
+            
+    //         // Vérifier que ce médecin a accès au dossier de ce patient
+    //         $hasAccess = $this->appointmentService->getByPatientId($id)
+    //             ->where('doctor_id', $doctor->id)
+    //             ->count() > 0;
+                
+    //         if (!$hasAccess) {
+    //             return redirect()->back()->with('error', 'Vous n\'avez pas accès au dossier médical de ce patient.');
+    //         }
+            
+    //         // Récupérer le dossier médical
+    //         $medicalRecord = app(\App\Services\DossierMedicalService::class)->getByPatientId($id) ?? null;
+            
+    //         return view('doctor.medical-records.show', compact('patient', 'medicalRecord'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors du chargement du dossier médical: ' . $e->getMessage());
+    //     }
+    // }
+    
+    // public function medicalRecords($id)
+    // {
+    //     try {
+    //         $doctor = auth()->user();
+    //         $patient = $this->patientService->getPatientById($id);
+    //         $hasAccess = $this->appointmentService->getByPatientId($id)
+    //             ->where('doctor_id', $doctor->id)
+    //             ->count() > 0;
+                
+    //         if (!$hasAccess) {
+    //             return redirect()->back()->with('error', 'Vous n\'avez pas accès aux dossiers médicaux de ce patient.');
+    //         }
+            
+    //         $medicalRecords = app(\App\Services\DossierMedicalService::class)->getAllByPatientId($id) ?? collect([]);
+            
+    //         return view('doctor.medical-records.index', compact('patient', 'medicalRecords'));
+    //     } catch (\Exception $e) {
+    //         return redirect()->back()->with('error', 'Erreur lors du chargement des dossiers médicaux: ' . $e->getMessage());
+    //     }
+    // }
 }
 
 

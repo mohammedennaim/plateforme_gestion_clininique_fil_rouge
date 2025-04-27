@@ -195,7 +195,7 @@
                                 </p>
                             </div>
                             <div class="flex space-x-2">
-                                <a href="{{ route('doctor.patients.update', $patient->id) }}" class="inline-flex items-center px-4 py-2 border border-white text-white rounded-lg shadow-sm text-sm font-medium bg-opacity-10 bg-white hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition duration-300">
+                                <a href="{{ route('doctor.patients.update', $patient->user->id) }}" class="inline-flex items-center px-4 py-2 border border-white text-white rounded-lg shadow-sm text-sm font-medium bg-opacity-10 bg-white hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition duration-300">
                                     <i class="fas fa-edit mr-2"></i>
                                     Modifier
                                 </a>

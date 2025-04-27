@@ -104,6 +104,15 @@ class PatientService
 
     public function getPatientById($id)
     {
-        return Patient::with('user')->findOrFail($id);
+        return Patient::with('user')->where('user_id', $id)->get(); 
+    }
+
+    public function findPatientById($id)
+    {
+        return Patient::findOrFail($id);
+    }
+
+    public function getUserById($id){
+        return User::findOrFail($id);
     }
 } 

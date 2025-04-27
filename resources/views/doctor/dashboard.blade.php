@@ -739,7 +739,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">Total Patients</dt>
                                     <dd class="flex items-center">
                                         <div class="text-2xl font-semibold text-gray-900" id="patient-counter">
-                                            {{ count($patients) }}
+                                            {{ $countPatients }}
                                         </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
@@ -1099,7 +1099,7 @@
                                 <span class="text-xs text-gray-600">{{ $tomorrowAppointmentsCount }} demain</span>
                             </div>
                         </div>
-                        <a href="{{ route('doctor.appointments') }}"
+                        <a href=""
                             class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
                     </div>
                 </div>
@@ -1522,7 +1522,7 @@
                             <i class="fas fa-users text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ count($patients) }}</div>
+                    <div class="text-3xl font-bold mb-1">{{ $countPatients }}</div>
                     <div class="text-sm text-indigo-100">{{ $newPatientsThisMonth }} nouveaux ce mois</div>
                 </div>
 

@@ -1016,28 +1016,7 @@
                 return isValid;
             }
             
-            function updateAvailableTimes(specialty) {
-                resetTimeOptions();
-                
-                if (doctors[specialty]) {
-                    const availableTimesSet = new Set();
-                    const availableTimes = Array.from(availableTimesSet);
-                    
-                    doctors[specialty].forEach(doctor => {
-                        doctor.availability.forEach(time => {
-                            availableTimesSet.add(time);
-                        });
-                    });
-                    
-                    Array.from(timeSelect.options).forEach(option => {
-                        if (option.value && !availableTimes.includes(option.value)) {
-                            option.disabled = true;
-                            option.textContent = option.value + ' (indisponible)';
-                        }
-                    });
-                }
-            }
-            
+           
             function resetTimeOptions() {
                 Array.from(timeSelect.options).forEach(option => {
                     if (option.value) {

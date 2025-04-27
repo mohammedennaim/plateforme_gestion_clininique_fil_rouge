@@ -253,7 +253,7 @@
             </div>
             
             <div class="p-6">
-                <form action="{{ route('doctor.patients.update', $patient->id) }}" method="POST">
+                <form action="{{ route('doctor.patients.update', $patient->user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     
@@ -269,6 +269,7 @@
                                     <i class="fas fa-user text-primary-400 mr-2"></i>
                                     Nom complet <span class="text-danger-500">*</span>
                                 </label>
+                                
                                 <input type="text" name="name" id="name" value="{{ old('name', $patient->user->name) }}" class="form-input" required>
                                 @error('name')
                                     <p class="form-error">{{ $message }}</p>
@@ -302,7 +303,7 @@
                                     <i class="fas fa-venus-mars text-primary-400 mr-2"></i>
                                     Genre <span class="text-danger-500">*</span>
                                 </label>
-                                <select name="gender" id="gender" class="form-select" required>
+                                <select name="gender" id="gender" class="form-select">
                                     <option value="">Sélectionner</option>
                                     <option value="Homme" {{ old('gender', $patient->gender) == 'Homme' ? 'selected' : '' }}>Homme</option>
                                     <option value="Femme" {{ old('gender', $patient->gender) == 'Femme' ? 'selected' : '' }}>Femme</option>
