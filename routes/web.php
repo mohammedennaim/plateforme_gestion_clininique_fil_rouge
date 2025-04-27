@@ -90,6 +90,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(
     // Patients routes
     Route::get('/patients', [DoctorController::class, 'patients'])->name('patients');
     Route::get('/search/patients', [DoctorController::class, 'searchPatients'])->name('search.patients');
+    Route::get('/patients/create', [DoctorController::class, 'createPatient'])->name('patients.create');
+    Route::post('/patients/create', [DoctorController::class, 'storePatient'])->name('patients.store');
     Route::put('/patients/{id}', [DoctorController::class, 'updatePatient'])->name('patients.update');
     Route::get('/patients/{id}', [DoctorController::class, 'editPatient'])->name('patients.edit');
     

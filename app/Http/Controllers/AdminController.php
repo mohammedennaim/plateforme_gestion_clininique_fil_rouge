@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AppointmentService;
 use Illuminate\Http\Request;
 use App\Services\DashboardService;
 
 class AdminController extends Controller
 {
     protected $dashboardService;
+    protected $appointmentService;
 
-    public function __construct(DashboardService $dashboardService)
+    public function __construct(DashboardService $dashboardService, AppointmentService $appointmentService)
     {
+        $this->appointmentService = $appointmentService;
         $this->dashboardService = $dashboardService;
     }
 
     public function index()
     {
-        try {
             $patients = $this->dashboardService->getAllPatients();
-            // dd(  $patients);
             $doctors = $this->dashboardService->getAllDoctors()->map(function ($doctor) {
                 return [
                     'id' => $doctor->id,
@@ -33,7 +34,6 @@ class AdminController extends Controller
                     'qualification' => $doctor->qualification
                 ];
             });
-            // dd($doctors);
             
 
             $appointments = $this->dashboardService->getAllAppointments();
@@ -41,8 +41,20 @@ class AdminController extends Controller
             $totalDoctors = $this->dashboardService->getTotalDoctorsCount();
             $totalAppointments = $this->dashboardService->getTotalAppointments();
             $totalRevenue = $this->dashboardService->getTotalRevenue();
-            $todayAppointments = $this->dashboardService->getTodayAppointments();
-            $pendingRequests = $this->dashboardService->getPendingRequests();
+            $Appointments = $this->appointmentService->getAll();
+            $pendingAppointments = $this->appointmentService->getPending();
+            $confirmedAppointments = $this->appointmentService->getConfirmed();
+            $terminatedAppointments = $this->appointmentService->getTermine();
+            $canceledAppointments = $this->appointmentService->getCanceled();
+            
+            // Préparation des données pour le graphique des rendez-vous
+            $appointmentStats = [
+                'pending' => $pendingAppointments,
+                'confirmed' => $confirmedAppointments,
+                'terminated' => $terminatedAppointments,
+                'canceled' => $canceledAppointments
+            ];
+
             return view('admin.dashboard', compact(
                 'patients',
                 'doctors',
@@ -51,12 +63,9 @@ class AdminController extends Controller
                 'totalDoctors',
                 'totalAppointments',
                 'totalRevenue',
-                'todayAppointments',
-                'pendingRequests'
+                'appointmentStats'
             ));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Une erreur est survenue lors du chargement du tableau de bord.');
-        }
+
     }
 
     public function showDoctor($id)

@@ -553,13 +553,13 @@
                 <i class="fas fa-users text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Patients</span>
                 <span
-                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($patients) }}</span>
+                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($appointments) }}</span>
             </a>
             <a href="#" class="sidebar-item flex items-center p-3" data-section="appointments">
                 <i class="fas fa-calendar-alt text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Rendez-vous</span>
                 <span
-                    class="ml-auto bg-amber-100 text-amber-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($todayAppointments)  }}</span>
+                    class="ml-auto bg-amber-100 text-amber-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($appointments)  }}</span>
             </a>
             <a href="#" class="sidebar-item flex items-center p-3" data-section="medical-records">
                 <i class="fas fa-file-medical text-lg text-gray-500 w-6"></i>
@@ -682,14 +682,14 @@
 
             <!-- Quick Actions -->
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
-                <a href=""
+                <a href="{{ route('doctor.patients.create') }}"
                     class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                     <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mb-2">
                         <i class="fas fa-user-plus text-indigo-600 text-xl"></i>
                     </div>
                     <span class="text-sm font-medium">Nouveau Patient</span>
                 </a>
-                <a href=""
+                <a href="{{ route('doctor.appointments.create', auth()->user()->id) }}"
                     class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center justify-center transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer">
                     <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-2">
                         <i class="fas fa-calendar-plus text-emerald-600 text-xl"></i>
@@ -777,7 +777,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">RDV Aujourd'hui</dt>
                                     <dd class="flex items-center">
                                         <div class="text-2xl font-semibold text-gray-900" id="appointment-counter">
-                                        {{ $stats["totalAppointments"] }}
+                                            {{ $todayAppointments->count() }}
                                         </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
@@ -883,7 +883,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                @if(isset($todayAppointmentsConfirmed) && $todayAppointmentsConfirmed)
+                @if(count($todayAppointmentsConfirmed) > 0 && $todayAppointmentsConfirmed)
                     <!-- Next appointment (affiché seulement s'il existe un prochain rendez-vous) -->
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
                         <div
@@ -1036,12 +1036,12 @@
                                     gérer vos dossiers médicaux ou planifier vos prochaines consultations.
                                 </p>
                                 <div class="flex gap-3">
-                                    <a href="{{ route('doctor.appointments') }}"
+                                    <a href=""
                                         class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         <i class="fas fa-calendar-alt mr-2"></i>
                                         Voir mon agenda
                                     </a>
-                                    <a href="{{ route('doctor.appointments.create') }}"
+                                    <a href="{{ route('doctor.appointments.create', auth()->user()->id) }}"
                                         class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         <i class="fas fa-user-plus mr-2"></i>
                                         Créer un rendez-vous
@@ -1099,8 +1099,7 @@
                                 <span class="text-xs text-gray-600">{{ $tomorrowAppointmentsCount }} demain</span>
                             </div>
                         </div>
-                        <a href=""
-                            class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
+                        <a href="" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
                     </div>
                 </div>
             </div>
@@ -1311,6 +1310,27 @@
                                                             class="text-xs font-medium text-{{ $appointment->status_color }}-800">{{ $appointment->status_label }}</span>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div class="flex gap-6 bg-gray-50 p-3 rounded-lg">
+                                                <span class="text-xs text-gray-500 block">Statut</span>
+                                                <span class="text-sm font-medium">
+                                                    @if($appointment->status == 'pending')
+                                                        <span
+                                                            class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">En attente</span>
+                                                    @elseif($appointment->status == 'canceled')
+                                                        <span
+                                                            class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Annulé</span>
+                                                    @elseif($appointment->status == 'completed')
+                                                        <span
+                                                            class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Terminé</span>
+                                                    @elseif($appointment->status == 'confirmed')
+                                                        <span
+                                                            class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs">Confirmé</span>
+                                                    @else
+                                                        <span
+                                                            class="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">{{ $appointment->status }}</span>
+                                                    @endif
+                                                </span>
                                             </div>
                                             <div class="flex space-x-2">
                                                 <a href="{{ route('doctor.appointments.show', $appointment->id) }}"
@@ -1581,19 +1601,20 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                    @forelse($patients as $patient)
+                    @forelse($appointments as $patient)
                         <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                             <div class="px-4 py-4 sm:px-6">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-12 w-12 rounded-full overflow-hidden bg-indigo-100">
-                                        <img src="{{ $patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($patient->name) . '&background=6366F1&color=ffffff' }}"
-                                            alt="{{ $patient->name }}">
+                                        <img src="{{ $patient->patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($patient->name) . '&background=6366F1&color=ffffff' }}"
+                                            alt="{{ $patient->patient->name }}">
                                     </div>
                                     <div class="ml-4 flex-1">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h3 class="text-lg font-medium text-indigo-600">{{ $patient->name }}</h3>
-                                                <p class="text-sm text-gray-500">ID: #{{ $patient->id }}</p>
+                                                <h3 class="text-lg font-medium text-indigo-600">
+                                                    {{ $patient->patient->user->name }}</h3>
+                                                <p class="text-sm text-gray-500">ID: #{{ $patient->patient->id }}</p>
                                             </div>
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $patient->status_color }}-100 text-{{ $patient->status_color }}-800">
@@ -1610,21 +1631,21 @@
                                 <div class="grid grid-cols-3 gap-2 text-sm">
                                     <div>
                                         <p class="text-gray-500">Âge</p>
-                                        <p class="font-medium">{{ $patient->age}} ans</p>
+                                        <p class="font-medium">{{ $patient->patient->user->age}} ans</p>
                                     </div>
                                     <div>
                                         <p class="text-gray-500">Genre</p>
-                                        <p class="font-medium">{{ $patient->gender }}</p>
+                                        <p class="font-medium">{{ $patient->patient->user->gender }}</p>
                                     </div>
                                     <div>
                                         <p class="text-gray-500">Téléphone</p>
-                                        <p class="font-medium">{{ $patient->phone }}</p>
+                                        <p class="font-medium">{{ $patient->patient->user->phone }}</p>
                                     </div>
                                 </div>
                                 <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
                                     <div>
                                         <p class="text-gray-500">Dernière visite</p>
-                                        <p class="font-medium">{{ $patient->last_visit_date }}</p>
+                                        <p class="font-medium">{{ $patient->patient->last_visit_date }}</p>
                                     </div>
                                     <div>
                                         <p class="text-gray-500">Prochain RDV</p>
@@ -1673,70 +1694,74 @@
             <h1 class="text-2xl font-bold text-gray-900 mb-6">Gestion des Rendez-vous</h1>
             <!-- Appointments content would go here -->
             <div class="bg-white rounded-xl shadow-sm mb-8"></div>
-                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-4 rounded-t-xl">
-                    <h2 class="text-xl font-bold flex items-center">
-                        <i class="fas fa-calendar-check text-yellow-300 mr-2"></i>
-                        Gestion des Rendez-vous
-                    </h2>
-                </div>
-                
-                <!-- Search & Filters -->
-                <div class="p-4 md:p-6 border-b border-gray-200">
-                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                        <div class="relative flex-grow">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-search text-gray-400"></i>
-                            </div>
-                            <input type="text" id="appointment-search" 
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                placeholder="Rechercher un rendez-vous par patient, date...">
-                        </div>
-                        <div class="flex space-x-2">
-                            <select id="appointment-status-filter" class="border border-gray-300 rounded-lg shadow-sm py-2 px-3 sm:text-sm">
-                                <option value="all">Tous les statuts</option>
-                                <option value="confirmed">Confirmés</option>
-                                <option value="pending">En attente</option>
-                                <option value="completed">Terminés</option>
-                                <option value="canceled">Annulés</option>
-                            </select>
-                        </div>
-                        <a href="{{ route('doctor.appointments.create',$appointment->id) }}" 
-                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
-                            <i class="fas fa-plus mr-2"></i>
-                            Nouveau RDV
-                        </a>
-                    </div>
-                </div>
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-4 rounded-t-xl">
+                <h2 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-calendar-check text-yellow-300 mr-2"></i>
+                    Gestion des Rendez-vous
+                </h2>
+            </div>
 
-                <!-- Appointments List -->
-                <div class="overflow-hidden">
-                    <ul class="divide-y divide-gray-200" id="appointments-list">
-                        @forelse($stats['Appointments'] as $appointment)
+            <!-- Search & Filters -->
+            <div class="p-4 md:p-6 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="appointment-search"
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Rechercher un rendez-vous par patient, date...">
+                    </div>
+                    <div class="flex space-x-2">
+                        <select id="appointment-status-filter"
+                            class="border border-gray-300 rounded-lg shadow-sm py-2 px-3 sm:text-sm">
+                            <option value="all">Tous les statuts</option>
+                            <option value="confirmed">Confirmés</option>
+                            <option value="pending">En attente</option>
+                            <option value="completed">Terminés</option>
+                            <option value="canceled">Annulés</option>
+                        </select>
+                    </div>
+                    <a href="{{ route('doctor.appointments.create', auth()->user()->id) }}"
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                        <i class="fas fa-plus mr-2"></i>
+                        Nouveau RDV
+                    </a>
+                </div>
+            </div>
+
+            <!-- Appointments List -->
+            <div class="overflow-hidden">
+                <ul class="divide-y divide-gray-200" id="appointments-list">
+                    @if (count($appointments) > 0)
+                        @foreach($appointments as $appointment)
                             <li class="appointment-card p-5" data-status="{{ $appointment->status }}">
                                 <div class="flex flex-col md:flex-row md:items-center">
                                     <!-- Time Column -->
                                     <div class="md:w-1/6 mb-4 md:mb-0">
                                         <div class="text-center p-3 bg-indigo-50 rounded-lg">
-                                            <p class="text-xs text-indigo-600 font-medium">{{ $appointment->formatted_date }}</p>
+                                            <p class="text-xs text-indigo-600 font-medium">{{ $appointment->formatted_date }}
+                                            </p>
                                             <p class="text-xl font-bold text-indigo-700">{{ $appointment->formatted_time }}</p>
-                                            <p class="text-xs text-indigo-500">Durée: {{ $appointment->duration ?? '30' }} min</p>
+                                            <p class="text-xs text-indigo-500">Durée: {{ $appointment->duration ?? '30' }} min
+                                            </p>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Patient Info -->
                                     <div class="md:w-2/6 md:px-4">
                                         <div class="flex items-center">
-                                            <img class="h-12 w-12 rounded-full mr-3"
-                                                src="{{ $appointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($appointment->patient->name) . '&background=6366F1&color=ffffff' }}"
-                                                alt="{{ $appointment->patient->name }}">
                                             <div>
-                                                <h3 class="text-md font-medium text-gray-800">{{ $appointment->patient->name }}</h3>
+                                                <h3 class="text-md font-medium text-gray-800">
+                                                    {{ $appointment->patient->user->name}}
+                                                </h3>
                                                 <div class="text-sm text-gray-500">
-                                                    ID: {{ $appointment->patient->id_number ?? $appointment->patient->id }} | 
+                                                    ID: {{ $appointment->patient->id }} |
                                                     {{ $appointment->patient->age ?? '?' }} ans
                                                 </div>
                                                 <div class="flex items-center mt-1">
-                                                    <span class="status-indicator status-{{ $appointment->status_class }}"></span>
+                                                    <span
+                                                        class="status-indicator status-{{ $appointment->status_class }}"></span>
                                                     <span class="text-xs font-medium text-{{ $appointment->status_color }}-800">
                                                         {{ $appointment->status_label }}
                                                     </span>
@@ -1744,7 +1769,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Appointment Details -->
                                     <div class="md:w-2/6 mt-4 md:mt-0 md:px-4">
                                         <div class="grid grid-cols-2 gap-2 text-sm">
@@ -1770,27 +1795,31 @@
                                             </p>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Actions -->
                                     <div class="md:w-1/6 flex md:justify-end mt-4 md:mt-0 space-x-2">
-                                        <a href="{{ route('doctor.appointments.show', $appointment->id) }}" 
+                                        <a href="{{ route('doctor.appointments.show', $appointment->id) }}"
                                             class="p-2 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         @if($appointment->status !== 'completed')
-                                            <form action="{{ route('doctor.appointments.change-status', $appointment->id) }}" method="POST" class="inline-block">
+                                            <form action="{{ route('doctor.appointments.change-status', $appointment->id) }}"
+                                                method="POST" class="inline-block">
                                                 @csrf
                                                 <input type="hidden" name="status" value="completed">
-                                                <button type="submit" class="p-2 bg-green-50 text-green-600 rounded-full hover:bg-green-100 transition-colors">
+                                                <button type="submit"
+                                                    class="p-2 bg-green-50 text-green-600 rounded-full hover:bg-green-100 transition-colors">
                                                     <i class="fas fa-check"></i>
                                                 </button>
                                             </form>
                                         @endif
                                         @if($appointment->status !== 'canceled')
-                                            <form action="{{ route('doctor.appointments.change-status', $appointment->id) }}" method="POST" class="inline-block">
+                                            <form action="{{ route('doctor.appointments.change-status', $appointment->id) }}"
+                                                method="POST" class="inline-block">
                                                 @csrf
                                                 <input type="hidden" name="status" value="canceled">
-                                                <button type="submit" class="p-2 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors">
+                                                <button type="submit"
+                                                    class="p-2 bg-red-50 text-red-600 rounded-full hover:bg-red-100 transition-colors">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </form>
@@ -1798,80 +1827,82 @@
                                     </div>
                                 </div>
                             </li>
-                        @empty
-                            <li class="p-8 text-center text-gray-500">
-                                <div class="flex flex-col items-center">
-                                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                                        <i class="fas fa-calendar-day text-gray-400 text-xl"></i>
-                                    </div>
-                                    <p>Aucun rendez-vous trouvé</p>
-                                    <a href="{{ route('doctor.appointments.create',$appointment->id) }}" class="mt-3 text-indigo-600 hover:text-indigo-800">
-                                        + Créer un nouveau rendez-vous
-                                    </a>
+                        @endforeach
+                    @else
+                        <li class="p-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                                    <i class="fas fa-calendar-day text-gray-400 text-xl"></i>
                                 </div>
-                            </li>
-                        @endforelse
-                    </ul>
+                                <p>Aucun rendez-vous trouvé</p>
+                                <a href="{{ route('doctor.appointments.create') }}"
+                                    class="mt-3 text-indigo-600 hover:text-indigo-800">
+                                    + Créer un nouveau rendez-vous
+                                </a>
+                            </div>
+                        </li>
+                    @endif
+                </ul>
+            </div>
+
+            <div class="bg-gray-50 px-6 py-4 flex justify-between items-center rounded-b-xl border-t border-gray-200">
+                <div class="text-sm text-gray-600">
+                    Affichage de {{ count($todayAppointments) }} rendez-vous
                 </div>
-                
-                <div class="bg-gray-50 px-6 py-4 flex justify-between items-center rounded-b-xl border-t border-gray-200">
-                    <div class="text-sm text-gray-600">
-                        Affichage de {{ count($todayAppointments) }} rendez-vous
-                    </div>
-                    <a href="" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                        Voir tous les rendez-vous <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+                <a href="" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                    Voir tous les rendez-vous <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+    </div>
+    </section>
+
+    <section id="medical-records-section" class="p-4 md:p-8 dashboard-section hidden">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Dossiers Médicaux</h1>
+        <!-- Medical records content would go here -->
+        <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+            <p class="text-gray-500">Section en cours de développement</p>
+        </div>
+    </section>
+
+    <section id="analytics-section" class="p-4 md:p-8 dashboard-section hidden">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Analyses et Statistiques</h1>
+        <!-- Analytics content would go here -->
+        <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+            <p class="text-gray-500">Section en cours de développement</p>
+        </div>
+    </section>
+
+    <section id="communications-section" class="p-4 md:p-8 dashboard-section hidden">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Communications</h1>
+        <!-- Communications content would go here -->
+        <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+            <p class="text-gray-500">Section en cours de développement</p>
+        </div>
+    </section>
+
+    <section id="tasks-section" class="p-4 md:p-8 dashboard-section hidden">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Gestion des Tâches</h1>
+        <!-- Tasks content would go here -->
+        <div class="bg-white p-10 rounded-xl shadow-sm text-center">
+            <p class="text-gray-500">Section en cours de développement</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white p-4 border-t border-gray-200 text-center md:text-left text-sm text-gray-600">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    &copy; {{ date('Y') }} MediDash. Tous droits réservés.
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-500 hover:text-indigo-600">Confidentialité</a>
+                    <a href="#" class="text-gray-500 hover:text-indigo-600">Conditions</a>
+                    <a href="#" class="text-gray-500 hover:text-indigo-600">Aide</a>
                 </div>
             </div>
-        </section>
-
-        <section id="medical-records-section" class="p-4 md:p-8 dashboard-section hidden">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">Dossiers Médicaux</h1>
-            <!-- Medical records content would go here -->
-            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
-                <p class="text-gray-500">Section en cours de développement</p>
-            </div>
-        </section>
-
-        <section id="analytics-section" class="p-4 md:p-8 dashboard-section hidden">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">Analyses et Statistiques</h1>
-            <!-- Analytics content would go here -->
-            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
-                <p class="text-gray-500">Section en cours de développement</p>
-            </div>
-        </section>
-
-        <section id="communications-section" class="p-4 md:p-8 dashboard-section hidden">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">Communications</h1>
-            <!-- Communications content would go here -->
-            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
-                <p class="text-gray-500">Section en cours de développement</p>
-            </div>
-        </section>
-
-        <section id="tasks-section" class="p-4 md:p-8 dashboard-section hidden">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">Gestion des Tâches</h1>
-            <!-- Tasks content would go here -->
-            <div class="bg-white p-10 rounded-xl shadow-sm text-center">
-                <p class="text-gray-500">Section en cours de développement</p>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="bg-white p-4 border-t border-gray-200 text-center md:text-left text-sm text-gray-600">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-col md:flex-row md:justify-between items-center">
-                    <div class="mb-4 md:mb-0">
-                        &copy; {{ date('Y') }} MediDash. Tous droits réservés.
-                    </div>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-500 hover:text-indigo-600">Confidentialité</a>
-                        <a href="#" class="text-gray-500 hover:text-indigo-600">Conditions</a>
-                        <a href="#" class="text-gray-500 hover:text-indigo-600">Aide</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        </div>
+    </footer>
     </div>
 
     <script>
@@ -1903,7 +1934,7 @@
                     overlay.classList.remove("active");
                 });
             }
-            
+
             const sidebarItems = document.querySelectorAll(".sidebar-item");
             const sections = document.querySelectorAll(".dashboard-section");
 
@@ -2212,4 +2243,5 @@
         }
     </script>
 </body>
+
 </html>

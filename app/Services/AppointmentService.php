@@ -51,10 +51,10 @@ class AppointmentService{
         return $this->appointmentRepository->getTodayAppointments();
     }
 
-    public function getPendingRequests()
-    {
-        return $this->appointmentRepository->getPendingRequests();
-    }
+    // public function getPendingRequests()
+    // {
+    //     return $this->appointmentRepository->getPendingRequests();
+    // }
     public function getTotalAppointments()
     {
         return $this->appointmentRepository->getTotalAppointments();
@@ -82,11 +82,27 @@ class AppointmentService{
     {
         return $this->appointmentRepository->getCountByPatientsByDoctorId($doctorId);
     }
-    public function getCountStatistique()
-    {
-        return $this->appointmentRepository->getCountStats();
-    }
+    // public function getCountStatistique()
+    // {
+    //     return $this->appointmentRepository->getCountStats();
+    // }
 
+    public function getPending()
+    {
+        return $this->appointmentRepository->getPending();
+    }
+    public function getCanceled()
+    {
+        return $this->appointmentRepository->getCanceled();
+    }
+    public function getTermine()
+    {
+        return $this->appointmentRepository->getTermine();
+    }
+    public function getConfirmed()
+    {
+        return $this->appointmentRepository->getConfirmed();
+    }
     public function searchPatients($query)
     {
         return $this->appointmentRepository->searchPatients($query);

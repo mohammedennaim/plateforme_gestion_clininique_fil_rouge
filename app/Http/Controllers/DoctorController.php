@@ -13,6 +13,7 @@ use App\Services\DashboardService;
 use App\Services\DoctorService;
 use App\Services\AppointmentService;
 use App\Services\PatientService;
+use Hash;
 use Illuminate\Http\Request;
 
 class DoctorController extends Controller
@@ -34,10 +35,11 @@ class DoctorController extends Controller
             $doctor = auth()->user();
             $doctorId = $doctor->doctor->id;
             $details = $this->doctorService->getDoctorDetails($doctorId);
-            $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'pending');
+            $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId);
             $todayAppointmentsConfirmed = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'confirmed');
+            // dd(isset($todayAppointmentsConfirmed));
             $appointments = $this->appointmentService->getByDoctorId($doctorId);
-            // dd($appointments);
+            // dd($appointments[0]->patient->user->name);
             $patients = $this->appointmentService->getByDoctorId($doctorId);
             $countPatients = $this->appointmentService->getCountByPatientsByDoctorId($doctorId);
             // dd($todayAppointments[0]->date->format('d/m/Y'));
@@ -65,7 +67,7 @@ class DoctorController extends Controller
                 ['time', 'asc'],
             ])->first();
             // dd($nextAppointment);
-            $appointmentDateTime = $nextAppointment->date->setTimeFromTimeString($nextAppointment->time);
+            $appointmentDateTime = $nextAppointment ? $nextAppointment->date->setTimeFromTimeString($nextAppointment->time) : null;
             $diffInMinutes = now()->diffInMinutes($appointmentDateTime);
             $hours = floor($diffInMinutes / 60);
             $minutes = $diffInMinutes % 60;
@@ -228,6 +230,61 @@ class DoctorController extends Controller
         }
     }
 
+    public function createPatient()
+    {
+        try {
+            return view('doctor.patients.create');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de la création du patient: ' . $e->getMessage());
+        }
+    }
+
+    public function storePatient(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'phone' => 'nullable|string|max:20',
+                'adresse' => 'nullable|string|max:255',
+                'date_of_birth' => 'nullable|date',
+                'name_assurance' => 'nullable|string|max:255',
+                'assurance_number' => 'nullable|string|max:255',
+                'blood_type' => 'nullable|string|max:10',
+                'emergency_contact' => 'nullable|string|max:255',
+                'allergies' => 'nullable|string',
+                'height' => 'nullable|numeric|min:0',
+                'weight' => 'nullable|numeric|min:0',
+            ]);
+            $randomPassword = bin2hex(random_bytes(4));
+            $password = bcrypt($randomPassword);
+            
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => $password,
+                'role' => 'patient',
+                'phone' => $validated['phone'] ?? null,
+                'adress' => $validated['adresse'] ?? null,
+                'date_of_birth' => $validated['date_of_birth'] ?? null,
+            ]);
+
+            Patient::create([
+                'user_id' => $user->id,
+                'name_assurance' => $validated['name_assurance'] ?? null,
+                'assurance_number' => $validated['assurance_number'] ?? null,
+                'blood_type' => $validated['blood_type'] ?? null,
+                'emergency_contact' => $validated['emergency_contact'] ?? null,
+                'allergies' => $validated['allergies'] ?? null,
+                'height' => $validated['height'] ?? null,
+                'weight' => $validated['weight'] ?? null,
+            ]);
+            return redirect()->route('doctor.dashboard')->with('success', 'Patient créé avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de la création du patient: ' . $e->getMessage());
+        }
+    }
+
     public function updatePatient(Request $request, $id)
     {
         try {
@@ -350,7 +407,7 @@ class DoctorController extends Controller
         try {
             $detailsDoctor = auth()->user();
             $doctor = $this->doctorService->getDoctorDetails($detailsDoctor->doctor->id);
-            dd($doctor);
+            // dd($doctor);
             $patients = Appointment::where('doctor_id',$doctor->id)->with('patient')->get();
             
             $patientUserIds = [];

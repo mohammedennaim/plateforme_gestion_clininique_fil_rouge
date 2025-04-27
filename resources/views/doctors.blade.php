@@ -240,7 +240,7 @@
                                 <span class="w-2 h-2 bg-green-600 rounded-full mr-1"></span> Disponible
                             </div>
                             <div class="absolute inset-0 bg-gradient-to-t from-primary-800/80 to-transparent flex items-end justify-center pb-4 doctor-overlay">
-                                <a href="#appointment" class="px-4 py-2 bg-white text-primary-700 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors">
+                                <a href="{{ route('patient.reserver.store') }}" class="px-4 py-2 bg-white text-primary-700 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors">
                                     Prendre Rendez-vous
                                 </a>
                             </div>
@@ -459,29 +459,6 @@
                     profileDropdown.classList.add('hidden');
                 }
             });
-
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        const backToTopButton = document.getElementById('back-to-top');
-
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                backToTopButton.classList.remove('opacity-0', 'invisible');
-                backToTopButton.classList.add('opacity-100', 'visible');
-            } else {
-                backToTopButton.classList.add('opacity-0', 'invisible');
-                backToTopButton.classList.remove('opacity-100', 'visible');
-            }
-        });
-
-        backToTopButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
 
         function doctorsPage() {
             return {

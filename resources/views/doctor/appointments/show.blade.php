@@ -40,8 +40,7 @@
                 <a href="{{ route('doctor.appointments.edit',$appointment->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                     <i class="fas fa-edit mr-2"></i>Modifier
                 </a>
-                <a href="#" onclick="history.back()"
-                    class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                <a href="{{ route('doctor.dashboard') }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                     <i class="fas fa-arrow-left mr-2"></i>Retour
                 </a>
             </div>
@@ -204,7 +203,7 @@
                             @csrf
                             <input type="hidden" name="status" value="completed">
                             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                <i class="fas fa-check-double mr-2"></i>Marquer comme terminé
+                                <i class="fas fa-check-double mr-2"></i>terminé
                             </button>
                         </form>
                     </div>

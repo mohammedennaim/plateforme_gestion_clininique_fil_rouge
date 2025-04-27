@@ -94,10 +94,7 @@ class DashboardService
     {
         return $this->appointmentRepository->getTodayAppointments();
     }
-    public function getPendingRequests()
-    {
-        return $this->appointmentRepository->getPendingRequests();
-    }
+    
     // public function getMonthlyRevenue()
     // {
     //     return $this->appointmentRepository->getAll()->whereMonth('created_at', now()->month)->sum('price');

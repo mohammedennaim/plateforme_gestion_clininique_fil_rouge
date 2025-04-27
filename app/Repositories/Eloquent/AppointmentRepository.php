@@ -51,9 +51,21 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     {
         return $this->model->where('doctor_id', auth()->user()->id)->where('date', now()->format('Y-m-d'))->get();
     }
-    public function getPendingRequests()
+    public function getPending()
     {
-        return $this->model->where('status', 'pending')->get();
+        return $this->model->where('status', 'pending')->get()->count();
+    }
+    public function getCanceled()
+    {
+        return $this->model->where('status', 'canceled')->get()->count();
+    }
+    public function getTermine()
+    {
+        return $this->model->where('status', 'completed')->get()->count();
+    }
+    public function getconfirmed()
+    {
+        return $this->model->where('status', 'confirmed')->get()->count();
     }
     public function getTotalAppointments()
     {
@@ -78,10 +90,6 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     public function getCountByPatientsByDoctorId($doctorId)
     {
         return Appointment::where('doctor_id', $doctorId)->count();
-    }
-    public function getCountStats()
-    {
-        return Appointment::all()->count();
     }
 
     public function searchPatients($query)
