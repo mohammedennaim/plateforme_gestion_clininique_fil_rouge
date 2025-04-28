@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Patient;
 use App\Services\AppointmentService;
+use App\Services\PatientService;
 use Illuminate\Http\Request;
 use App\Services\DashboardService;
 
@@ -10,11 +12,13 @@ class AdminController extends Controller
 {
     protected $dashboardService;
     protected $appointmentService;
+    protected $patientService;
 
-    public function __construct(DashboardService $dashboardService, AppointmentService $appointmentService)
+    public function __construct(DashboardService $dashboardService, AppointmentService $appointmentService, PatientService $patientService)
     {
         $this->appointmentService = $appointmentService;
         $this->dashboardService = $dashboardService;
+        $this->patientService = $patientService;
     }
 
     public function index()
@@ -34,20 +38,18 @@ class AdminController extends Controller
                     'qualification' => $doctor->qualification
                 ];
             });
-            
 
-            $appointments = $this->dashboardService->getAllAppointments();
             $totalPatients = $this->dashboardService->getTotalPatients();
             $totalDoctors = $this->dashboardService->getTotalDoctorsCount();
             $totalAppointments = $this->dashboardService->getTotalAppointments();
             $totalRevenue = $this->dashboardService->getTotalRevenue();
-            $Appointments = $this->appointmentService->getAll();
+            $appointments = $this->appointmentService->getAll();
             $pendingAppointments = $this->appointmentService->getPending();
             $confirmedAppointments = $this->appointmentService->getConfirmed();
             $terminatedAppointments = $this->appointmentService->getTermine();
             $canceledAppointments = $this->appointmentService->getCanceled();
-            
-            // Préparation des données pour le graphique des rendez-vous
+
+            // dd($doctorStats);
             $appointmentStats = [
                 'pending' => $pendingAppointments,
                 'confirmed' => $confirmedAppointments,
@@ -66,6 +68,15 @@ class AdminController extends Controller
                 'appointmentStats'
             ));
 
+    }
+
+    public function showPatient(Request $request)
+    
+    {
+        $patient = $this->patientService->getPatientById($request->id)->first();
+        $doctors = $this->dashboardService->getAllDoctors();
+        // dd($doctors);
+        return view('admin.patients.show', compact('patient', 'doctors'));
     }
 
     public function showDoctor($id)

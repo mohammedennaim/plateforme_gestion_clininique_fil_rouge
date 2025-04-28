@@ -17,14 +17,12 @@ class Patient extends Model
         'assurance_number',
         'blood_type',
         'emergency_contact',
-        'medical_history',
         'height',
         'weight',
     ];
 
     protected $casts = [
         'last_visit_date' => 'datetime',
-        'medical_history' => 'array',
         'allergies' => 'array',
     ];
 
@@ -55,7 +53,7 @@ class Patient extends Model
 
     public function getAddressAttribute(): string
     {
-        return $this->user->adresse;
+        return $this->user->address;
     }
 
     public function getAgeAttribute(): int

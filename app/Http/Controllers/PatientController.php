@@ -64,7 +64,6 @@ class PatientController extends Controller
     {
         $visitor = $this->dashboardService->getPatientById($patient->id);
         $appointments = $this->dashboardService->getAppointmentsByPatientId($patient->id);
-// dd($patient);
         
         return view('admin.patients.show', compact('patient'));
     }

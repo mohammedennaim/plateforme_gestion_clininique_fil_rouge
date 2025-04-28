@@ -355,9 +355,7 @@
                         M</div>
                     <h1 class="text-xl font-bold text-gray-800">MediClinic</h1>
                 </div>
-                <button id="mobile-menu-toggle" class="md:hidden text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-bars"></i>
-                </button>
+                
             </div>
 
             <!-- Navigation -->
@@ -595,7 +593,7 @@
                         <div
                             class="bg-gradient-to-br from-white to-success-50 rounded-xl shadow-card p-6 card animate-fade-in delay-100">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-sm font-medium text-gray-500">Médecins Actifs</h3>
+                                <h3 class="text-sm font-medium text-gray-500">Médecins Active</h3>
                                 <div class="bg-success-100 text-success-600 p-2 rounded-lg">
                                     <i class="fas fa-check-circle"></i>
                                 </div>
@@ -633,7 +631,7 @@
                         <div
                             class="bg-gradient-to-br from-white to-danger-50 rounded-xl shadow-card p-6 card animate-fade-in delay-300">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-sm font-medium text-gray-500">Inactifs</h3>
+                                <h3 class="text-sm font-medium text-gray-500">Not Active</h3>
                                 <div class="bg-danger-100 text-danger-600 p-2 rounded-lg">
                                     <i class="fas fa-ban"></i>
                                 </div>
@@ -703,7 +701,7 @@
                                     <option value="all">Tous</option>
                                     <option value="active">Active</option>
                                     <option value="pending">En attente</option>
-                                    <option value="inactive">Not active</option>
+                                    <option value="inactive">Non active</option>
                                 </select>
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-filter text-gray-400"></i>
@@ -721,210 +719,165 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        <!-- Doctor Card 1 -->
-                        <div
-                            class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                        @foreach ($doctors as $doctor)
                             <div
-                                class="card-header px-6 py-4 bg-gradient-to-r from-primary-50 to-white border-b border-gray-100">
-                                <div class="flex items-center">
+                                class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                                @if($doctor['status'] == 'pending')
+                                    <!-- Pending Doctor Design -->
                                     <div
-                                        class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-primary-100">
-                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Dr. Jean Dupont"
-                                            class="h-full w-full object-cover">
-                                    </div>
-                                    <div class="ml-4 flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <h3 class="text-lg font-semibold text-primary-700">Dr. Jean Dupont</h3>
-                                                <p class="text-sm text-gray-600">Cardiologie</p>
+                                        class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-warning-100">
+                                                <img src="{{ $doctor->profile_photo ?? 'https://randomuser.me/api/portraits/men/59.jpg' }}"
+                                                    alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
                                             </div>
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
-                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
-                                                Actif
-                                            </span>
+                                            <div class="ml-4 flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <div>
+                                                        <h3 class="text-lg font-semibold text-primary-700">Dr.
+                                                            {{ $doctor['name'] }}</h3>
+                                                        <p class="text-sm text-gray-600">
+                                                            {{ $doctor['speciality'] ?? 'Spécialité non définie' }}</p>
+                                                    </div>
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
+                                                        <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
+                                                        En attente
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="px-6 py-4">
-                                <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Email</p>
-                                        <p class="font-medium text-gray-800">jean.dupont@example.com</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Téléphone</p>
-                                        <p class="font-medium text-gray-800">+33 6 12 34 56 78</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-gray-500 text-sm">Patients</p>
-                                    <div class="flex items-center mt-1">
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div class="bg-primary-600 h-2.5 rounded-full" style="width: 75%"></div>
+                                @elseif($doctor['status'] == 'active')
+                                    <!-- Active Doctor Design -->
+                                    <div
+                                        class="card-header px-6 py-4 bg-gradient-to-r from-success-50 to-white border-b border-gray-100">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-success-100">
+                                                <img src="{{ $doctor['profile_photo'] ?? 'https://randomuser.me/api/portraits/men/32.jpg' }}"
+                                                    alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
+                                            </div>
+                                            <div class="ml-4 flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <div>
+                                                        <h3 class="text-lg font-semibold text-primary-700">Dr.
+                                                            {{ $doctor['name'] }}</h3>
+                                                        <p class="text-sm text-gray-600">
+                                                            {{ $doctor['speciality'] ?? 'Spécialité non définie' }}</p>
+                                                    </div>
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                        <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                        Active
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <span class="ml-2 text-sm font-medium text-gray-700">42</span>
                                     </div>
-                                </div>
-                            </div>
-                            <div
-                                class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div class="card-actions flex space-x-3">
-                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-warning-600 hover:text-warning-800 transition-colors">
-                                        <i class="fas fa-exchange-alt"></i>
-                                    </button>
-                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                                <a href="#"
-                                    class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                    Voir détails
-                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
+                                @else
+                                    <!-- Not Active Doctor Design -->
+                                    <div
+                                        class="card-header px-6 py-4 bg-gradient-to-r from-danger-50 to-white border-b border-gray-100">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-danger-100">
+                                                <img src="{{ $doctor['profile_photo'] ?? 'https://randomuser.me/api/portraits/men/45.jpg' }}"
+                                                    alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
+                                            </div>
+                                            <div class="ml-4 flex-1">
+                                                <div class="flex items-center justify-between">
+                                                    <div>
+                                                        <h3 class="text-lg font-semibold text-primary-700">Dr.
+                                                            {{ $doctor['name'] }}</h3>
+                                                        <p class="text-sm text-gray-600">
+                                                            {{ $doctor['speciality'] ?? 'Spécialité non définie' }}</p>
+                                                    </div>
+                                                    <span
+                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
+                                                        <span class="w-1.5 h-1.5 bg-danger-500 rounded-full mr-1.5"></span>
+                                                        Non active
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
 
-                        <!-- Doctor Card 2 -->
-                        <div
-                            class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
-                            <div
-                                class="card-header px-6 py-4 bg-gradient-to-r from-primary-50 to-white border-b border-gray-100">
-                                <div class="flex items-center">
-                                    <div
-                                        class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-primary-100">
-                                        <img src="https://randomuser.me/api/portraits/women/44.jpg"
-                                            alt="Dr. Marie Martin" class="h-full w-full object-cover">
+                                <div class="px-6 py-4">
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Email</p>
+                                            <p class="font-medium text-gray-800">{{ $doctor['email'] }}</p>
+                                        </div>
+                                        <div class="ml-10">
+                                            <p class="text-gray-500">Téléphone</p>
+                                            <p class="font-medium text-gray-800">{{ $doctor['phone'] ?? 'Non renseigné' }}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div class="ml-4 flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <h3 class="text-lg font-semibold text-primary-700">Dr. Marie Martin</h3>
-                                                <p class="text-sm text-gray-600">Pédiatrie</p>
+                                    <div class="mt-4">
+                                        <p class="text-gray-500 text-sm">Patients</p>
+                                        <div class="flex items-center mt-1">
+                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                                @if($doctor['status'] == 'en attente')
+                                                    <div class="bg-warning-500 h-2.5 rounded-full"></div>
+                                                @elseif($doctor['status'] == 'active')
+                                                    <div class="bg-success-600 h-2.5 rounded-full"></div>
+                                                @else
+                                                    <div class="bg-danger-500 h-2.5 rounded-full"></div>
+                                                @endif
                                             </div>
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
-                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
-                                                Actif
+                                            <span class="ml-2 text-sm font-medium text-gray-700 w-44">
+                                                @php
+                                                    $count = $appointments->where('doctor_id', $doctor['id'])->count();
+                                                    $total = $appointments->count() > 0 ? $appointments->count() : 1;
+                                                    $percentage = min(100, round(($count / $total) * 100));
+                                                @endphp
+                                                {{ $count }} ({{ $percentage }}%)
                                             </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-6 py-4">
-                                <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Email</p>
-                                        <p class="font-medium text-gray-800">marie.martin@example.com</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Téléphone</p>
-                                        <p class="font-medium text-gray-800">+33 6 23 45 67 89</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-gray-500 text-sm">Patients</p>
-                                    <div class="flex items-center mt-1">
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div class="bg-primary-600 h-2.5 rounded-full" style="width: 90%"></div>
-                                        </div>
-                                        <span class="ml-2 text-sm font-medium text-gray-700">56</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div class="card-actions flex space-x-3">
-                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-warning-600 hover:text-warning-800 transition-colors">
-                                        <i class="fas fa-exchange-alt"></i>
-                                    </button>
-                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                                <a href="#"
-                                    class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                    Voir détails
-                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
+                                            <script>
+                                                document.currentScript.previousElementSibling.previousElementSibling.firstElementChild.style.width = '{{ $percentage }}%';
+                                            </script>
 
-                        <!-- Doctor Card 3 -->
-                        <div
-                            class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
-                            <div
-                                class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
-                                <div class="flex items-center">
-                                    <div
-                                        class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-warning-100">
-                                        <img src="https://randomuser.me/api/portraits/men/59.jpg"
-                                            alt="Dr. Pierre Lefebvre" class="h-full w-full object-cover">
-                                    </div>
-                                    <div class="ml-4 flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <h3 class="text-lg font-semibold text-primary-700">Dr. Pierre Lefebvre
-                                                </h3>
-                                                <p class="text-sm text-gray-600">Généraliste</p>
-                                            </div>
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
-                                                <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
-                                                En attente
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="px-6 py-4">
-                                <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Email</p>
-                                        <p class="font-medium text-gray-800">pierre.lefebvre@example.com</p>
+                                <div
+                                    class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                    <div class="card-actions flex space-x-3">
+                                        <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        @if($doctor['status'] == 'en attente')
+                                            <button class="text-success-600 hover:text-success-800 transition-colors">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        @elseif($doctor['status'] == 'active')
+                                            <button class="text-warning-600 hover:text-warning-800 transition-colors">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
+                                        @else
+                                            <button class="text-success-600 hover:text-success-800 transition-colors">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        @endif
+
+                                        <button class="text-danger-600 hover:text-danger-800 transition-colors">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </div>
-                                    <div>
-                                        <p class="text-gray-500">Téléphone</p>
-                                        <p class="font-medium text-gray-800">+33 6 34 56 78 90</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4">
-                                    <p class="text-gray-500 text-sm">Patients</p>
-                                    <div class="flex items-center mt-1">
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div class="bg-warning-500 h-2.5 rounded-full" style="width: 10%"></div>
-                                        </div>
-                                        <span class="ml-2 text-sm font-medium text-gray-700">5</span>
-                                    </div>
+                                    <a href=""
+                                        class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                        Voir détails
+                                        <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                    </a>
                                 </div>
                             </div>
-                            <div
-                                class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div class="card-actions flex space-x-3">
-                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-success-600 hover:text-success-800 transition-colors">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                                <a href="#"
-                                    class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                    Voir détails
-                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
+                        @endforeach
+
                     </div>
 
                     <div class="flex justify-center">
@@ -983,8 +936,9 @@
                                 <select
                                     class="w-full md:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
                                     <option value="all">Tous</option>
-                                    <option value="active">Actifs</option>
-                                    <option value="inactive">Inactifs</option>
+                                    <option value="active">Active</option>
+                                    <option value="active">En Attente</option>
+                                    <option value="inactive">Not Active</option>
                                 </select>
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-filter text-gray-400"></i>
@@ -999,223 +953,76 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         <!-- Patient Card 1 -->
-                        <div
-                            class="patient-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
-                            <div
-                                class="card-header px-6 py-4 bg-gradient-to-r from-info-50 to-white border-b border-gray-100">
-                                <div class="flex items-center">
-                                    <div
-                                        class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-info-100">
-                                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Jean Dupont"
-                                            class="h-full w-full object-cover">
-                                    </div>
-                                    <div class="ml-4 flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <h3 class="text-lg font-semibold text-primary-700">Jean Dupont</h3>
-                                                <p class="text-sm text-gray-600">ID: #12345</p>
-                                            </div>
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
-                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
-                                                Actif
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-6 py-4">
-                                <div class="grid grid-cols-3 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Âge</p>
-                                        <p class="font-medium text-gray-800">42 ans</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Genre</p>
-                                        <p class="font-medium text-gray-800">Homme</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Téléphone</p>
-                                        <p class="font-medium text-gray-800">+33 6 12 34 56 78</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Dernière visite</p>
-                                        <p class="font-medium text-gray-800">15/04/2023</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Prochain RDV</p>
-                                        <p class="font-medium text-primary-600">28/05/2023</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div class="card-actions flex space-x-3">
-                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                        <i class="fas fa-file-medical"></i>
-                                    </button>
-                                    <button class="text-success-600 hover:text-success-800 transition-colors">
-                                        <i class="fas fa-calendar-plus"></i>
-                                    </button>
-                                    <button class="text-info-600 hover:text-info-800 transition-colors">
-                                        <i class="fas fa-comments"></i>
-                                    </button>
-                                </div>
-                                <a href="#"
-                                    class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                    Voir détails
-                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
+                        @foreach ($patients as $patient)
 
-                        <!-- Patient Card 2 -->
-                        <div
-                            class="patient-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
                             <div
-                                class="card-header px-6 py-4 bg-gradient-to-r from-info-50 to-white border-b border-gray-100">
-                                <div class="flex items-center">
-                                    <div
-                                        class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-info-100">
-                                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Marie Martin"
-                                            class="h-full w-full object-cover">
-                                    </div>
-                                    <div class="ml-4 flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <h3 class="text-lg font-semibold text-primary-700">Marie Martin</h3>
-                                                <p class="text-sm text-gray-600">ID: #12346</p>
+                                class="patient-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                                <div
+                                    class="card-header px-6 py-4 bg-gradient-to-r from-info-50 to-white border-b border-gray-100">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-info-100">
+                                            <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Jean Dupont"
+                                                class="h-full w-full object-cover">
+                                        </div>
+                                        <div class="ml-4 flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h3 class="text-lg font-semibold text-primary-700">
+                                                        {{ $patient['name'] }}</h3>
+                                                    <p class="text-sm text-gray-600">ID: {{ $patient['id'] }}</p>
+                                                </div>
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                    <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                    {{ $patient['status'] }}
+                                                </span>
                                             </div>
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
-                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
-                                                Actif
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="px-6 py-4">
-                                <div class="grid grid-cols-3 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Âge</p>
-                                        <p class="font-medium text-gray-800">35 ans</p>
+                                <div class="px-6 py-4">
+                                    <div class="grid grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Âge</p>
+                                            <p class="font-medium text-gray-800">{{ $patient['age'] ?? 'N/A' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Genre</p>
+                                            <p class="font-medium text-gray-800">{{ $patient['gender'] ?? 'N/A' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Téléphone</p>
+                                            <p class="font-medium text-gray-800">{{ $patient['phone'] ?? 'N/A' }}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="text-gray-500">Genre</p>
-                                        <p class="font-medium text-gray-800">Femme</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Téléphone</p>
-                                        <p class="font-medium text-gray-800">+33 6 23 45 67 89</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Dernière visite</p>
-                                        <p class="font-medium text-gray-800">22/04/2023</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Prochain RDV</p>
-                                        <p class="font-medium text-primary-600">10/06/2023</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div class="card-actions flex space-x-3">
-                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                        <i class="fas fa-file-medical"></i>
-                                    </button>
-                                    <button class="text-success-600 hover:text-success-800 transition-colors">
-                                        <i class="fas fa-calendar-plus"></i>
-                                    </button>
-                                    <button class="text-info-600 hover:text-info-800 transition-colors">
-                                        <i class="fas fa-comments"></i>
-                                    </button>
-                                </div>
-                                <a href="#"
-                                    class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                    Voir détails
-                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Patient Card 3 -->
-                        <div
-                            class="patient-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
-                            <div
-                                class="card-header px-6 py-4 bg-gradient-to-r from-info-50 to-white border-b border-gray-100">
-                                <div class="flex items-center">
-                                    <div
-                                        class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-info-100">
-                                        <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Pierre Dubois"
-                                            class="h-full w-full object-cover">
-                                    </div>
-                                    <div class="ml-4 flex-1">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <h3 class="text-lg font-semibold text-primary-700">Pierre Dubois</h3>
-                                                <p class="text-sm text-gray-600">ID: #12347</p>
-                                            </div>
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
-                                                <span class="w-1.5 h-1.5 bg-danger-500 rounded-full mr-1.5"></span>
-                                                Inactif
-                                            </span>
+                                    <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Dernière visite</p>
+                                            <p class="font-medium text-gray-800">
+                                                {{ $patient['patient_details']->last_visit_date ?? 'N/A'}}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Prochain RDV</p>
+                                            <p class="font-medium text-primary-600">{{ $patient['next_rdv'] ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="px-6 py-4">
-                                <div class="grid grid-cols-3 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Âge</p>
-                                        <p class="font-medium text-gray-800">58 ans</p>
+                                <div
+                                    class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                    <div class="card-actions flex space-x-3">
+                                        <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                            <i class="fas fa-file-medical"></i>
+                                        </button>
                                     </div>
-                                    <div>
-                                        <p class="text-gray-500">Genre</p>
-                                        <p class="font-medium text-gray-800">Homme</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Téléphone</p>
-                                        <p class="font-medium text-gray-800">+33 6 34 56 78 90</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Dernière visite</p>
-                                        <p class="font-medium text-gray-800">05/03/2023</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-500">Prochain RDV</p>
-                                        <p class="font-medium text-gray-500">Non planifié</p>
-                                    </div>
+                                    <a href="{{ route('admin.patients.show', $patient['id']) }}"
+                                        class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                        Voir détails
+                                        <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                    </a>
                                 </div>
                             </div>
-                            <div
-                                class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div class="card-actions flex space-x-3">
-                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                        <i class="fas fa-file-medical"></i>
-                                    </button>
-                                    <button class="text-success-600 hover:text-success-800 transition-colors">
-                                        <i class="fas fa-calendar-plus"></i>
-                                    </button>
-                                    <button class="text-info-600 hover:text-info-800 transition-colors">
-                                        <i class="fas fa-comments"></i>
-                                    </button>
-                                </div>
-                                <a href="#"
-                                    class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                    Voir détails
-                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
 
                     <div class="flex justify-center">
@@ -1274,9 +1081,10 @@
                                 <select
                                     class="w-full md:w-40 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
                                     <option value="all">Tous</option>
-                                    <option value="upcoming">À venir</option>
-                                    <option value="completed">Terminés</option>
-                                    <option value="cancelled">Annulés</option>
+                                    <option value="upcoming">pending</option>
+                                    <option value="completed">confirmed</option>
+                                    <option value="completed">completed</option>
+                                    <option value="cancelled">canceled</option>
                                 </select>
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-filter text-gray-400"></i>
@@ -1289,68 +1097,229 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        <!-- Appointment Card 1 -->
-                        <div
-                            class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
-                            <div
-                                class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-primary-700">Jean Dupont</h3>
-                                        <p class="text-sm text-gray-600">Avec Dr. Marie Martin</p>
+                        @foreach ($appointments as $appointment)
+                            @if($appointment['status'] == 'pending')
+                                <div
+                                    class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                                    <div
+                                        class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                <p class="text-sm text-gray-600">Avec Dr.
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                            </div>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
+                                                <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
+                                                En attente
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
-                                        <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
-                                        À venir
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="px-6 py-4">
-                                <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <p class="text-gray-500">Date</p>
-                                        <p class="font-medium text-gray-800">28/05/2023</p>
+                                    <div class="px-6 py-4">
+                                        <div class="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <p class="text-gray-500">Date</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['date'] ?? date('d/m/Y') }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Heure</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['time'] ?? '00:00' }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <p class="text-gray-500">Motif</p>
+                                            <p class="font-medium text-gray-800">{{ $appointment['reason'] ?? 'Consultation' }}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="text-gray-500">Heure</p>
-                                        <p class="font-medium text-gray-800">10:15</p>
+                                    <div
+                                        class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                        <div class="card-actions flex space-x-3">
+                                            <button class="text-info-600 hover:text-info-800 transition-colors">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                        <a href="#"
+                                            class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                            Voir détails
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="mt-4">
-                                    <p class="text-gray-500">Motif</p>
-                                    <p class="font-medium text-gray-800">Contrôle tension artérielle</p>
-                                </div>
-                                <div class="mt-4 flex items-center">
-                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                        <div class="bg-warning-500 h-1.5 rounded-full" style="width: 100%"></div>
+
+                            @elseif($appointment['status'] == 'confirmed')
+                                <div
+                                    class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                                    <div
+                                        class="card-header px-6 py-4 bg-gradient-to-r from-primary-50 to-white border-b border-gray-100">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                <p class="text-sm text-gray-600">Avec Dr.
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                            </div>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
+                                                <span class="w-1.5 h-1.5 bg-primary-500 rounded-full mr-1.5"></span>
+                                                Confirmé
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span class="ml-2 text-xs font-medium text-gray-500">3 jours</span>
+                                    <div class="px-6 py-4">
+                                        <div class="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <p class="text-gray-500">Date</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['date'] ?? date('d/m/Y') }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Heure</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['time'] ?? '00:00' }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <p class="text-gray-500">Motif</p>
+                                            <p class="font-medium text-gray-800">{{ $appointment['reason'] ?? 'Consultation' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                        <div class="card-actions flex space-x-3">
+                                            <button class="text-info-600 hover:text-info-800 transition-colors">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                        <a href="#"
+                                            class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                            Voir détails
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div
-                                class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                <div class="card-actions flex space-x-3">
-                                    <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-success-600 hover:text-success-800 transition-colors">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                    <button class="text-danger-600 hover:text-danger-800 transition-colors">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+
+                            @elseif($appointment['status'] == 'completed')
+                                <div
+                                    class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                                    <div
+                                        class="card-header px-6 py-4 bg-gradient-to-r from-success-50 to-white border-b border-gray-100">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                <p class="text-sm text-gray-600">Avec Dr.
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                            </div>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                Terminé
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="px-6 py-4">
+                                        <div class="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <p class="text-gray-500">Date</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['date'] ?? date('d/m/Y') }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Heure</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['time'] ?? '00:00' }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <p class="text-gray-500">Motif</p>
+                                            <p class="font-medium text-gray-800">{{ $appointment['reason'] ?? 'Consultation' }}
+                                            </p>
+                                        </div>
+                                        <div class="mt-4">
+                                            <p class="text-gray-500">Notes</p>
+                                            <p class="text-sm text-gray-600 line-clamp-2">
+                                                {{ $appointment['notes'] ?? 'Consultation terminée avec succès.' }}</p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                        <div class="card-actions flex space-x-3">
+                                            <button class="text-info-600 hover:text-info-800 transition-colors">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                        <a href="#"
+                                            class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                            Voir détails
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                                <a href="#"
-                                    class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                    Voir détails
-                                    <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                </a>
-                            </div>
-                        </div>
+
+                            @else
+                                <div
+                                    class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                                    <div
+                                        class="card-header px-6 py-4 bg-gradient-to-r from-danger-50 to-white border-b border-gray-100">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-primary-700">
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                <p class="text-sm text-gray-600">Avec Dr.
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                            </div>
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
+                                                <span class="w-1.5 h-1.5 bg-danger-500 rounded-full mr-1.5"></span>
+                                                Annulé
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="px-6 py-4">
+                                        <div class="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <p class="text-gray-500">Date</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['date'] ?? date('d/m/Y') }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Heure</p>
+                                                <p class="font-medium text-gray-800">{{ $appointment['time'] ?? '00:00' }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <p class="text-gray-500">Motif</p>
+                                            <p class="font-medium text-gray-800">{{ $appointment['reason'] ?? 'Consultation' }}
+                                            </p>
+                                        </div>
+                                        <div class="mt-4">
+                                            <p class="text-gray-500">Raison d'annulation</p>
+                                            <p class="text-sm text-danger-600">
+                                                {{ $appointment['cancel_reason'] ?? 'Annulé par le patient' }}</p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                        <div class="card-actions flex space-x-3">
+                                            <button class="text-info-600 hover:text-info-800 transition-colors">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                        <a href="#"
+                                            class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                            Voir détails
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
 
                         <!-- Appointment Card 2 -->
-                        <div
+                        <!-- <div
                             class="appointment-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
                             <div
                                 class="card-header px-6 py-4 bg-gradient-to-r from-success-50 to-white border-b border-gray-100">
@@ -1454,7 +1423,7 @@
                                     <i class="fas fa-chevron-right ml-1 text-xs"></i>
                                 </a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="flex justify-center">
@@ -1592,7 +1561,6 @@
             todayAppointments: @json($todayAppointments ?? [])
         };
 
-        // console.log(dashboardData);
         document.addEventListener('DOMContentLoaded', function () {
 
             if (document.getElementById('total-doctors')) {
@@ -1617,7 +1585,6 @@
                 document.getElementById('inactive-doctors').textContent = inactiveDoctors;
             }
 
-            // Initialiser les graphiques après un délai pour s'assurer que les éléments Canvas sont prêts
             setTimeout(function () {
                 console.log("Initializing charts");
                 initStatusChart();
@@ -1635,14 +1602,14 @@
             const statusData = {
                 active: 0,
                 pending: 0,
-                inactive: 0
+                notactive: 0
             };
-
+            // console.log(doctors[0].user.status);
             if (dashboardData && dashboardData.doctors && dashboardData.doctors.length > 0) {
                 dashboardData.doctors.forEach(doctor => {
                     if (doctor.status === 'active') statusData.active++;
                     else if (doctor.status === 'pending') statusData.pending++;
-                    else if (doctor.status === 'not active') statusData.inactive++;
+                    else if (doctor.status === 'not active') statusData.notactive++;
                 });
             }
 
@@ -1651,7 +1618,7 @@
                 data: {
                     labels: ['Active', 'En attente', 'not active'],
                     datasets: [{
-                        data: [statusData.active, statusData.pending, statusData.inactive],
+                        data: [statusData.active, statusData.pending, statusData.notactive],
                         backgroundColor: [
                             'rgba(16, 185, 129, 0.8)',
                             'rgba(245, 158, 11, 0.8)',
@@ -1715,10 +1682,10 @@
                 });
             }
 
-            if (registrationData.doctors.every(val => val === 0) && registrationData.patients.every(val => val === 0)) {
-                registrationData.doctors = [5, 7, 10, 12, 15, 18];
-                registrationData.patients = [8, 12, 15, 22, 28, 35];
-            }
+            // if (registrationData.doctors.every(val => val === 0) && registrationData.patients.every(val => val === 0)) {
+            //     registrationData.doctors = [5, 7, 10, 12, 15, 18];
+            //     registrationData.patients = [8, 12, 15, 22, 28, 35];
+            // }
 
             for (let i = 5; i >= 0; i--) {
                 const monthIndex = (currentMonth - i + 12) % 12;
@@ -1764,7 +1731,7 @@
                 }
             });
         }
-        
+
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
@@ -1812,7 +1779,7 @@
                 }, 300);
             }
         }
-        
+
         document.addEventListener('DOMContentLoaded', function () {
             const sidebarLinks = document.querySelectorAll('.sidebar-item');
             const sections = document.querySelectorAll('.section');
@@ -1856,7 +1823,7 @@
                     }
                 });
             });
-            
+
             const savedSection = localStorage.getItem('activeSection');
             if (savedSection) {
                 activateSection(savedSection);
@@ -1881,7 +1848,6 @@
                     const dropdown = this.closest('.dropdown');
                     dropdown.classList.toggle('active');
 
-                    // Fermer les autres dropdowns
                     dropdownToggles.forEach(otherToggle => {
                         if (otherToggle !== toggle) {
                             otherToggle.closest('.dropdown').classList.remove('active');
@@ -1902,16 +1868,11 @@
         function initAppointmentChart() {
             const appointmentChart = document.getElementById('appointment-chart');
             if (!appointmentChart) {
-                console.error("Appointment chart element not found");
                 return;
             }
 
-            console.log("Initializing appointment chart");
-
-            // Récupérer les statistiques des rendez-vous du backend
             const appointmentStats = @json($appointmentStats ?? null);
 
-            // Définir les données par défaut si aucune statistique n'est disponible
             let appointmentData = {
                 pending: 0,
                 confirmed: 0,
@@ -1921,17 +1882,8 @@
 
             if (appointmentStats) {
                 appointmentData = appointmentStats;
-            } else {
-                // Utiliser des données fictives si aucune donnée réelle n'est disponible
-                appointmentData = {
-                    pending: 15,
-                    confirmed: 25,
-                    terminated: 40,
-                    canceled: 8
-                };
             }
 
-            // Créer le graphique avec gestion d'erreurs
             try {
                 new Chart(appointmentChart, {
                     type: 'pie',
@@ -1945,10 +1897,10 @@
                                 appointmentData.canceled
                             ],
                             backgroundColor: [
-                                'rgba(245, 158, 11, 0.8)', // warning - orange pour en attente
-                                'rgba(59, 130, 246, 0.8)', // info - bleu pour confirmés
-                                'rgba(16, 185, 129, 0.8)', // success - vert pour terminés
-                                'rgba(239, 68, 68, 0.8)'   // danger - rouge pour annulés
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(239, 68, 68, 0.8)'
                             ],
                             borderColor: [
                                 'rgba(245, 158, 11, 1)',

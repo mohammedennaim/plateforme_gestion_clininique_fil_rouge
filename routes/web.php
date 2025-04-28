@@ -69,15 +69,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create');
     Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
-    Route::get('/patients/{patient}', [PatientController::class, 'show'])->name('admin.patients.show');
-    Route::get('/patients/{patient}/edit', [PatientController::class, 'edit'])->name('admin.patients.edit');
+    Route::get('/patients/{id}', [AdminController::class, 'showPatient'])->name('patients.show');
+    Route::get('/patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
     Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
-    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('admin.patients.destroy');
+    Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patients.destroy');
     Route::get('/patients/stats', [PatientController::class, 'stats'])->name('patients.stats');
 
-    Route::post('/doctors', [DoctorController::class, 'store'])->name('admin.doctors.store');
-    Route::put('/doctors/{doctor}', [DoctorController::class, 'update'])->name('admin.doctors.update');
-    Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('admin.doctors.destroy');
+    Route::post('/doctors', [DoctorController::class, 'store'])->name('doctors.store');
+    Route::put('/doctors/{doctor}', [DoctorController::class, 'update'])->name('doctors.update');
+    Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
 
     // Route::post('/patients', [PatientController::class, 'store'])->name('admin.patients.store');
     // Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('admin.patients.update');
