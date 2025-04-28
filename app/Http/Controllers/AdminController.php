@@ -34,8 +34,6 @@ class AdminController extends Controller
                     'status' => $doctor->user->status,
                     'is_available' => $doctor->is_available,
                     'speciality' => $doctor->id_speciality,
-                    'nombre_cabinet' => $doctor->nombre_cabinet,
-                    'qualification' => $doctor->qualification
                 ];
             });
 

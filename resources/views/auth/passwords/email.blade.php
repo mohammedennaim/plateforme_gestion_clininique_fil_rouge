@@ -5,7 +5,6 @@
     <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="px-6 py-4 bg-indigo-600 flex items-center justify-between rounded-t-lg">
             <h2 class="text-2xl font-extrabold text-white">{{ __('Réinitialisation du mot de passe') }}</h2>
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-10">
         </div>
 
         <div class="p-6">
@@ -28,7 +27,7 @@
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-opacity-50 transition duration-300 ease-in-out" aria-label="Envoyer le lien de réinitialisation">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-opacity-50 transition duration-300 ease-in-out" aria-label="Envoyer le lien de réinitialisation">
                         {{ __('Envoyer le lien de réinitialisation') }}
                     </button>
 
