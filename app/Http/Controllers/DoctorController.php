@@ -36,7 +36,7 @@ class DoctorController extends Controller
             $doctorId = $doctor->doctor->id;
             $details = $this->doctorService->getDoctorDetails($doctorId);
             $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId);
-            $todayAppointmentsConfirmed = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'confirmed');
+            $todayAppointmentsConfirmed = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'confirmed')->first();
             // dd(isset($todayAppointmentsConfirmed));
             $appointments = $this->appointmentService->getByDoctorId($doctorId);
             // dd($appointments[0]->patient->user->name);
@@ -131,7 +131,7 @@ class DoctorController extends Controller
             $patientsWeeklyChangePercent = 15;
             $followUpsCount = 18;
             $urgentFollowUpsCount = 3;
-            // dd($todayAppointmentsConfirmed->count());
+            // dd($todayAppointmentsConfirmed);
             $stats = [
                 'totalAppointments' => $appointments ? $appointments->count() : 0,
                 'todayAppointmentsConfirmed' => $todayAppointmentsConfirmed ? $todayAppointmentsConfirmed->count() : 0,

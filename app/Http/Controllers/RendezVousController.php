@@ -19,6 +19,7 @@ class RendezVousController extends Controller
             $appointment = Appointment::where('patient_id', $patient->id)->get()->last();
             $doctors = User::where('role', 'doctor')->get();
             $speciality = Speciality::all();
+            // dd($speciality);
             // $appointment = $appointments->where('patient_id', auth()->user()->id)->whereNotNull('date')->sortBy('date')->last();
             if ($appointment != null) {
                 $doctor = Doctor::where('id', $appointment->doctor_id)->first();
@@ -91,6 +92,15 @@ class RendezVousController extends Controller
             'time' => 'required',
             'reason' => 'nullable|string|max:255',            
         ]);
+
+        $existingAppointment = Appointment::where('doctor_id', $validatedData['doctor_id'])
+                                 ->where('date', $validatedData['date'])
+                                 ->where('time', $validatedData['time'])
+                                 ->first();
+        
+        if ($existingAppointment) {
+            return redirect()->back()->with('error', 'Un rendez-vous existe déjà à cette date et heure avec ce médecin.');
+        }
 
         $appointment = new Appointment();
         $appointment->doctor_id = $validatedData['doctor_id'];

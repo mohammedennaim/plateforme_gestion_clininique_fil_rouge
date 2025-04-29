@@ -98,26 +98,87 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-primary-50 to-secondary-50 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-white shadow-sm py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center">
-                <i class="fas fa-hospital text-primary-600 text-2xl mr-2"></i>
-                <span class="text-xl font-semibold text-primary-700">MediClinic</span>
+@if (auth()->check())
+        <header class="bg-white shadow-sm py-4">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-hospital text-primary-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-semibold text-primary-700">MediClinic</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{{ route('welcome') }}" class="text-primary-600 font-medium">Accueil</a>
+                    <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                    <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div id="user-profile" class="items-center">
+                        <div class="relative">
+                            <button id="profile-dropdown-button" class="flex items-center space-x-2 focus:outline-none">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <span class="text-sm font-medium text-secondary-700">{{ $user['name'] }}</span>
+                                <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
+                            </button>
+
+                            <div id="profile-dropdown"
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user mr-2 text-secondary-400"></i>Mon profil
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-calendar-check mr-2 text-secondary-400"></i>Mes rendez-vous
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2 text-secondary-400"></i>Paramètres
+                                </a>
+                                <div class="border-t border-secondary-200 my-1"></div>
+
+                                <form action="{{ route('logout') }}" method="POST" class="w-full">
+                                    @csrf
+                                    <button type="submit" id="logout-button"
+                                        class="block px-4 py-2 text-sm text-red-600 hover:bg-secondary-50 w-full">
+                                        <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <nav class="hidden md:flex space-x-6">
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Accueil</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                <a href="#" class="text-primary-600 font-medium">Rendez-vous</a>
-                <a href="#" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
-            </nav>
-            
-            <button class="md:hidden text-secondary-600 focus:outline-none">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-        </div>
-    </header>
+        </header>
+    @else
+        <header class="bg-white shadow-sm py-4">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-hospital text-primary-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-semibold text-primary-700">MediClinic</span>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="{{ route('welcome') }}" class="text-primary-600 font-medium">Accueil</a>
+                    <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
+                    <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
+                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div id="auth-buttons" class="flex items-center">
+                        <a href="{{ Route('login') }}" id="login-button"
+                            class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
+                        <span class="mx-2 text-secondary-300">|</span>
+                        <a href="{{ Route('logout') }}"
+                            class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+    @endif
+
 
     <main class="flex-grow container mx-auto px-4 py-8">
         <div class="max-w-2xl mx-auto">
@@ -344,6 +405,18 @@
 
     <!-- JavaScript -->
     <script>
+        
+        const profileDropdownButton = document.getElementById('profile-dropdown-button');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        profileDropdownButton.addEventListener('click', function () {
+            profileDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
         document.addEventListener('DOMContentLoaded', function() {
             // Initialiser Stripe avec votre clé publique
             const stripe = Stripe('{{ config("services.stripe.key") }}');

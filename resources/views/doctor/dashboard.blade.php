@@ -883,7 +883,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                @if(count($todayAppointmentsConfirmed) > 0 && $todayAppointmentsConfirmed)
+                @if($todayAppointmentsConfirmed != null && $todayAppointmentsConfirmed)
                     <!-- Next appointment (affiché seulement s'il existe un prochain rendez-vous) -->
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
                         <div
@@ -903,14 +903,10 @@
                             <div
                                 class="bg-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center">
                                 <div class="text-center">
-                                    <p class="text-indigo-200 text-sm">{{ $nextAppointment->day_name ?? 'Aujourd\'hui' }}
+                                    <p class="text-indigo-200 text-sm"> Aujourd'hui
                                     </p>
-                                    <p class="text-3xl font-bold">{{ $nextAppointment->formatted_time ?? '09:30' }}</p>
-                                    <p class="text-xs">{{ $nextAppointment->am_pm ?? 'AM' }}</p>
-                                </div>
-                                <div class="md:mt-4 text-center">
-                                    <span class="px-2 py-1 bg-indigo-700 rounded-lg text-xs">Salle
-                                        {{ $nextAppointment->room ?? '204' }}</span>
+                                    <p class="text-3xl font-bold">{{ $todayAppointmentsConfirmed->time->format('h:i') }}</p>
+                                    <p class="text-xs">{{ $todayAppointmentsConfirmed->time->format('A') }}</p>
                                 </div>
                             </div>
 
@@ -920,17 +916,17 @@
                                     <div class="w-full lg:w-2/3">
                                         <div class="flex items-center">
                                             <img class="h-12 w-12 rounded-full mr-4"
-                                                src="{{ $nextAppointment->patient->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($nextAppointment->patient->name ?? 'Patient') . '&background=6366F1&color=ffffff' }}"
-                                                alt="{{ $nextAppointment->patient->name ?? 'Patient' }}">
+                                                src="{{ $todayAppointmentsConfirmed->patient->user->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($nextAppointment->patient->name ?? 'Patient') . '&background=6366F1&color=ffffff' }}"
+                                                alt="{{ $todayAppointmentsConfirmed->patient->user->name ?? 'Patient' }}">
                                             <div>
                                                 <h3 class="text-lg font-medium text-indigo-700">
-                                                    {{ $nextAppointment->patient->name ?? 'Mohammed Alami' }}
+                                                    {{ $todayAppointmentsConfirmed->patient->user->name ?? 'Mohammed Alami' }}
                                                 </h3>
                                                 <div class="flex flex-wrap text-sm text-gray-600">
-                                                    <span class="mr-3">{{ $nextAppointment->patient->gender ?? 'Homme' }} •
-                                                        {{ $nextAppointment->patient->age ?? '42' }} ans</span>
+                                                    <span class="mr-3">{{ $todayAppointmentsConfirmed->patient->user->gender ?? 'Homme' }} •
+                                                        {{ $todayAppointmentsConfirmed->patient->user->age ?? '42' }} ans</span>
                                                     <span>Patient ID:
-                                                        #{{ $nextAppointment->patient->id_number ?? 'MED-12345' }}</span>
+                                                        #{{ $todayAppointmentsConfirmed->patient->id ?? 'MED-12345' }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -947,14 +943,14 @@
                                                 <p class="text-gray-500">Médecin</p>
                                                 <p class="font-medium flex items-center mt-1">
                                                     <i class="fas fa-user-md text-indigo-500 mr-2"></i>
-                                                    Dr. {{ $details->user->name }}
+                                                    Dr. {{ $todayAppointmentsConfirmed->doctor->user->name ?? 'Ahmed El Amrani' }}
                                                 </p>
                                             </div>
                                             <div>
                                                 <p class="text-gray-500">Département</p>
                                                 <p class="font-medium flex items-center mt-1">
                                                     <i class="fas fa-stethoscope text-indigo-500 mr-2"></i>
-                                                    {{ $details->department ?? 'Cardiologie' }}
+                                                    {{$todayAppointmentsConfirmed->doctor->speciality ?? 'test'}}
                                                 </p>
                                             </div>
                                         </div>
@@ -1300,8 +1296,8 @@
                                                     <p class="text-sm font-medium text-indigo-600">
                                                         {{ $appointment->patient->name }}
                                                     </p>
-                                                    <p class="text-xs text-gray-500">Dr.
-                                                        {{ $appointment->doctor->user->name }} • {{ $appointment->time }}
+                                                    <p class="text-xs text-gray-500">Mr.
+                                                        {{ $appointment->patient->user->name }} • {{ $appointment->time }}
                                                     </p>
                                                     <div class="flex items-center mt-1">
                                                         <span

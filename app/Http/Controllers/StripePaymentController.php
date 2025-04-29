@@ -26,6 +26,8 @@ class StripePaymentController extends Controller
     {
         
         $appointmentId = Appointment::all()->last()->id;
+        $user = auth()->user();
+        
         
         // Vérifier si le rendez-vous existe
         if ($appointmentId) {
@@ -36,9 +38,7 @@ class StripePaymentController extends Controller
         }
         // dd($appointmentId);
         
-        return view('patient.payment', [
-            'appointmentId' => $appointmentId
-        ]);
+        return view('patient.payment',compact('user', 'appointmentId'));
     }
 
     /**

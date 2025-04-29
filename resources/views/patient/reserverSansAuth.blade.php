@@ -238,6 +238,19 @@
                     </div>
                 </div>
                 
+                @if (session('error'))
+                <div id="error-message" class="mb-4 bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 animate-fadeIn">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="font-medium">{{ session('error') }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                
                 <form method="POST" action="{{ route('patient.reserver.store') }}" id="appointment-form" class="space-y-6">
                     @csrf
                     <input type="hidden" name="doctor_id" id="doctor_id" value="1">
