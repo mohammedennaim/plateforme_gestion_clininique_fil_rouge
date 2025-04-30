@@ -1656,7 +1656,7 @@
                                         class="text-sm text-indigo-600 hover:text-indigo-500">
                                         <i class="fas fa-file-medical"></i>
                                     </a>
-                                    <a href="{{ route('doctor.appointments.create', $patient->id) }}"
+                                    <a href="{{ route('doctor.appointments.create', auth()->user()->id) }}"
                                         class="text-sm text-emerald-600 hover:text-emerald-500">
                                         <i class="fas fa-calendar-plus"></i>
                                     </a>
@@ -1831,7 +1831,7 @@
                                     <i class="fas fa-calendar-day text-gray-400 text-xl"></i>
                                 </div>
                                 <p>Aucun rendez-vous trouvé</p>
-                                <a href="{{ route('doctor.appointments.create') }}"
+                                <a href="{{ route('doctor.appointments.create',auth()->user()->id) }}"
                                     class="mt-3 text-indigo-600 hover:text-indigo-800">
                                     + Créer un nouveau rendez-vous
                                 </a>

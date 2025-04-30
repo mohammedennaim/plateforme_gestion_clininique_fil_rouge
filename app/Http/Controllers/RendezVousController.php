@@ -31,7 +31,7 @@ class RendezVousController extends Controller
             }
             // dd($appointment);
             // $speciality = Speciality::all();
-            return view('patient.reserver' , compact('user', 'patient', 'appointments', 'appointment', 'specialities'));
+            return view('patient.reserver' , compact('user', 'patient', 'appointment', 'specialities'));
             // dd($medecinDernierVisit);
             // dd($speciality);
         }
@@ -95,7 +95,7 @@ class RendezVousController extends Controller
             'reason' => 'nullable|string|max:255',            
         ]);
 
-        $doctors = Doctor::where('speciality_id', $validatedData['speciality'])->get();
+        $doctors = Doctor::where('id_speciality', $validatedData['speciality'])->get();
         
         $doctor = null;
         foreach ($doctors as $doc) {
