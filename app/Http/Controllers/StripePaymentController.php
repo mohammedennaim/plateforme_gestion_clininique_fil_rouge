@@ -26,19 +26,20 @@ class StripePaymentController extends Controller
     {
         
         $appointmentId = Appointment::all()->last()->id;
+
         $user = auth()->user();
         
-        
-        // Vérifier si le rendez-vous existe
         if ($appointmentId) {
             $appointment = Appointment::find($appointmentId);
             if (!$appointment) {
                 return redirect()->route('home')->with('error', 'Rendez-vous introuvable');
             }
         }
-        // dd($appointmentId);
         
-        return view('patient.payment',compact('user', 'appointmentId'));
+        if ($user) {
+            return view('patient.payment',compact('user', 'appointmentId'));
+        }
+        return view('patient.payment',compact('appointmentId'));
     }
 
     /**

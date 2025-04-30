@@ -255,6 +255,19 @@
                     </div>
                 </div>
 
+                @if (session('error'))
+                <div id="error-message" class="mb-4 bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 animate-fadeIn">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="font-medium">{{ session('error') }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 <!-- Form -->
                 <form method="POST" action="{{ route('patient.reserver.store') }}" id="appointment-form">
                     @csrf
@@ -445,8 +458,8 @@
                                         class="block w-full pl-10 pr-10 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none"
                                         required>
                                         <option value="" selected disabled>Sélectionnez une spécialité</option>
-                                        @foreach ($speciality as $s)
-                                            <option value="{{ $s->name }}">{{ $s->name }}</option>
+                                        @foreach ($specialities as $speciality)
+                                            <option value="{{$speciality->id}}">{{$speciality->name}}</option>
                                         @endforeach
                                     </select>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">

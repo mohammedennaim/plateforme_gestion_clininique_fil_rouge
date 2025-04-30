@@ -12,13 +12,14 @@ use Illuminate\Http\Request;
 class RendezVousController extends Controller
 {
     public function create(){
+        $specialities = Speciality::all();
         // dd('hello');
         if (auth()->user()) {
             $user = User::where('role', 'patient')->get()[0];
             $patient = Patient::where('user_id', auth()->user()->id)->first();
             $appointment = Appointment::where('patient_id', $patient->id)->get()->last();
             $doctors = User::where('role', 'doctor')->get();
-            $speciality = Speciality::all();
+            // $speciality = Speciality::all();
             // dd($speciality);
             // $appointment = $appointments->where('patient_id', auth()->user()->id)->whereNotNull('date')->sortBy('date')->last();
             if ($appointment != null) {
@@ -26,15 +27,16 @@ class RendezVousController extends Controller
                 $medecinDernierVisit = User::where('id', $doctor->user_id)->first();
                 // dd($medecinDernierVisit);
                 
-                return view('patient.reserver' , compact('user', 'patient', 'doctors', 'appointment', 'medecinDernierVisit', 'speciality'));
+                return view('patient.reserver' , compact('user', 'patient', 'doctors', 'appointment', 'medecinDernierVisit', 'specialities'));
             }
             // dd($appointment);
-            $speciality = Speciality::all();
-            return view('patient.reserver' , compact('user', 'patient', 'appointments', 'appointment', 'speciality'));
+            // $speciality = Speciality::all();
+            return view('patient.reserver' , compact('user', 'patient', 'appointments', 'appointment', 'specialities'));
             // dd($medecinDernierVisit);
             // dd($speciality);
         }
-        return view('patient.reserverSansAuth');
+        // dd($speciality);
+        return view('patient.reserverSansAuth', compact('specialities'));
 
     }
 
@@ -87,28 +89,48 @@ class RendezVousController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'doctor_id' => 'required|exists:doctors,id',
+            'speciality' => 'required|exists:speciality,id',
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required',
             'reason' => 'nullable|string|max:255',            
         ]);
 
-        $existingAppointment = Appointment::where('doctor_id', $validatedData['doctor_id'])
-                                 ->where('date', $validatedData['date'])
-                                 ->where('time', $validatedData['time'])
-                                 ->first();
+        $doctors = Doctor::where('speciality_id', $validatedData['speciality'])->get();
+        
+        $doctor = null;
+        foreach ($doctors as $doc) {
+            $existingAppointment = Appointment::where('doctor_id', $doc->id)
+            ->where('date', $validatedData['date'])
+            ->where('time', $validatedData['time'])
+            ->first();
+            
+            if (!$existingAppointment) {
+                $doctor = $doc;
+                
+                break;
+            }
+        }
+        
+        if (!$doctor) {
+            return redirect()->back()->with('error', "Aucun médecin n'est disponible pour cette spécialité à la date ou l'heure choisie. Veuillez sélectionner une autre date ou un autre créneau horaire pour effectuer votre réservation.")->withInput();
+        }
+        
+        $existingAppointment = Appointment::where('doctor_id', $doctor->id)
+                               ->where('date', $validatedData['date'])
+                               ->where('time', $validatedData['time'])
+                               ->first();
         
         if ($existingAppointment) {
             return redirect()->back()->with('error', 'Un rendez-vous existe déjà à cette date et heure avec ce médecin.');
         }
 
         $appointment = new Appointment();
-        $appointment->doctor_id = $validatedData['doctor_id'];
+        $appointment->doctor_id = $doctor->id;
         $appointment->date = $validatedData['date'];
         $appointment->time = $validatedData['time'];
         $appointment->reason = $validatedData['reason'] ?? null;
         $appointment->status = 'pending';
-        $appointment->price = 0;
+        $appointment->price = 0; 
         
         if (auth()->check()) {
             $patient = Patient::where('user_id', auth()->id())->first();
@@ -135,7 +157,7 @@ class RendezVousController extends Controller
 
         $appointment->save();
 
-        return redirect()->route('patient.payment', ['patient' => $appointment->patient_id])
+        return redirect()->route('patient.payment',$appointment->patient->id)
             ->with('appointment_id', $appointment->id)
             ->with('success', 'Votre rendez-vous a été enregistré. Procédez au paiement pour confirmer.');
     }

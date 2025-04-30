@@ -265,7 +265,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-user text-secondary-400"></i>
                                     </div>
-                                    <input type="text" id="fullname" name="patient_info[name]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Jean Dupont" required>
+                                    <input type="text" id="fullname" name="patient_info[name]" value="{{ old('patient_info.name') }}" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Jean Dupont" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -279,7 +279,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-birthday-cake text-secondary-400"></i>
                                     </div>
-                                    <input type="date" id="birth-date" name="patient_info[birthdate]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required>
+                                    <input type="date" id="birth-date" name="patient_info[birthdate]" value="{{ old('patient_info.birthdate') }}" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -293,7 +293,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-envelope text-secondary-400"></i>
                                     </div>
-                                    <input type="email" id="email" name="patient_info[email]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="exemple@email.com" required>
+                                    <input type="email" id="email" name="patient_info[email]" value="{{ old('patient_info.email') }}" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="exemple@email.com" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -307,7 +307,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-phone text-secondary-400"></i>
                                     </div>
-                                    <input type="tel" id="phone" name="patient_info[phone]" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="06 12 34 56 78" required>
+                                    <input type="tel" id="phone" name="patient_info[phone]" value="{{ old('patient_info.phone') }}" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="06 12 34 56 78" required>
                                 </div>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
@@ -335,37 +335,67 @@
                         </div>
                         
                         <div class="border border-secondary-200 rounded-lg p-4">
-                            <div class="flex items-center mb-4">
-                                <input type="checkbox" id="has-insurance" name="has-insurance" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
-                                <label for="has-insurance" class="ml-2 text-sm font-medium text-secondary-700">J'ai une assurance médicale</label>
-                            </div>
-                            
-                            <div id="insurance-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
-                                <div>
-                                    <label for="insurance-provider" class="block text-sm font-medium text-secondary-700 mb-1">Compagnie d'assurance</label>
-                                    <input type="text" id="insurance-provider" name="insurance-provider" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Nom de l'assurance">
-                                </div>
-                                <div>
-                                    <label for="insurance-number" class="block text-sm font-medium text-secondary-700 mb-1">Numéro d'adhérent</label>
-                                    <input type="text" id="insurance-number" name="insurance-number" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Numéro d'adhérent">
-                                </div>
-                            </div>
-                        </div>
+    <div class="flex items-center mb-4">
+        <input
+            type="checkbox"
+            id="has-insurance"
+            name="has-insurance"
+            value="1"
+            {{ old('has-insurance') ? 'checked' : '' }}
+            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300"
+            @if ($errors->has('has-insurance')) aria-invalid="true" aria-describedby="insurance-error" @endif
+        >
+        <label for="has-insurance" class="ml-2 text-sm font-medium text-secondary-700">
+            J'ai une assurance médicale
+        </label>
+    </div>
+
+    {{-- Afficher dynamiquement si coché (après submit) --}}
+    <div id="insurance-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4 {{ old('has-insurance') ? '' : 'hidden' }}">
+        <div>
+            <label for="insurance-provider" class="block text-sm font-medium text-secondary-700 mb-1">
+                Compagnie d'assurance
+            </label>
+            <input
+                type="text"
+                id="insurance-provider"
+                name="insurance-provider"
+                value="{{ old('insurance-provider') }}"
+                class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Nom de l'assurance"
+            >
+        </div>
+        <div>
+            <label for="insurance-number" class="block text-sm font-medium text-secondary-700 mb-1">
+                Numéro d'adhérent
+            </label>
+            <input
+                type="text"
+                id="insurance-number"
+                name="insurance-number"
+                value="{{ old('insurance-number') }}"
+                class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                placeholder="Numéro d'adhérent"
+            >
+        </div>
+    </div>
+</div>
+
                         
                         <div class="border border-secondary-200 rounded-lg p-4">
                             <h3 class="text-sm font-medium text-secondary-700 mb-3">Contact d'urgence</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label for="emergency-name" class="block text-sm font-medium text-secondary-700 mb-1">Nom du contact</label>
-                                    <input type="text" id="emergency-name" name="emergency-name" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Nom complet">
+                                    <input type="text" id="emergency-name" name="emergency-name" value="{{ old('emergency-name') }}" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Nom complet">
                                 </div>
                                 <div>
                                     <label for="emergency-phone" class="block text-sm font-medium text-secondary-700 mb-1">Téléphone du contact</label>
-                                    <input type="tel" id="emergency-phone" name="emergency-phone" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Numéro de téléphone">
+                                    <input type="tel" id="emergency-phone" name="emergency-phone" value="{{ old('emergency-phone') }}" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Numéro de téléphone">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label for="emergency-relation" class="block text-sm font-medium text-secondary-700 mb-1">Relation</label>
-                                    <select id="emergency-relation" name="emergency-relation" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <select id="emergency-relation" name="emergency-relation" value="{{ old('emergency-relation') }}" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                         <option value="" selected disabled>Sélectionnez une relation</option>
                                         <option value="conjoint">Conjoint(e)</option>
                                         <option value="parent">Parent</option>
@@ -400,13 +430,11 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-stethoscope text-secondary-400"></i>
                                     </div>
-                                    <select id="specialty" name="specialty" class="block w-full pl-10 pr-10 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none" required>
+                                    <select id="specialty" name="speciality"  value="{{ old('speciality') }}" class="block w-full pl-10 pr-10 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none" required>
                                         <option value="" selected disabled>Sélectionnez une spécialité</option>
-                                        <option value="cardiologie">Cardiologie</option>
-                                        <option value="dermatologie">Dermatologie</option>
-                                        <option value="pediatrie">Pédiatrie</option>
-                                        <option value="ophtalmologie">Ophtalmologie</option>
-                                        <option value="neurologie">Neurologie</option>
+                                        @foreach ($specialities as $speciality)
+                                            <option value="{{$speciality->id}}">{{$speciality->name}}</option>
+                                        @endforeach
                                     </select>
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                         <i class="fas fa-chevron-down text-secondary-400"></i>
@@ -425,7 +453,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-exclamation-circle text-secondary-400"></i>
                                     </div>
-                                    <select id="urgency" name="urgency" class="block w-full pl-10 pr-10 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
+                                    <select id="urgency" name="urgency"  value="{{ old('urgency') }}" class="block w-full pl-10 pr-10 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 appearance-none">
                                         <option value="normal" selected>Normal - Consultation de routine</option>
                                         <option value="soon">Dès que possible - Dans les prochains jours</option>
                                         <option value="urgent">Urgent - Besoin de consulter rapidement</option>
@@ -485,27 +513,27 @@
                         </div>
                         
                         <!-- Doctor Gender Preference -->
-                        <div>
+                        <!-- <div>
                             <label class="block text-sm font-medium text-secondary-700 mb-1">Préférence de genre du médecin</label>
                             <div class="flex space-x-4">
                                 <div class="flex items-center">
-                                    <input type="radio" id="no-preference" name="doctor-gender" value="no-preference" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300" checked>
+                                    <input type="radio" id="no-preference" name="doctor-gender" value="{{ old('doctor-gender') }}" value="no-preference" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300" checked>
                                     <label for="no-preference" class="ml-2 text-sm text-secondary-700">Pas de préférence</label>
                                 </div>
                                 <div class="flex items-center">
-                                    <input type="radio" id="male-doctor" name="doctor-gender" value="male" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
+                                    <input type="radio" id="male-doctor" name="doctor-gender" value="{{ old('doctor-gender') }}" value="male" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
                                     <label for="male-doctor" class="ml-2 text-sm text-secondary-700">Médecin homme</label>
                                 </div>
                                 <div class="flex items-center">
-                                    <input type="radio" id="female-doctor" name="doctor-gender" value="female" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
+                                    <input type="radio" id="female-doctor" name="doctor-gender" value="{{ old('doctor-gender') }}" value="female" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300">
                                     <label for="female-doctor" class="ml-2 text-sm text-secondary-700">Médecin femme</label>
                                 </div>
                             </div>
                             <p class="text-xs text-secondary-500 mt-1">Nous ferons notre possible pour respecter votre préférence selon les disponibilités.</p>
-                        </div>
+                        </div> -->
                         
                         <!-- Accessibility Needs -->
-                        <div>
+                        <!-- <div>
                             <label class="block text-sm font-medium text-secondary-700 mb-1">Besoins d'accessibilité</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <div class="flex items-center">
@@ -529,7 +557,7 @@
                                 <label for="other-needs" class="block text-sm font-medium text-secondary-700 mb-1">Autres besoins spécifiques</label>
                                 <textarea id="other-needs" name="other-needs" rows="2" class="block w-full px-3 py-2 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Précisez vos besoins spécifiques..."></textarea>
                             </div>
-                        </div>
+                        </div> -->
                         
                         <!-- Reason for Visit -->
                         <div>
@@ -538,7 +566,7 @@
                                 <div class="absolute top-3 left-3 flex items-start pointer-events-none">
                                     <i class="fas fa-comment-medical text-secondary-400"></i>
                                 </div>
-                                <textarea id="reason" name="reason" rows="3" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Décrivez brièvement la raison de votre visite..." required></textarea>
+                                <textarea id="reason" name="reason" value="{{ old('reason') }}" rows="3" class="block w-full pl-10 pr-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Décrivez brièvement la raison de votre visite..." required></textarea>
                             </div>
                             <div class="invalid-feedback text-red-500 text-sm mt-1">
                                 <i class="fas fa-exclamation-circle mr-1"></i>
@@ -739,6 +767,23 @@
     </footer>
 
     <script>
+
+document.addEventListener('DOMContentLoaded', function () {
+        const checkbox = document.getElementById('has-insurance');
+        const insuranceFields = document.getElementById('insurance-fields');
+
+        function toggleFields() {
+            if (checkbox.checked) {
+                insuranceFields.classList.remove('hidden');
+            } else {
+                insuranceFields.classList.add('hidden');
+            }
+        }
+
+        checkbox.addEventListener('change', toggleFields);
+        toggleFields(); // Pour initialiser correctement à l'affichage
+    });
+
         const doctors = {
             cardiologie: [
                 { id: 1, name: "Dr. Martin", availability: ["09:00", "10:30", "14:00", "16:30"], gender: "male" },
