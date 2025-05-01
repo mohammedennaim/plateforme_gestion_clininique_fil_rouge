@@ -777,7 +777,6 @@
                                         </div>
                                     </div>
                                 @else
-                                    <!-- Not Active Doctor Design -->
                                     <div
                                         class="card-header px-6 py-4 bg-gradient-to-r from-danger-50 to-white border-b border-gray-100">
                                         <div class="flex items-center">
@@ -840,7 +839,6 @@
                                             <script>
                                                 document.currentScript.previousElementSibling.previousElementSibling.firstElementChild.style.width = '{{ $percentage }}%';
                                             </script>
-
                                         </div>
                                     </div>
                                 </div>

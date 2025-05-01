@@ -77,7 +77,7 @@ class AppointmentRepository implements AppointmentRepositoryInterface
     }
     public function getAppointmentsByDoctorId($doctorId)
     {
-        return $this->model->where('doctor_id', $doctorId)->get();
+        return $this->model->where('doctor_id', $doctorId)->get()->unique('patient_id');
     }
     public function getByPatientId($patientId)
     {

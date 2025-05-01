@@ -752,7 +752,7 @@
                         <a href="{{ Route('login') }}" id="login-button"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
                         <span class="mx-2 text-secondary-300">|</span>
-                        <a href="{{ Route('logout') }}"
+                        <a href="{{ Route('register') }}"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
                     </div>
                 </div>

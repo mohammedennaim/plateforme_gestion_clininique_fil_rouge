@@ -34,32 +34,38 @@ class DoctorController extends Controller
       
             $doctor = auth()->user();
             $doctorId = $doctor->doctor->id;
+            // dd($doctorId);
             $details = $this->doctorService->getDoctorDetails($doctorId);
             $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId);
             $todayAppointmentsConfirmed = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'confirmed')->first();
             // dd(isset($todayAppointmentsConfirmed));
-            $appointments = $this->appointmentService->getByDoctorId($doctorId);
+            $appointments = $this->appointmentService->getAll();
             // dd($appointments[0]->patient->user->name);
-            $patients = $this->appointmentService->getByDoctorId($doctorId);
+            $appointmentsUnique = $this->appointmentService->getByDoctorId($doctorId);
+
+            // dd($patients);
             $countPatients = $this->appointmentService->getCountByPatientsByDoctorId($doctorId);
             // dd($todayAppointments[0]->date->format('d/m/Y'));
             // dd($countPatients);
   
-            foreach($appointments as $appointment) {
-                if ($appointment->patient && !$patients->contains('id', $appointment->patient->id)) {
-                    $patients->push($appointment->patient);
-                }
-            }
+            // foreach($appointments as $appointment) {
+            //     if ($appointment->patient && !$appointmentsUnique->contains('id', $appointment->patient->id)) {
+            //         $appointmentsUnique->push($appointment->patient);
+            //     }
+            // }
+
+            // dd($appointmentsUnique);
             
-            $revenue = $this->appointmentService->getTotalRevenue($doctor->id) ?? 0;
+            $revenue = $this->appointmentService->getTotalRevenue($doctorId) ?? 0;
+            
             $speciality = null;
             if ($details && isset($details->id_speciality)) {
                 $speciality = Speciality::where('id', $details->id_speciality)->first();
             }
             
             $monthlyRevenue = $revenue;
-            $patientSatisfactionRate = 95;
-            $satisfactionIncreasePercent = 5;
+            // $patientSatisfactionRate = 95;
+            // $satisfactionIncreasePercent = 5;
             $reviewCount = 120;
         
             $nextAppointment = $todayAppointments->sortBy([
@@ -85,47 +91,20 @@ class DoctorController extends Controller
             $calendarDays = $this->generateCalendarDays();
             
             $visitsChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            $visitsChartData = [65, 59, 80, 81, 56, 55, 72, 78, 80, 85, 90, 95];
+            $visitsChartData = $this->appointmentService->getByDoctorId($doctorId)->groupBy(function ($appointment) {
+                return \Carbon\Carbon::parse($appointment->date)->format('M');
+            })->map(function ($appointments) {
+                return $appointments->count();
+            })->values()->toArray();
+
             $revenueChartLabels = ['Consultations', 'Traitements', 'Tests Labo', 'Médicaments', 'Autres'];
             $revenueChartData = [35, 25, 20, 15, 5];
-            $totalVisitsThisMonth = 145;
-            $visitsIncreasePercent = 12;
             $totalRevenue = $revenue ?? 5000;
-            $revenueIncreasePercent = 8;
-            
-            $averageWaitTime = 15;
-            $waitTimeImprovement = 20;
-            $averageConsultationTime = 25;
-            $consultationTimeVariance = 5;
-            $noShowRate = 4;
-            $noShowRateImprovement = 25;
-            $onlineBookingRate = 68;
-            $onlineBookingImprovement = 15;
-            
+            $revenueIncreasePercent = 8;          
        
-            $weather = (object) ['temperature' => 22, 'city' => 'Casablanca'];
-            $urgentLabResultsCount = 3;
-            $unreadMessagesCount = 5;
-            $newPatientsThisMonth = 12;
-            $appointmentIncreasePercent = 8;
-            $tomorrowAppointmentsCount = 0;
-            $tasks = collect([
-                (object) ['id' => 1, 'description' => 'Réviser les rapports de laboratoire', 'completed' => false, 'priority_label' => 'Urgent', 'priority_color' => 'red-600', 'priority_icon' => 'exclamation-circle', 'due_label' => "Aujourd'hui"],
-                (object) ['id' => 2, 'description' => 'Appeler les patients de suivi', 'completed' => false, 'priority_label' => 'Moyen', 'priority_color' => 'amber-600', 'priority_icon' => 'clock', 'due_label' => "Demain"]
-            ]);
-            $pendingTasksCount = 2;
-            
-            $recentActivities = collect([
-                (object) ['color' => 'indigo', 'icon' => 'user', 'title' => 'Nouveau patient enregistré', 'highlight' => 'Ahmed Benani', 'description' => 'a été ajouté à votre liste de patients.', 'time_ago' => 'Il y a 30 minutes'],
-                (object) ['color' => 'green', 'icon' => 'check', 'title' => 'Rendez-vous terminé', 'highlight' => 'Consultation avec Fatima Zahra', 'description' => 'a été complétée avec succès.', 'time_ago' => 'Il y a 2 heures']
-            ]);
-            
-            $messages = collect([
-                (object) ['id' => 1, 'sender' => (object) ['name' => 'Dr. Karim', 'avatar_url' => null], 'preview' => 'Pouvez-vous examiner les résultats du patient #12345?', 'time' => '09:45', 'unread_count' => 1],
-                (object) ['id' => 2, 'sender' => (object) ['name' => 'Administration', 'avatar_url' => null], 'preview' => 'Planning de la semaine prochaine disponible', 'time' => 'Hier', 'unread_count' => 0]
-            ]);
-            
-            $activePatientCount = $patients->count();
+            $weather = (object) ['temperature' => 22, 'city' => 'Youssoufia'];
+        
+            $activePatientCount = $appointmentsUnique->count();
             $activePatientPercent = 85;
             $patientsThisWeek = 24;
             $patientsWeeklyChangePercent = 15;
@@ -136,28 +115,25 @@ class DoctorController extends Controller
                 'totalAppointments' => $appointments ? $appointments->count() : 0,
                 'todayAppointmentsConfirmed' => $todayAppointmentsConfirmed ? $todayAppointmentsConfirmed->count() : 0,
                 'Appointments' => $todayAppointments ?: collect(),
-                'patientsCount' => $patients->count(),
+                'patientsCount' => $appointmentsUnique->count(),
                 'revenue' => $revenue,
-                'patients' => $patients,
-                'patient' => $patients->first(),
+                'patients' => $appointmentsUnique,
+                'patient' => $appointmentsUnique->first(),
                 'nextAppointment' => $nextAppointment ? $nextAppointmentCountdown : 'Aucun rendez-vous prévu'
             ];
 
             return view('doctor.dashboard', compact(
-                'details', 'revenue', 'todayAppointments', 'patients',
-                'monthlyRevenue', 'patientSatisfactionRate', 'satisfactionIncreasePercent', 'reviewCount',
+                'details', 'revenue', 'todayAppointments', 'appointmentsUnique',
+                'monthlyRevenue', 'reviewCount',
                 'nextAppointment', 'nextAppointmentCountdown', 'currentDateTime',
                 'currentMonth', 'currentYear', 'prevMonth', 'prevYear', 'nextMonth', 'nextYear',
                 'calendarDays', 
                 'visitsChartLabels', 'visitsChartData', 'revenueChartLabels', 'revenueChartData',
-                'totalVisitsThisMonth', 'visitsIncreasePercent', 'totalRevenue', 'revenueIncreasePercent',
-                'averageWaitTime', 'waitTimeImprovement', 'averageConsultationTime', 'consultationTimeVariance',
-                'noShowRate', 'noShowRateImprovement', 'onlineBookingRate', 'onlineBookingImprovement',
-                'weather', 'urgentLabResultsCount', 'unreadMessagesCount', 'newPatientsThisMonth',
-                'appointmentIncreasePercent', 'tasks', 'pendingTasksCount', 'recentActivities', 'messages',
+                'totalRevenue', 'revenueIncreasePercent',
+                'weather', 
                 'activePatientCount', 'activePatientPercent', 'patientsThisWeek',
                 'patientsWeeklyChangePercent', 'followUpsCount', 'urgentFollowUpsCount', 'appointments', 'speciality','doctorId',
-                'stats','tomorrowAppointmentsCount', 'todayAppointmentsConfirmed', 'countPatients'
+                'stats', 'todayAppointmentsConfirmed', 'countPatients'
             ));
         
       

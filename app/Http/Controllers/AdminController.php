@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Models\Speciality;
 use App\Services\AppointmentService;
 use App\Services\PatientService;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class AdminController extends Controller
                     'doctor_details' => $doctor,
                     'status' => $doctor->user->status,
                     'is_available' => $doctor->is_available,
-                    'speciality' => $doctor->id_speciality,
+                    'speciality' => Speciality::find($doctor->id_speciality)->name,
                 ];
             });
 

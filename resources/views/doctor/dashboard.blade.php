@@ -532,7 +532,7 @@
                     <i class="fas fa-user-md text-indigo-600 text-3xl"></i>
                 </div>
                 <h2 class="text-lg font-semibold">Dr. {{ $details->user->name }}</h2>
-                <p class="text-sm text-gray-500">{{ $speciality->name ?? 'Cardiologue' }}</p>
+                <p class="text-sm text-gray-500">{{ $speciality->name ?? 'medecin generale' }}</p>
                 <span
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
                     <span class="w-2 h-2 bg-green-500 rounded-full mr-1.5 pulse"></span>
@@ -553,7 +553,7 @@
                 <i class="fas fa-users text-lg text-gray-500 w-6"></i>
                 <span class="ml-3">Patients</span>
                 <span
-                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($appointments) }}</span>
+                    class="ml-auto bg-indigo-100 text-indigo-600 rounded-full px-2 py-0.5 text-xs font-medium">{{ count($appointmentsUnique) }}</span>
             </a>
             <a href="#" class="sidebar-item flex items-center p-3" data-section="appointments">
                 <i class="fas fa-calendar-alt text-lg text-gray-500 w-6"></i>
@@ -727,7 +727,7 @@
             </div>
 
             <!-- Statistics cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center">
@@ -739,7 +739,7 @@
                                     <dt class="text-sm font-medium text-gray-500 truncate">Total Patients</dt>
                                     <dd class="flex items-center">
                                         <div class="text-2xl font-semibold text-gray-900" id="patient-counter">
-                                            {{ $countPatients }}
+                                            {{ $appointmentsUnique->count() }}
                                         </div>
                                         <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
                                             <i class="fas fa-arrow-up mr-1"></i>
@@ -841,45 +841,6 @@
                         <span class="text-xs text-gray-500">Mis à jour aujourd'hui</span>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 p-3 rounded-full bg-rose-100 text-rose-600">
-                                <i class="fas fa-smile text-xl"></i>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Satisfaction Patients</dt>
-                                    <dd class="flex items-center">
-                                        <div class="text-2xl font-semibold text-gray-900">
-                                            {{ $patientSatisfactionRate }}%
-                                        </div>
-                                        <div class="ml-2 flex items-center text-xs font-medium text-emerald-500">
-                                            <i class="fas fa-arrow-up mr-1"></i>
-                                            <span>{{ $satisfactionIncreasePercent }}%</span>
-                                        </div>
-                                    </dd>
-                                </dl>
-                                <div class="mt-2">
-                                    <div class="progress-bar">
-                                        <div class="progress-bar-fill bg-rose-600"
-                                            style="width: {{ $patientSatisfactionRate }}%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
-                        <div class="text-sm">
-                            <a href="" class="font-medium text-rose-600 hover:text-rose-500 flex items-center">
-                                Voir les avis
-                                <i class="fas fa-arrow-right ml-1"></i>
-                            </a>
-                        </div>
-                        <span class="text-xs text-gray-500">Basé sur {{ $reviewCount }} avis</span>
-                    </div>
-                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -901,8 +862,8 @@
                         <div class="md:flex">
                             <!-- Date column -->
                             <div
-                                class="bg-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center">
-                                <div class="text-center">
+                                class="bg-indigo-600 text-white p-4 md:py-6 md:px-8 flex md:flex-col justify-between items-center h-96">
+                                <div class="text-center mt-24">
                                     <p class="text-indigo-200 text-sm"> Aujourd'hui
                                     </p>
                                     <p class="text-3xl font-bold">{{ $todayAppointmentsConfirmed->time->format('h:i') }}</p>
@@ -950,7 +911,7 @@
                                                 <p class="text-gray-500">Département</p>
                                                 <p class="font-medium flex items-center mt-1">
                                                     <i class="fas fa-stethoscope text-indigo-500 mr-2"></i>
-                                                    {{$todayAppointmentsConfirmed->doctor->speciality ?? 'test'}}
+                                                    {{ $speciality->name ?? 'medecin generale' }}
                                                 </p>
                                             </div>
                                         </div>
@@ -986,11 +947,11 @@
                                         <div class="mt-4">
                                             <p class="text-sm font-medium text-gray-700">Notes:</p>
                                             <p class="text-sm text-gray-600 mt-1">
-                                                {{ $nextAppointment->notes ?? 'Le patient a mentionné des douleurs thoraciques lors de la dernière visite. Suivi de l\'efficacité des médicaments.' }}
+                                                {{ $nextAppointment->reason ?? 'Le patient a mentionné des douleurs thoraciques lors de la dernière visite. Suivi de l\'efficacité des médicaments.' }}
                                             </p>
                                         </div>
 
-                                        <div class="mt-6 flex flex-wrap gap-2">
+                                        <div class="mt-6 flex flex-wrap gap-2 gap-y-5">
                                             <a href=""
                                                 class="flex items-center px-3 py-2 border border-gray-300 text-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                                 <i class="fas fa-file-medical text-indigo-500 mr-2"></i>
@@ -1049,7 +1010,7 @@
                 @endif
 
                 <!-- Mini Calendar -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden h-full">
                     <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                         <h3 class="text-lg font-medium text-gray-900 flex items-center">
                             <i class="fas fa-calendar-alt text-indigo-500 mr-2"></i>
@@ -1088,11 +1049,7 @@
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-indigo-600 rounded-full mr-1"></div>
-                                <span class="text-xs text-gray-600">{{ $stats["totalAppointments"] }} aujourd'hui</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-amber-500 rounded-full mr-1"></div>
-                                <span class="text-xs text-gray-600">{{ $tomorrowAppointmentsCount }} demain</span>
+                                <span class="text-xs text-gray-600">{{ count($todayAppointments)  }} aujourd'hui</span>
                             </div>
                         </div>
                         <a href="" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Voir tous</a>
@@ -1100,175 +1057,8 @@
                 </div>
             </div>
 
-            <!-- Analytics and patient data -->
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
-                <div class="border-b border-gray-200">
-                    <nav class="flex">
-                        <button class="tab-button active text-indigo-600 py-4 px-6 font-medium text-sm"
-                            data-tab="dashboard-analytics">
-                            Analyses du tableau de bord
-                        </button>
-                        <button class="tab-button text-gray-500 hover:text-gray-700 py-4 px-6 font-medium text-sm"
-                            data-tab="demographics">
-                            Démographie des patients
-                        </button>
-                        <button class="tab-button text-gray-500 hover:text-gray-700 py-4 px-6 font-medium text-sm"
-                            data-tab="revenue">
-                            Analyse des revenus
-                        </button>
-                        <button class="tab-button text-gray-500 hover:text-gray-700 py-4 px-6 font-medium text-sm"
-                            data-tab="performance">
-                            Performance du personnel
-                        </button>
-                    </nav>
-                </div>
-
-                <div class="p-6">
-                    <!-- Tab content -->
-                    <div id="dashboard-analytics" class="tab-content block">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- Patient Visits Chart -->
-                            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                                    <h3 class="text-lg font-medium text-gray-900">Visites des patients</h3>
-                                    <div class="flex space-x-2">
-                                        <button
-                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period"
-                                            data-period="week">
-                                            Semaine
-                                        </button>
-                                        <button
-                                            class="px-3 py-1 bg-indigo-600 border border-indigo-600 rounded-md text-sm text-white hover:bg-indigo-700 chart-period active"
-                                            data-period="month">
-                                            Mois
-                                        </button>
-                                        <button
-                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period"
-                                            data-period="year">
-                                            Année
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="p-4">
-                                    <div class="chart-container">
-                                        <canvas id="patientVisitsChart"></canvas>
-                                    </div>
-                                </div>
-                                <div class="px-4 py-3 bg-gray-50 text-sm">
-                                    <div class="flex justify-between items-center text-gray-600">
-                                        <span>Total des visites ce mois: {{ $totalVisitsThisMonth }}</span>
-                                        <span class="text-emerald-600 flex items-center font-medium">
-                                            <i class="fas fa-arrow-up mr-1"></i> {{ $visitsIncreasePercent }}% vs mois
-                                            dernier
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Revenue Distribution Chart -->
-                            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                                    <h3 class="text-lg font-medium text-gray-900">Distribution des revenus</h3>
-                                    <div class="flex items-center">
-                                        <span class="text-sm text-gray-500 mr-3">{{ $currentMonth }}
-                                            {{ $currentYear }}</span>
-                                        <button class="flex items-center text-sm text-indigo-600 hover:text-indigo-500"
-                                            id="export-revenue">
-                                            <i class="fas fa-download mr-1"></i> Exporter
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="p-4">
-                                    <div class="chart-container">
-                                        <canvas id="revenueChart"></canvas>
-                                    </div>
-                                </div>
-                                <div class="px-4 py-3 bg-gray-50 text-sm">
-                                    <div class="flex justify-between items-center text-gray-600">
-                                        <span>Revenu total: {{ number_format($totalRevenue, 0) }} MAD</span>
-                                        <span class="text-emerald-600 flex items-center font-medium">
-                                            <i class="fas fa-arrow-up mr-1"></i> {{ $revenueIncreasePercent }}% vs mois
-                                            dernier
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Key performance indicators -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="text-sm font-medium text-gray-500">Temps d'attente moyen</div>
-                                <div class="flex items-end space-x-1 mt-1">
-                                    <div class="text-2xl font-semibold">{{ $averageWaitTime }}</div>
-                                    <div class="text-sm text-gray-500 mb-1">minutes</div>
-                                </div>
-                                <div class="mt-2 text-xs flex items-center text-emerald-600">
-                                    <i class="fas fa-arrow-down mr-1"></i>
-                                    <span>{{ $waitTimeImprovement }}% de moins que l'objectif</span>
-                                </div>
-                            </div>
-
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="text-sm font-medium text-gray-500">Durée moy. des consultations</div>
-                                <div class="flex items-end space-x-1 mt-1">
-                                    <div class="text-2xl font-semibold">{{ $averageConsultationTime }}</div>
-                                    <div class="text-sm text-gray-500 mb-1">minutes</div>
-                                </div>
-                                <div class="mt-2 text-xs flex items-center text-amber-600">
-                                    <i class="fas fa-arrow-up mr-1"></i>
-                                    <span>{{ $consultationTimeVariance }}% de plus que l'objectif</span>
-                                </div>
-                            </div>
-
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="text-sm font-medium text-gray-500">Taux d'absence</div>
-                                <div class="flex items-end space-x-1 mt-1">
-                                    <div class="text-2xl font-semibold">{{ $noShowRate }}</div>
-                                    <div class="text-sm text-gray-500 mb-1">%</div>
-                                </div>
-                                <div class="mt-2 text-xs flex items-center text-emerald-600">
-                                    <i class="fas fa-arrow-down mr-1"></i>
-                                    <span>{{ $noShowRateImprovement }}% de moins que le mois dernier</span>
-                                </div>
-                            </div>
-
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="text-sm font-medium text-gray-500">Réservations en ligne</div>
-                                <div class="flex items-end space-x-1 mt-1">
-                                    <div class="text-2xl font-semibold">{{ $onlineBookingRate }}</div>
-                                    <div class="text-sm text-gray-500 mb-1">%</div>
-                                </div>
-                                <div class="mt-2 text-xs flex items-center text-emerald-600">
-                                    <i class="fas fa-arrow-up mr-1"></i>
-                                    <span>{{ $onlineBookingImprovement }}% de plus que le mois dernier</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="demographics" class="tab-content hidden">
-                        <div class="text-center py-10">
-                            <p class="text-gray-500">Contenu de la démographie des patients à venir</p>
-                        </div>
-                    </div>
-
-                    <div id="revenue" class="tab-content hidden">
-                        <div class="text-center py-10">
-                            <p class="text-gray-500">Contenu de l'analyse des revenus à venir</p>
-                        </div>
-                    </div>
-
-                    <div id="performance" class="tab-content hidden">
-                        <div class="text-center py-10">
-                            <p class="text-gray-500">Contenu de la performance du personnel à venir</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Appointments and activities section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Appointments section -->
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
                 <!-- Today's Appointments -->
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="px-6 py-4 flex justify-between items-center border-b border-gray-200">
@@ -1373,128 +1163,76 @@
                         </a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Activity tabs -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <div class="flex space-x-6">
-                            <button id="tab-activity" class="tab-button active">
-                                Activités
-                            </button>
-                            <button id="tab-tasks" class="tab-button">
-                                Tâches <span
-                                    class="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs">{{ $pendingTasksCount ?? 'N/A' }}</span>
-                            </button>
-                            <button id="tab-messages" class="tab-button">
-                                Messages <span
-                                    class="ml-1 px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs">{{ $unreadMessagesCount ?? 'N/A'}}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Activity tab -->
-                    <div id="panel-activity" class="panel max-h-80 overflow-y-auto">
-                        <div class="px-6 py-4">
-                            <div class="flow-root">
-                                <ul class="relative">
-                                    @foreach($recentActivities as $activity)
-                                        <li class="ml-6 mb-4 relative">
-                                            <div
-                                                class="absolute top-2.5 left-0 -ml-6 flex items-center justify-center w-5 h-5 bg-{{ $activity->color }}-600 rounded-full">
-                                                <i class="fas fa-{{ $activity->icon }} text-white text-xs"></i>
-                                            </div>
-                                            <div class="ml-2 relative bg-gray-50 p-3 rounded-lg shadow-sm">
-                                                <div class="text-sm font-medium text-gray-900">{{ $activity->title }}</div>
-                                                <p class="mt-1 text-xs text-gray-500">
-                                                    <span
-                                                        class="font-medium text-{{ $activity->color }}-600">{{ $activity->highlight }}</span>
-                                                    {{ $activity->description }}
-                                                </p>
-                                                <span
-                                                    class="text-xs text-gray-500 mt-1 block">{{ $activity->time_ago }}</span>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tasks tab -->
-                    <div id="panel-tasks" class="panel max-h-80 overflow-y-auto hidden">
-                        <div class="px-6 py-4">
-                            <div class="flex justify-between items-center mb-4">
-                                <h4 class="text-sm font-medium text-gray-700">Tâches prioritaires</h4>
-                                <button class="text-indigo-600 text-sm hover:text-indigo-500" id="add-task-btn">
-                                    <i class="fas fa-plus mr-1"></i> Ajouter
-                                </button>
-                            </div>
-
-                            <div class="space-y-2">
-                                @foreach($tasks as $task)
-                                    <div class="task-item" data-id="{{ $task->id }}">
-                                        <div class="flex items-start">
-                                            <div class="task-checkbox flex-shrink-0 mr-3 {{ $task->completed ? 'checked' : '' }}"
-                                                data-id="{{ $task->id }}"></div>
-                                            <div class="flex-grow">
-                                                <div class="task-text {{ $task->completed ? 'checked' : '' }}">
-                                                    {{ $task->description }}
-                                                </div>
-                                                <div
-                                                    class="text-xs text-{{ $task->priority_color }} mt-1 flex items-center">
-                                                    <i class="fas fa-{{ $task->priority_icon }} mr-1"></i>
-                                                    {{ $task->priority_label }} • {{ $task->due_label }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Messages tab -->
-                    <div id="panel-messages" class="panel max-h-80 overflow-y-auto hidden">
-                        <div class="divide-y divide-gray-200">
-                            @foreach($messages as $message)
-                                <div class="message-item p-4 cursor-pointer" data-id="{{ $message->id }}">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex">
-                                            <img class="h-10 w-10 rounded-full"
-                                                src="{{ $message->sender->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($message->sender->name) . '&background=4f46e5&color=ffffff' }}"
-                                                alt="{{ $message->sender->name }}">
-                                            <div class="ml-3">
-                                                <p class="text-sm font-medium text-gray-900">{{ $message->sender->name }}
-                                                </p>
-                                                <p class="text-sm text-gray-500 line-clamp-1">{{ $message->preview }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex flex-col items-end">
-                                            <span class="text-xs text-gray-500">{{ $message->time }}</span>
-                                            @if($message->unread_count > 0)
-                                                <span
-                                                    class="w-5 h-5 bg-indigo-600 rounded-full text-white text-xs flex items-center justify-center mt-1">{{ $message->unread_count }}</span>
-                                            @endif
-                                        </div>
+            <!-- Analytics and patient data -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
+                <div class="p-6">
+                    <!-- Tab content -->
+                    <div id="dashboard-analytics" class="tab-content block">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Patient Visits Chart -->
+                            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                                    <h3 class="text-lg font-medium text-gray-900">Visites des patients</h3>
+                                    <div class="flex space-x-2">
+                                        <button
+                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period"
+                                            data-period="week">
+                                            Semaine
+                                        </button>
+                                        <button
+                                            class="px-3 py-1 bg-indigo-600 border border-indigo-600 rounded-md text-sm text-white hover:bg-indigo-700 chart-period active"
+                                            data-period="month">
+                                            Mois
+                                        </button>
+                                        <button
+                                            class="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 chart-period"
+                                            data-period="year">
+                                            Année
+                                        </button>
                                     </div>
                                 </div>
-                            @endforeach
-                        </div>
+                                <div class="p-4">
+                                    <div class="chart-container">
+                                        <canvas id="patientVisitsChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-3 bg-gray-50 text-sm">
+                                    <div class="flex justify-between items-center text-gray-600">
+                                        <span>Total des visites : {{ $appointmentsUnique->count() }}</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-center">
-                            <a href="" class="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
-                                <i class="fas fa-envelope mr-2"></i>
-                                Ouvrir la boîte de réception
-                            </a>
+                            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                                    <h3 class="text-lg font-medium text-gray-900">Distribution des revenus</h3>
+                                    <div class="flex items-center">
+                                        <span class="text-sm text-gray-500 mr-3">{{ $currentMonth }}
+                                            {{ $currentYear }}</span>
+                                        <button class="flex items-center text-sm text-indigo-600 hover:text-indigo-500"
+                                            id="export-revenue">
+                                            <i class="fas fa-download mr-1"></i> Exporter
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="chart-container">
+                                        <canvas id="revenueChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-3 bg-gray-50 text-sm">
+                                    <div class="flex justify-between items-center text-gray-600">
+                                        <span>Revenu total: {{ number_format($totalRevenue, 0) }} MAD</span>
+                                        <span class="text-emerald-600 flex items-center font-medium">
+                                            <i class="fas fa-arrow-up mr-1"></i> {{ $revenueIncreasePercent }}% vs mois
+                                            dernier
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="bg-gray-50 px-6 py-3 border-t border-gray-200">
-                        <a href=""
-                            class="inline-flex w-full items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm">
-                            <i class="fas fa-history mr-2"></i>
-                            Voir toute l'activité
-                        </a>
                     </div>
                 </div>
             </div>
@@ -1534,45 +1272,41 @@
                 <div class="stats-card-gradient-1 rounded-xl shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold">Total Patients</h3>
-                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center flex gap-3">
+                            <div class="text-3xl font-bold mb-1">{{ $appointmentsUnique->count() }}</div>
                             <i class="fas fa-users text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ $countPatients }}</div>
-                    <div class="text-sm text-indigo-100">{{ $newPatientsThisMonth }} nouveaux ce mois</div>
                 </div>
 
                 <div class="stats-card-gradient-2 rounded-xl shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold">Actifs</h3>
-                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center flex gap-3">
+                            <div class="text-3xl font-bold mb-1">{{ $activePatientCount }}</div>
                             <i class="fas fa-user-check text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ $activePatientCount }}</div>
-                    <div class="text-sm text-emerald-100">{{ $activePatientPercent }}% du total</div>
                 </div>
 
                 <div class="stats-card-gradient-3 rounded-xl shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold">Cette semaine</h3>
-                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center flex gap-3">
+                            <div class="text-3xl font-bold mb-1">{{ $patientsThisWeek }}</div>
                             <i class="fas fa-calendar-week text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ $patientsThisWeek }}</div>
-                    <div class="text-sm text-orange-100">{{ $patientsWeeklyChangePercent }}% vs sem. dernière</div>
                 </div>
 
                 <div class="stats-card-gradient-4 rounded-xl shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold">Contrôles à faire</h3>
-                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                        <div class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center flex gap-3">
+                            <div class="text-3xl font-bold mb-1">{{ $followUpsCount }}</div>
                             <i class="fas fa-clipboard-check text-white"></i>
                         </div>
                     </div>
-                    <div class="text-3xl font-bold mb-1">{{ $followUpsCount }}</div>
-                    <div class="text-sm text-red-100">{{ $urgentFollowUpsCount }} urgents</div>
                 </div>
             </div>
 
@@ -1597,7 +1331,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-                    @forelse($appointments as $patient)
+                    @forelse($appointmentsUnique as $patient)
                         <div class="patient-card bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                             <div class="px-4 py-4 sm:px-6">
                                 <div class="flex items-center">
@@ -1652,7 +1386,7 @@
 
                             <div class="px-4 py-3 sm:px-6 flex justify-between border-t border-gray-200">
                                 <div class="patient-actions flex space-x-2">
-                                    <a href="{{ route('medical-records.show', $patient->id) }}"
+                                    <a href="{{ route('medical-records.show', $patient->patient->id) }}"
                                         class="text-sm text-indigo-600 hover:text-indigo-500">
                                         <i class="fas fa-file-medical"></i>
                                     </a>
@@ -1664,7 +1398,7 @@
                                         <i class="fas fa-comments"></i>
                                     </a>
                                 </div>
-                                <a href="{{ route('doctor.patients.show', $patient->id) }}"
+                                <a href="{{ route('doctor.patients.show', $patient->patient->id) }}"
                                     class="text-sm text-indigo-600 hover:text-indigo-500 font-medium">
                                     Voir détails
                                 </a>
@@ -1675,12 +1409,6 @@
                             Aucun patient trouvé
                         </div>
                     @endforelse
-                </div>
-
-                <div class="px-6 py-4 bg-gray-50 flex items-center justify-between border-t border-gray-200">
-                    @if(method_exists($patients, 'links'))
-                        {{ $patients->links() }}
-                    @endif
                 </div>
             </div>
         </section>
@@ -1711,7 +1439,7 @@
                     <div class="flex space-x-2">
                         <select id="appointment-status-filter"
                             class="border border-gray-300 rounded-lg shadow-sm py-2 px-3 sm:text-sm">
-                            <option value="all">Tous les statuts</option>
+                            <option value="">Tous les statuts</option>
                             <option value="confirmed">Confirmés</option>
                             <option value="pending">En attente</option>
                             <option value="completed">Terminés</option>
