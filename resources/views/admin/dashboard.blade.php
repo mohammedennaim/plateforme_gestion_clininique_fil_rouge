@@ -355,7 +355,7 @@
                         M</div>
                     <h1 class="text-xl font-bold text-gray-800">MediClinic</h1>
                 </div>
-                
+
             </div>
 
             <!-- Navigation -->
@@ -720,160 +720,172 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                         @foreach ($doctors as $doctor)
-                            <div
-                                class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
-                                @if($doctor['status'] == 'pending')
-                                    <!-- Pending Doctor Design -->
-                                    <div
-                                        class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-warning-100">
-                                                <img src="{{ $doctor->profile_photo ?? 'https://randomuser.me/api/portraits/men/59.jpg' }}"
-                                                    alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
-                                            </div>
-                                            <div class="ml-4 flex-1">
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h3 class="text-lg font-semibold text-primary-700">Dr.
-                                                            {{ $doctor['name'] }}</h3>
-                                                        <p class="text-sm text-gray-600">
-                                                            {{ $doctor['speciality'] ?? 'Spécialité non définie' }}</p>
-                                                    </div>
-                                                    <span
-                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
-                                                        <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
-                                                        En attente
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @elseif($doctor['status'] == 'active')
-                                    <!-- Active Doctor Design -->
-                                    <div
-                                        class="card-header px-6 py-4 bg-gradient-to-r from-success-50 to-white border-b border-gray-100">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-success-100">
-                                                <img src="{{ $doctor['profile_photo'] ?? 'https://randomuser.me/api/portraits/men/32.jpg' }}"
-                                                    alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
-                                            </div>
-                                            <div class="ml-4 flex-1">
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h3 class="text-lg font-semibold text-primary-700">Dr.
-                                                            {{ $doctor['name'] }}</h3>
-                                                        <p class="text-sm text-gray-600">
-                                                            {{ $doctor['speciality'] ?? 'Spécialité non définie' }}</p>
-                                                    </div>
-                                                    <span
-                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
-                                                        <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
-                                                        Active
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div
-                                        class="card-header px-6 py-4 bg-gradient-to-r from-danger-50 to-white border-b border-gray-100">
-                                        <div class="flex items-center">
-                                            <div
-                                                class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-danger-100">
-                                                <img src="{{ $doctor['profile_photo'] ?? 'https://randomuser.me/api/portraits/men/45.jpg' }}"
-                                                    alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
-                                            </div>
-                                            <div class="ml-4 flex-1">
-                                                <div class="flex items-center justify-between">
-                                                    <div>
-                                                        <h3 class="text-lg font-semibold text-primary-700">Dr.
-                                                            {{ $doctor['name'] }}</h3>
-                                                        <p class="text-sm text-gray-600">
-                                                            {{ $doctor['speciality'] ?? 'Spécialité non définie' }}</p>
-                                                    </div>
-                                                    <span
-                                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
-                                                        <span class="w-1.5 h-1.5 bg-danger-500 rounded-full mr-1.5"></span>
-                                                        Non active
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
+                                                <div
+                                                    class="doctor-card bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                                                    @if($doctor['status'] == 'pending')
+                                                        <!-- Pending Doctor Design -->
+                                                        <div
+                                                            class="card-header px-6 py-4 bg-gradient-to-r from-warning-50 to-white border-b border-gray-100">
+                                                            <div class="flex items-center">
+                                                                <div
+                                                                    class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-warning-100">
+                                                                    <img src="{{ $doctor->profile_photo ?? 'https://randomuser.me/api/portraits/men/59.jpg' }}"
+                                                                        alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
+                                                                </div>
+                                                                <div class="ml-4 flex-1">
+                                                                    <div class="flex items-center justify-between">
+                                                                        <div>
+                                                                            <h3 class="text-lg font-semibold text-primary-700">Dr.
+                                                                                {{ $doctor['name'] }}
+                                                                            </h3>
+                                                                            <p class="text-sm text-gray-600">
+                                                                                {{ $doctor['speciality'] ?? 'Spécialité non définie' }}
+                                                                            </p>
+                                                                        </div>
+                                                                        <span
+                                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
+                                                                            <span class="w-1.5 h-1.5 bg-warning-500 rounded-full mr-1.5"></span>
+                                                                            En attente
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @elseif($doctor['status'] == 'active')
+                                                        <!-- Active Doctor Design -->
+                                                        <div
+                                                            class="card-header px-6 py-4 bg-gradient-to-r from-success-50 to-white border-b border-gray-100">
+                                                            <div class="flex items-center">
+                                                                <div
+                                                                    class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-success-100">
+                                                                    <img src="{{ $doctor['profile_photo'] ?? 'https://randomuser.me/api/portraits/men/32.jpg' }}"
+                                                                        alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
+                                                                </div>
+                                                                <div class="ml-4 flex-1">
+                                                                    <div class="flex items-center justify-between">
+                                                                        <div>
+                                                                            <h3 class="text-lg font-semibold text-primary-700">Dr.
+                                                                                {{ $doctor['name'] }}
+                                                                            </h3>
+                                                                            <p class="text-sm text-gray-600">
+                                                                                {{ $doctor['speciality'] ?? 'Spécialité non définie' }}
+                                                                            </p>
+                                                                        </div>
+                                                                        <span
+                                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
+                                                                            <span class="w-1.5 h-1.5 bg-success-500 rounded-full mr-1.5"></span>
+                                                                            Active
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <div
+                                                            class="card-header px-6 py-4 bg-gradient-to-r from-danger-50 to-white border-b border-gray-100">
+                                                            <div class="flex items-center">
+                                                                <div
+                                                                    class="flex-shrink-0 h-14 w-14 rounded-full overflow-hidden border-2 border-danger-100">
+                                                                    <img src="{{ $doctor['profile_photo'] ?? 'https://randomuser.me/api/portraits/men/45.jpg' }}"
+                                                                        alt="{{ $doctor['name'] }}" class="h-full w-full object-cover">
+                                                                </div>
+                                                                <div class="ml-4 flex-1">
+                                                                    <div class="flex items-center justify-between">
+                                                                        <div>
+                                                                            <h3 class="text-lg font-semibold text-primary-700">Dr.
+                                                                                {{ $doctor['name'] }}
+                                                                            </h3>
+                                                                            <p class="text-sm text-gray-600">
+                                                                                {{ $doctor['speciality'] ?? 'Spécialité non définie' }}
+                                                                            </p>
+                                                                        </div>
+                                                                        <span
+                                                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
+                                                                            <span class="w-1.5 h-1.5 bg-danger-500 rounded-full mr-1.5"></span>
+                                                                            Non active
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
 
-                                <div class="px-6 py-4">
-                                    <div class="grid grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                            <p class="text-gray-500">Email</p>
-                                            <p class="font-medium text-gray-800">{{ $doctor['email'] }}</p>
-                                        </div>
-                                        <div class="ml-10">
-                                            <p class="text-gray-500">Téléphone</p>
-                                            <p class="font-medium text-gray-800">{{ $doctor['phone'] ?? 'Non renseigné' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="mt-4">
-                                        <p class="text-gray-500 text-sm">Patients</p>
-                                        <div class="flex items-center mt-1">
-                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                                @if($doctor['status'] == 'en attente')
-                                                    <div class="bg-warning-500 h-2.5 rounded-full"></div>
-                                                @elseif($doctor['status'] == 'active')
-                                                    <div class="bg-success-600 h-2.5 rounded-full"></div>
-                                                @else
-                                                    <div class="bg-danger-500 h-2.5 rounded-full"></div>
-                                                @endif
-                                            </div>
-                                            <span class="ml-2 text-sm font-medium text-gray-700 w-44">
-                                                @php
-                                                    $count = $appointments->where('doctor_id', $doctor['id'])->count();
-                                                    $total = $appointments->count() > 0 ? $appointments->count() : 1;
-                                                    $percentage = min(100, round(($count / $total) * 100));
-                                                @endphp
-                                                {{ $count }} ({{ $percentage }}%)
-                                            </span>
-                                            <script>
-                                                document.currentScript.previousElementSibling.previousElementSibling.firstElementChild.style.width = '{{ $percentage }}%';
-                                            </script>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div
-                                    class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                                    <div class="card-actions flex space-x-3">
-                                        <button class="text-primary-600 hover:text-primary-800 transition-colors">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
+                                                    <div class="px-6 py-4">
+                                                        <div class="grid grid-cols-2 gap-4 text-sm">
+                                                            <div>
+                                                                <p class="text-gray-500">Email</p>
+                                                                <p class="font-medium text-gray-800">{{ $doctor['email'] }}</p>
+                                                            </div>
+                                                            <div class="ml-10">
+                                                                <p class="text-gray-500">Téléphone</p>
+                                                                <p class="font-medium text-gray-800">{{ $doctor['phone'] ?? 'Non renseigné' }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mt-4">
+                                                            <p class="text-gray-500 text-sm">Patients</p>
+                                                            <div class="flex items-center mt-1">
+                                                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                                                    @if($doctor['status'] == 'en attente')
+                                                                        <div class="bg-warning-500 h-2.5 rounded-full"></div>
+                                                                    @elseif($doctor['status'] == 'active')
+                                                                        <div class="bg-success-600 h-2.5 rounded-full"></div>
+                                                                    @else
+                                                                        <div class="bg-danger-500 h-2.5 rounded-full"></div>
+                                                                    @endif
+                                                                </div>
+                                                                <span class="ml-2 text-sm font-medium text-gray-700 w-44">
+                                                                    @php
+                                                                        $count = $appointments->where('doctor_id', $doctor['id'])->count();
+                                                                        $total = $appointments->count() > 0 ? $appointments->count() : 1;
+                                                                        $percentage = min(100, round(($count / $total) * 100));
+                                                                    @endphp
+                                                                    {{ $count }} ({{ $percentage }}%)
+                                                                </span>
+                                                                <script>
+                                                                    document.currentScript.previousElementSibling.previousElementSibling.firstElementChild.style.width = '{{ $percentage }}%';
+                                                                </script>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        class="px-6 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                                        <div class="card-actions flex space-x-3">
+                                                            <button class="text-primary-600 hover:text-primary-800 transition-colors">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
 
-                                        @if($doctor['status'] == 'en attente')
-                                            <button class="text-success-600 hover:text-success-800 transition-colors">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        @elseif($doctor['status'] == 'active')
-                                            <button class="text-warning-600 hover:text-warning-800 transition-colors">
-                                                <i class="fas fa-pause"></i>
-                                            </button>
-                                        @else
-                                            <button class="text-success-600 hover:text-success-800 transition-colors">
-                                                <i class="fas fa-play"></i>
-                                            </button>
-                                        @endif
+                                                            @if($doctor['status'] == 'active')
+                                                            <form action="{{ route('admin.doctors.change-status', $doctor['id']) }}"
+                                                                    method="POST" class="inline-block">
+                                                                    @csrf
+                                                                    <input type="hidden" name="status" value="not active">
+                                                                <button class="text-warning-600 hover:text-warning-800 transition-colors">
+                                                                    <i class="fas fa-pause"></i>
+                                                                </button>
+                                                                </form>
+                                                            @else
+                                                            <form action="{{ route('admin.doctors.change-status', $doctor['id']) }}"
+                                                                    method="POST" class="inline-block">
+                                                                    @csrf
+                                                                    <input type="hidden" name="status" value="active">
+                                                                <button class="text-success-600 hover:text-success-800 transition-colors">
+                                                                    <i class="fas fa-play"></i>
+                                                                </button>
+                                                                </form>
+                                                            @endif
 
-                                        <button class="text-danger-600 hover:text-danger-800 transition-colors">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                    <a href=""
-                                        class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
-                                        Voir détails
-                                        <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                                    </a>
-                                </div>
-                            </div>
+                                                            <button class="text-danger-600 hover:text-danger-800 transition-colors">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </div>
+                                                        <a href=""
+                                                            class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
+                                                            Voir détails
+                                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
                         @endforeach
 
                     </div>
@@ -967,7 +979,8 @@
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <h3 class="text-lg font-semibold text-primary-700">
-                                                        {{ $patient['name'] }}</h3>
+                                                        {{ $patient['name'] }}
+                                                    </h3>
                                                     <p class="text-sm text-gray-600">ID: {{ $patient['id'] }}</p>
                                                 </div>
                                                 <span
@@ -998,7 +1011,8 @@
                                         <div>
                                             <p class="text-gray-500">Dernière visite</p>
                                             <p class="font-medium text-gray-800">
-                                                {{ $patient['patient_details']->last_visit_date ?? 'N/A'}}</p>
+                                                {{ $patient['patient_details']->last_visit_date ?? 'N/A'}}
+                                            </p>
                                         </div>
                                         <div>
                                             <p class="text-gray-500">Prochain RDV</p>
@@ -1104,9 +1118,11 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-lg font-semibold text-primary-700">
-                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}
+                                                </h3>
                                                 <p class="text-sm text-gray-600">Avec Dr.
-                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}
+                                                </p>
                                             </div>
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700">
@@ -1156,9 +1172,11 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-lg font-semibold text-primary-700">
-                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}
+                                                </h3>
                                                 <p class="text-sm text-gray-600">Avec Dr.
-                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}
+                                                </p>
                                             </div>
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
@@ -1208,9 +1226,11 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-lg font-semibold text-primary-700">
-                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}
+                                                </h3>
                                                 <p class="text-sm text-gray-600">Avec Dr.
-                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}
+                                                </p>
                                             </div>
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700">
@@ -1239,7 +1259,8 @@
                                         <div class="mt-4">
                                             <p class="text-gray-500">Notes</p>
                                             <p class="text-sm text-gray-600 line-clamp-2">
-                                                {{ $appointment['notes'] ?? 'Consultation terminée avec succès.' }}</p>
+                                                {{ $appointment['notes'] ?? 'Consultation terminée avec succès.' }}
+                                            </p>
                                         </div>
                                     </div>
                                     <div
@@ -1265,9 +1286,11 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <h3 class="text-lg font-semibold text-primary-700">
-                                                    {{ $appointment->patient->user->name ?? 'Patient' }}</h3>
+                                                    {{ $appointment->patient->user->name ?? 'Patient' }}
+                                                </h3>
                                                 <p class="text-sm text-gray-600">Avec Dr.
-                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}</p>
+                                                    {{ $appointment->doctor->user->name ?? 'Médecin' }}
+                                                </p>
                                             </div>
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-danger-50 text-danger-700">
@@ -1296,7 +1319,8 @@
                                         <div class="mt-4">
                                             <p class="text-gray-500">Raison d'annulation</p>
                                             <p class="text-sm text-danger-600">
-                                                {{ $appointment['cancel_reason'] ?? 'Annulé par le patient' }}</p>
+                                                {{ $appointment['cancel_reason'] ?? 'Annulé par le patient' }}
+                                            </p>
                                         </div>
                                     </div>
                                     <div

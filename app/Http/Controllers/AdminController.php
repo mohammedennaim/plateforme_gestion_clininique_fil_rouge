@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Patient;
 use App\Models\Speciality;
 use App\Services\AppointmentService;
+use App\Services\DoctorService;
 use App\Services\PatientService;
 use Illuminate\Http\Request;
 use App\Services\DashboardService;
@@ -14,12 +15,14 @@ class AdminController extends Controller
     protected $dashboardService;
     protected $appointmentService;
     protected $patientService;
+    protected $doctorService;
 
-    public function __construct(DashboardService $dashboardService, AppointmentService $appointmentService, PatientService $patientService)
+    public function __construct(DashboardService $dashboardService, AppointmentService $appointmentService, PatientService $patientService, DoctorService $doctorService)
     {
         $this->appointmentService = $appointmentService;
         $this->dashboardService = $dashboardService;
         $this->patientService = $patientService;
+        $this->doctorService = $doctorService;
     }
 
     public function index()
@@ -128,5 +131,18 @@ class AdminController extends Controller
     public function deletePatient($id)
     {
         return view('admin.patients.delete', compact('id'));
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        
+        try {
+            $doctor = $this->doctorService->getDoctorById($id);
+            $doctor->user->update($request->all());
+
+            return redirect()->back()->with('success', 'mise à jour status doctor avec succès.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Erreur lors de la mise à jour status doctor: ' . $e->getMessage());
+        }
     }
 }

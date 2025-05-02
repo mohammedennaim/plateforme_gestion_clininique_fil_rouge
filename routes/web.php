@@ -64,7 +64,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/dashboard/doctors/{id}', [AdminController::class, 'updateDoctor']);
     Route::post('/dashboard/doctors', [AdminController::class, 'storeDoctor']);
     Route::delete('/dashboard/doctors/{id}', [AdminController::class, 'destroyDoctor']);
-
+    Route::post('dashboard/doctors/{id}',[AdminController::class, 'updateStatus'])->name('doctors.change-status');
 
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create');
