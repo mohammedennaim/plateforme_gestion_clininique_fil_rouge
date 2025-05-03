@@ -27,6 +27,8 @@ class CheckRole
 
         foreach ($roles as $role) {
             if ($user->role === $role) {
+                
+        dd("ggg");
                 return $next($request);
             }
         }

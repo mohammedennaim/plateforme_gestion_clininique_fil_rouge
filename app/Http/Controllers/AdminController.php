@@ -94,12 +94,12 @@ class AdminController extends Controller
 
     public function updateDoctor(Request $request, $id)
     {
-        $doctorData= [
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'phone' => $request->input('phone'),
-            'role' => $request->input('role'),
-        ];
+        // $doctorData= [
+        //     'name' => $request->input('name'),
+        //     'email' => $request->input('email'),
+        //     'phone' => $request->input('phone'),
+        //     'role' => $request->input('role'),
+        // ];
         return response()->json($this->dashboardService->updateDoctor($id, $request->all()));
     }
 
@@ -109,18 +109,18 @@ class AdminController extends Controller
     }
 
 
-    public function storeAppointment(Request $request)
-    {
-        return response()->json($this->dashboardService->createAppointment($request->all()), 201);
-    }
-    public function updateAppointment(Request $request, $id)
-    {
-        return response()->json($this->dashboardService->updateAppointment($id, $request->all()));
-    }
-    public function destroyAppointment($id)
-    {
-        return response()->json($this->dashboardService->deleteAppointment($id));
-    }
+    // public function storeAppointment(Request $request)
+    // {
+    //     return response()->json($this->appointmentService->create($request->all()), 201);
+    // }
+    // public function updateAppointment(Request $request, $id)
+    // {
+    //     return response()->json($this->appointmentService->update($id, $request->all()));
+    // }
+    // public function destroyAppointment($id)
+    // {
+    //     return response()->json($this->appointmentService->delete($id));
+    // }
     
     public function editPatient($id)
     {

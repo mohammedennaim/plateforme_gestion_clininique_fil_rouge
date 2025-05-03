@@ -33,14 +33,12 @@ Route::get('/services', [HomeController::class ,'services'])->name('services');
 Route::get('/doctors', [HomeController::class ,'doctors'])->name('doctors');
 
 Route::prefix('auth')->group(function () {
-
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::get('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/register', [AuthController::class, 'store']);
     Route::post('/login', [AuthController::class, 'authenticate']);
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Routes pour la réinitialisation de mot de passe
     Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
@@ -112,52 +110,46 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(
 
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
-    
-    // API Routes for tasks and appointments
-    Route::post('/tasks/{id}/toggle', [DoctorController::class, 'toggleTask'])->name('tasks.toggle');
-    Route::post('/tasks', [DoctorController::class, 'storeTask'])->name('tasks.store');
+
+    Route::get('/pending',[DoctorController::class, 'pending'])->name('pending');
 });
+
+Route::prefix('patient')->group(function () {
+    Route::get('/reserver', [RendezVousController::class, 'create'])->name('patient.reserverSansAuth');
+    Route::post('/reserver', [RendezVousController::class, 'store'])->name('patient.reserver.store');
+    Route::prefix('payment')->group(function () {
+        Route::get('/{patient}', [StripePaymentController::class, 'showPaymentPage'])->name('patient.payment');
+        Route::get('/appointment/{appointment_id}', [StripePaymentController::class, 'showAppointmentDetails'])->name('payment.appointment-details');
+        Route::post('/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
+        Route::post('/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
+        Route::post('/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
+        Route::get('/success', [StripePaymentController::class, 'showSuccessPage'])->name('payment.success');
+    });
+});
+
+
+Route::get('/appointment/details/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('appointment.details');
+Route::put('/appointment/cancel/{appointment_id}', [RendezVousController::class, 'cancelAppointment'])->name('appointment.cancel');
+Route::get('/appointment/process-after-payment/{appointment_id}', [RendezVousController::class, 'processAfterPayment'])->name('appointment.process-after-payment');
 
 Route::get('/home', function () {
     return view('home');
 })->name('home')->middleware('auth');
 
-Route::prefix('patient')->group(function () {
-
-    Route::get('/reserver', [RendezVousController::class, 'create'])->name('patient.reserverSansAuth');
-    Route::post('/reserver', [RendezVousController::class, 'store'])->name('patient.reserver.store');
-    Route::get('/appointment/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('patient.appointment.details');
-
-    Route::get('/dossiers', [DossierMedicalController::class, 'index'])->name('dossiers.index');
-    Route::get('/dossiers/{id}', [DossierMedicalController::class, 'show'])->name('dossiers.show');
-    Route::get('/dossiers/create', [DossierMedicalController::class, 'create'])->name('dossiers.create');
-    Route::post('/dossiers', [DossierMedicalController::class, 'store'])->name('dossiers.store');
-    Route::get('/dossiers/{id}/edit', [DossierMedicalController::class, 'edit'])->name('dossiers.edit');
-    Route::put('/dossiers/{id}', [DossierMedicalController::class, 'update'])->name('dossiers.update');
-    Route::delete('/dossiers/{id}', [DossierMedicalController::class, 'destroy'])->name('dossiers.destroy');
-});
-
-// Routes de paiement accessibles directement à la racine
-Route::prefix('payment')->group(function () {
-    Route::get('/{patient}', [StripePaymentController::class, 'showPaymentPage'])->name('patient.payment');
-    Route::get('/appointment/{appointment_id}', [StripePaymentController::class, 'showAppointmentDetails'])->name('payment.appointment-details');
-    Route::post('/process', [StripePaymentController::class, 'processPayment'])->name('payment.process');
-    Route::post('/confirm', [StripePaymentController::class, 'confirmPayment'])->name('payment.confirm');
-    Route::post('/check-status', [StripePaymentController::class, 'checkPaymentStatus'])->name('payment.check-status');
-    Route::get('/success', [StripePaymentController::class, 'showSuccessPage'])->name('payment.success');
-});
-
-// Add Medical Records routes - accessible to all authenticated users
-Route::middleware('auth')->group(function () {
-    Route::resource('medical-records', MedicalRecordController::class);
-    Route::get('/medical-records/{id}/download', [MedicalRecordController::class, 'download'])->name('medical-records.download');
-});
-
-// Stripe Payment Routes
-
-// Appointment Details after payment
-Route::get('/appointment/details/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('appointment.details');
-Route::put('/appointment/cancel/{appointment_id}', [RendezVousController::class, 'cancelAppointment'])->name('appointment.cancel');
-Route::get('/appointment/process-after-payment/{appointment_id}', [RendezVousController::class, 'processAfterPayment'])->name('appointment.process-after-payment');
-
 SendMessage::dispatch('Hello, this is a test message!')->delay(now()->addMinutes(1));
+
+// Route::middleware('auth')->group(function () {
+//     Route::resource('medical-records', MedicalRecordController::class);
+//     Route::get('/medical-records/{id}/download', [MedicalRecordController::class, 'download'])->name('medical-records.download');
+// });
+// Route::prefix('patient')->group(function () {
+//     Route::get('/appointment/{appointment_id}', [RendezVousController::class, 'showAppointmentDetails'])->name('patient.appointment.details');
+
+//     Route::get('/dossiers', [DossierMedicalController::class, 'index'])->name('dossiers.index');
+//     Route::get('/dossiers/{id}', [DossierMedicalController::class, 'show'])->name('dossiers.show');
+//     Route::get('/dossiers/create', [DossierMedicalController::class, 'create'])->name('dossiers.create');
+//     Route::post('/dossiers', [DossierMedicalController::class, 'store'])->name('dossiers.store');
+//     Route::get('/dossiers/{id}/edit', [DossierMedicalController::class, 'edit'])->name('dossiers.edit');
+//     Route::put('/dossiers/{id}', [DossierMedicalController::class, 'update'])->name('dossiers.update');
+//     Route::delete('/dossiers/{id}', [DossierMedicalController::class, 'destroy'])->name('dossiers.destroy');
+// })->middleware('patient');

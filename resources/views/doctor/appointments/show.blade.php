@@ -74,23 +74,23 @@
                         <div class="mt-4 grid grid-cols-2 gap-4">
                             <div class="bg-gray-50 p-3 rounded-lg">
                                 <span class="text-xs text-gray-500 block">Name de Assurance</span>
-                                <span class="text-sm font-medium">{{ $patient->name_assurance }}</span>
+                                <span class="text-sm font-medium">{{ $patient->name_assurance ?? 'N/A' }}</span>
                             </div>
 
                             <div class="bg-gray-50 p-3 rounded-lg">
                                 <span class="text-xs text-gray-500 block">Nombre de Assurance</span>
-                                <span class="text-sm font-medium">{{ $patient->assurance_number }}</span>
+                                <span class="text-sm font-medium">{{ $patient->assurance_number ?? 'N/A' }}</span>
                             </div>
 
                             <div class="bg-gray-50 p-3 rounded-lg">
                                 <span class="text-xs text-gray-500 block">Blood Type</span>
-                                <span class="text-sm font-medium">{{ $patient->blood_type }}</span>
+                                <span class="text-sm font-medium">{{ $patient->blood_type ?? 'N/A' }}</span>
                             </div>
 
-                            @if ($patient->emergency_contact)
+                            @if (empty($patient->emergency_contact))
                                 <div class="bg-gray-50 p-3 rounded-lg">
                                     <span class="text-xs text-gray-500 block">Contact d'urgence</span>
-                                    <span class="text-sm font-medium">{{ $patient->emergency_contact }}</span>
+                                    <span class="text-sm font-medium">{{ $patient->emergency_contact ?? 'N/A' }}</span>
                                 </div>
                             @else
                                 <div class="bg-gray-50 p-3 rounded-lg">

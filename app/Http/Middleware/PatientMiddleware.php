@@ -22,8 +22,7 @@ class PatientMiddleware
 
         $user = Auth::user();
 
-        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un patient
-        if ($user->role !== 'patient') {
+        if ($user->role !== 'patient' || $user->status == 'not active') {
             return redirect()->route('home')->with('error', 'Accès réservé aux patients.');
         }
 

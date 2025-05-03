@@ -856,22 +856,22 @@
                                                             </button>
 
                                                             @if($doctor['status'] == 'active')
-                                                            <form action="{{ route('admin.doctors.change-status', $doctor['id']) }}"
+                                                                <form action="{{ route('admin.doctors.change-status', $doctor['id']) }}"
                                                                     method="POST" class="inline-block">
                                                                     @csrf
                                                                     <input type="hidden" name="status" value="not active">
-                                                                <button class="text-warning-600 hover:text-warning-800 transition-colors">
-                                                                    <i class="fas fa-pause"></i>
-                                                                </button>
+                                                                    <button class="text-warning-600 hover:text-warning-800 transition-colors">
+                                                                        <i class="fas fa-user-check text-green-600" title="Utilisateur actif"></i>
+                                                                    </button>
                                                                 </form>
                                                             @else
-                                                            <form action="{{ route('admin.doctors.change-status', $doctor['id']) }}"
+                                                                <form action="{{ route('admin.doctors.change-status', $doctor['id']) }}"
                                                                     method="POST" class="inline-block">
                                                                     @csrf
                                                                     <input type="hidden" name="status" value="active">
-                                                                <button class="text-success-600 hover:text-success-800 transition-colors">
-                                                                    <i class="fas fa-play"></i>
-                                                                </button>
+                                                                    <button class="text-success-600 hover:text-success-800 transition-colors">
+                                                                        <i class="fas fa-user-slash text-red-600" title="Utilisateur désactivé"></i>
+                                                                    </button>
                                                                 </form>
                                                             @endif
 

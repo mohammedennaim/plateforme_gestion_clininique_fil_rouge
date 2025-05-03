@@ -22,8 +22,7 @@ class DoctorMiddleware
 
         $user = Auth::user();
 
-        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un médecin
-        if ($user->role !== 'doctor') {
+        if ($user->role !== 'doctor' || $user->status == "not active") {
             return redirect()->route('home')->with('error', 'Accès réservé aux médecins.');
         }
 

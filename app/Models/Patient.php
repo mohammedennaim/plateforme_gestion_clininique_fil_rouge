@@ -53,7 +53,7 @@ class Patient extends Model
 
     public function getAddressAttribute(): string
     {
-        return $this->user->address;
+        return $this->user->adresse;
     }
 
     public function getAgeAttribute(): int

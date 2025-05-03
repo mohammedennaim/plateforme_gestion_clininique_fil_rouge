@@ -47,7 +47,7 @@ class DashboardService
 
     public function deleteDoctor($id)
     {
-        return $this->patientRepository->delete($id);
+        return $this->doctorRepository->delete($id);
     }
 
     public function getAllPatients()
@@ -99,46 +99,46 @@ class DashboardService
     // {
     //     return $this->appointmentRepository->getAll()->whereMonth('created_at', now()->month)->sum('price');
     // }
-    public function getAppointmentsByDate($date)
-    {
-        return $this->appointmentRepository->getAll()->where('date', $date);
-    }
+    // public function getAppointmentsByDate($date)
+    // {
+    //     return $this->appointmentRepository->getAll()->where('date', $date);
+    // }
 
-    public function getAllAppointments(){
-        return $this->appointmentRepository->getAll();
-    }
-    public function getAppointmentById($id){
-        return $this->appointmentRepository->getById($id);
-    }
-    public function getAppointmentsByDoctorId($doctorId){
-        return $this->appointmentRepository->getByDoctorId($doctorId);
-    }
-    public function getAppointmentsByPatientId($patientId){
-        return $this->appointmentRepository->getByPatientId($patientId);
-    }
-    public function createAppointment(array $data){
-        return $this->appointmentRepository->create($data);
-    }
-    public function updateAppointment($id, array $data){
-        return $this->appointmentRepository->update($id, $data);
-    }
-    public function deleteAppointment($id){
-        return $this->appointmentRepository->delete($id);
-    }
+    // public function getAllAppointments(){
+    //     return $this->appointmentRepository->getAll();
+    // }
+    // public function getAppointmentById($id){
+    //     return $this->appointmentRepository->getById($id);
+    // }
+    // public function getAppointmentsByDoctorId($doctorId){
+    //     return $this->appointmentRepository->getByDoctorId($doctorId);
+    // }
+    // public function getAppointmentsByPatientId($patientId){
+    //     return $this->appointmentRepository->getByPatientId($patientId);
+    // }
+    // public function createAppointment(array $data){
+    //     return $this->appointmentRepository->create($data);
+    // }
+    // public function updateAppointment($id, array $data){
+    //     return $this->appointmentRepository->update($id, $data);
+    // }
+    // public function deleteAppointment($id){
+    //     return $this->appointmentRepository->delete($id);
+    // }
 
-    public function getDoctorDetails($doctorId)
-    {
-        $doctor = $this->doctorRepository->getById($doctorId);
-        $appointments_count = $this->appointmentRepository->getCountByDoctorId($doctorId);
-        $patients_count = $this->appointmentRepository->getCountByPatientId($doctorId);
-        $todayAppointments = $this->appointmentRepository->getTodayAppointments()->where('doctor_id', $doctorId);
+    // public function getDoctorDetails($doctorId)
+    // {
+    //     $doctor = $this->doctorRepository->getById($doctorId);
+    //     $appointments_count = $this->appointmentRepository->getCountByDoctorId($doctorId);
+    //     $patients_count = $this->appointmentRepository->getCountByPatientId($doctorId);
+    //     $todayAppointments = $this->appointmentRepository->getTodayAppointments()->where('doctor_id', $doctorId);
 
-        return [
-            'doctor' => $doctor,
-            'appointments_count' => $appointments_count,
-            'patients_count' => $patients_count,
-            'todayAppointments' => $todayAppointments
-        ];
-    }
+    //     return [
+    //         'doctor' => $doctor,
+    //         'appointments_count' => $appointments_count,
+    //         'patients_count' => $patients_count,
+    //         'todayAppointments' => $todayAppointments
+    //     ];
+    // }
 
 }

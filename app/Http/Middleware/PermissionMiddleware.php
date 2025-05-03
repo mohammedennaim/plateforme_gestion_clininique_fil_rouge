@@ -20,9 +20,7 @@ class PermissionMiddleware
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Vous devez être connecté pour accéder à cette page.');
         }
-
-        // Version simplifiée : on accorde automatiquement la permission
-        // Cela permet d'éviter les blocages liés aux permissions tout en gardant la structure du code
+        
         return $next($request);
     }
 }

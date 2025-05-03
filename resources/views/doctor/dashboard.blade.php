@@ -757,7 +757,7 @@
                     </div>
                     <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
                         <div class="text-sm">
-                            <a href="" class="font-medium text-indigo-600 hover:text-indigo-500 flex items-center">
+                            <a href="#patients-section" class="font-medium text-indigo-600 hover:text-indigo-500 flex items-center">
                                 Voir les détails
                                 <i class="fas fa-arrow-right ml-1"></i>
                             </a>
@@ -795,7 +795,7 @@
                     </div>
                     <div class="bg-gray-50 px-5 py-3 flex justify-between items-center">
                         <div class="text-sm">
-                            <a href="" class="font-medium text-emerald-600 hover:text-emerald-500 flex items-center">
+                            <a href="#section_appointment" class="font-medium text-emerald-600 hover:text-emerald-500 flex items-center">
                                 Voir l'agenda
                                 <i class="fas fa-arrow-right ml-1"></i>
                             </a>
@@ -1058,7 +1058,7 @@
             </div>
 
             <!-- Appointments section -->
-            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8" id="section_appointment">
                 <!-- Today's Appointments -->
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="px-6 py-4 flex justify-between items-center border-b border-gray-200">
@@ -1386,7 +1386,7 @@
 
                             <div class="px-4 py-3 sm:px-6 flex justify-between border-t border-gray-200">
                                 <div class="patient-actions flex space-x-2">
-                                    <a href="{{ route('medical-records.show', $patient->patient->id) }}"
+                                    <a href=""
                                         class="text-sm text-indigo-600 hover:text-indigo-500">
                                         <i class="fas fa-file-medical"></i>
                                     </a>
@@ -1646,6 +1646,8 @@
             const sidebarToggle = document.getElementById("sidebar-toggle");
             const sidebar = document.getElementById("sidebar");
             const overlay = document.getElementById("overlay");
+            const sidebarItems = document.querySelectorAll(".sidebar-item");
+            const sections = document.querySelectorAll(".dashboard-section");
 
             if (sidebarToggle && sidebar && overlay) {
                 sidebarToggle.addEventListener("click", function () {
@@ -1658,9 +1660,6 @@
                     overlay.classList.remove("active");
                 });
             }
-
-            const sidebarItems = document.querySelectorAll(".sidebar-item");
-            const sections = document.querySelectorAll(".dashboard-section");
 
             sidebarItems.forEach(item => {
                 item.addEventListener("click", function (e) {

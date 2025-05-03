@@ -22,7 +22,6 @@ class AdminMiddleware
 
         $user = Auth::user();
 
-        // Vérification simplifiée : on vérifie seulement si l'utilisateur est un administrateur
         if ($user->role !== 'admin') {
             return redirect()->route('home')->with('error', 'Accès réservé aux administrateurs.');
         }

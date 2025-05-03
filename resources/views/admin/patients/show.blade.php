@@ -33,11 +33,8 @@
                 </div>
             </div>
             <div class="flex flex-wrap gap-2 mt-4 md:mt-0">
-                <a href="{{ url()->previous() }}" class="px-4 py-2 bg-gray-500 text-white rounded-lg shadow-sm hover:bg-gray-600 transition-colors flex items-center text-sm">
+                <a href="{{ route('admin.dashboard')}}" class="px-4 py-2 bg-gray-500 text-white rounded-lg shadow-sm hover:bg-gray-600 transition-colors flex items-center text-sm">
                     <i class="fas fa-arrow-left mr-2"></i> Retour
-                </a>
-                <a href="{{ route('admin.patients.edit', $patient->id) }}" class="px-4 py-2 bg-primary-600 text-white rounded-lg shadow-sm hover:bg-primary-700 transition-colors flex items-center text-sm">
-                    <i class="fas fa-edit mr-2"></i> Modifier
                 </a>
                 <button type="button" class="px-4 py-2 bg-red-600 text-white rounded-lg shadow-sm hover:bg-red-700 transition-colors flex items-center text-sm" data-bs-toggle="modal" data-bs-target="#deletePatientModal">
                     <i class="fas fa-trash mr-2"></i> Supprimer
@@ -99,7 +96,7 @@
                                 <i class="fas fa-map-marker-alt text-primary-500 mr-2"></i>
                                 Adresse
                             </div>
-                            <div class="text-gray-800 font-semibold">{{ $patient->address ?? 'Non renseigné' }}</div>
+                            <div class="text-gray-800 font-semibold">{{ $patient->adresse ?? 'Non renseigné' }}</div>
                         </div>
                         <div class="flex justify-between">
                             <div class="text-gray-500 font-medium">
@@ -234,10 +231,10 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('admin.appointments.show', $appointment->id) }}" class="p-1.5 rounded-full text-primary-600 hover:bg-primary-50 transition-colors" data-tooltip="Voir les détails">
+                                                    <a href="" class="p-1.5 rounded-full text-primary-600 hover:bg-primary-50 transition-colors" data-tooltip="Voir les détails">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a href="{{ route('admin.appointments.edit', $appointment->id) }}" class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors" data-tooltip="Modifier">
+                                                    <a href="" class="p-1.5 rounded-full text-indigo-600 hover:bg-indigo-50 transition-colors" data-tooltip="Modifier">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     <button class="p-1.5 rounded-full text-red-600 hover:bg-red-50 transition-colors" data-tooltip="Annuler">

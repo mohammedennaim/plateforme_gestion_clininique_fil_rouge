@@ -228,9 +228,7 @@ class DoctorController extends Controller
                 'assurance_number' => 'nullable|string|max:255',
                 'blood_type' => 'nullable|string|max:10',
                 'emergency_contact' => 'nullable|string|max:255',
-                'allergies' => 'nullable|string',
-                'height' => 'nullable|numeric|min:0',
-                'weight' => 'nullable|numeric|min:0',
+                'allergies' => 'nullable|string'
             ]);
             $randomPassword = bin2hex(random_bytes(4));
             $password = bcrypt($randomPassword);
@@ -251,9 +249,7 @@ class DoctorController extends Controller
                 'assurance_number' => $validated['assurance_number'] ?? null,
                 'blood_type' => $validated['blood_type'] ?? null,
                 'emergency_contact' => $validated['emergency_contact'] ?? null,
-                'allergies' => $validated['allergies'] ?? null,
-                'height' => $validated['height'] ?? null,
-                'weight' => $validated['weight'] ?? null,
+                'allergies' => $validated['allergies'] ?? null
             ]);
             return redirect()->route('doctor.dashboard')->with('success', 'Patient créé avec succès.');
         } catch (\Exception $e) {
@@ -402,15 +398,13 @@ class DoctorController extends Controller
 
     public function storeAppointment(Request $request){
         try {
-            $user = auth()->user();
-            $doctor = Doctor::where('user_id',$user->id)->first();
             $data = $request->validate([
                 'doctor_id' => 'required|exists:doctors,id',
                 'patient_id' => 'required|exists:patients,id',
                 'date' => 'required|date',
                 'time' => 'required|date_format:H:i',
                 'reason' => 'required|string',
-                'status' => 'required|in:pending,confirmed,canceled',
+                'status' => 'required|in:pending,confirmed,completed,canceled',
                 'price' => 'nullable|numeric'
             ]);
             
@@ -461,6 +455,10 @@ class DoctorController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erreur lors de la mise à jour du statut: ' . $e->getMessage());
         }
+    }
+
+    public function pending(){
+        return view('doctor.pending');
     }
 
     // public function patientHistory($id)
