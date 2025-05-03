@@ -331,8 +331,7 @@ class DoctorController extends Controller
     }
     
     public function updateAppointment(Request $request, $id)
-    {
-    
+    {    
         try {
             $doctor = auth()->user();
             $appointment = Appointment::findOrFail($id);
@@ -342,8 +341,8 @@ class DoctorController extends Controller
             }
             
             $validated = $request->validate([
-                'doctor_id' => $request->patient_id,
-                'patient_id' => $request->doctor_id,
+                'doctor_id' => 'required|exists:doctors,id',
+                'patient_id' => 'required|exists:patients,id',
                 'date' => 'required|date',
                 'time' => 'required|date_format:H:i',
                 'status' => 'required|in:pending,confirmed,completed,canceled',

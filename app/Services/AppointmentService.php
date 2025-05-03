@@ -110,6 +110,7 @@ class AppointmentService{
 
     public function updateAppointment($id, $data)
     {
+        
         return $this->appointmentRepository->update($id, $data);
     }
 
