@@ -299,6 +299,27 @@
                             </div>
                             
                             <div class="form-group">
+                                <label for="date_of_birth" class="form-label">
+                                    <i class="fas fa-birthday-cake text-primary-400 mr-2"></i>
+                                    Date de naissance <span class="text-danger-500">*</span>
+                                </label>
+                                <input type="date" name="date_of_birth" id="date_of_birth" value="{{ old('date_of_birth', $patient->user->date_of_birth ? (\Carbon\Carbon::parse($patient->user->date_of_birth)->format('Y-m-d')) : '') }}" class="form-input" required>
+                                @error('date_of_birth')
+                                <p class="form-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="adresse" class="form-label">
+                                    <i class="fas fa-map-marker-alt text-primary-400 mr-2"></i>
+                                    Adresse
+                                </label>
+                                <input type="text" name="adresse" id="adresse" value="{{ old('adresse', $patient->user->adresse) }}" class="form-input">
+                                @error('adresse')
+                                <p class="form-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="form-group">
                                 <label for="gender" class="form-label">
                                     <i class="fas fa-venus-mars text-primary-400 mr-2"></i>
                                     Genre <span class="text-danger-500">*</span>
@@ -310,28 +331,6 @@
                                     <option value="Autre" {{ old('gender', $patient->gender) == 'Autre' ? 'selected' : '' }}>Autre</option>
                                 </select>
                                 @error('gender')
-                                    <p class="form-error">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="birthdate" class="form-label">
-                                    <i class="fas fa-birthday-cake text-primary-400 mr-2"></i>
-                                    Date de naissance <span class="text-danger-500">*</span>
-                                </label>
-                                <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate', $patient->user->date_of_birth ? (\Carbon\Carbon::parse($patient->user->date_of_birth)->format('Y-m-d')) : '') }}" class="form-input" required>
-                                @error('birthdate')
-                                    <p class="form-error">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="address" class="form-label">
-                                    <i class="fas fa-map-marker-alt text-primary-400 mr-2"></i>
-                                    Adresse
-                                </label>
-                                <input type="text" name="address" id="address" value="{{ old('address', $patient->user->address) }}" class="form-input">
-                                @error('address')
                                     <p class="form-error">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -376,8 +375,29 @@
                                     <p class="form-error">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
+
                             <div class="form-group">
+                                <label for="name_assurance" class="form-label">
+                                    <i class="fas fa-shield-alt text-primary-400 mr-2"></i>
+                                    Name d'Assurance
+                                </label>
+                                <input type="text" name="name_assurance" id="name_assurance" value="{{ old('name_assurance', $patient->name_assurance) }}" class="form-input">
+                                @error('name_assurance')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="assurance_number" class="form-label">
+                                    <i class="fas fa-id-card text-primary-400 mr-2"></i>
+                                    Numéro d'Assurance
+                                </label>
+                                <input type="text" name="assurance_number" id="assurance_number" value="{{ old('assurance_number', $patient->assurance_number) }}" class="form-input">
+                                @error('assurance_number')
+                                    <p class="form-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            
+                            <!-- <div class="form-group">
                                 <label for="height" class="form-label">
                                     <i class="fas fa-ruler-vertical text-primary-400 mr-2"></i>
                                     Taille (cm)
@@ -397,30 +417,8 @@
                                 @error('weight')
                                     <p class="form-error">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </div> -->
                             
-                            <div class="form-group md:col-span-2">
-                                <label for="allergies" class="form-label">
-                                    <i class="fas fa-allergies text-danger-500 mr-2"></i>
-                                    Allergies
-                                </label>
-                                <textarea name="allergies" id="allergies" rows="3" class="form-textarea">{{ old('allergies', is_array($patient->allergies) ? implode(', ', $patient->allergies) : $patient->allergies) }}</textarea>
-                                <p class="text-gray-500 text-xs mt-1">Séparez les allergies par des virgules (ex: Pénicilline, Arachides, Lactose)</p>
-                                @error('allergies')
-                                    <p class="form-error">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            
-                            <div class="form-group md:col-span-2">
-                                <label for="notes" class="form-label">
-                                    <i class="fas fa-sticky-note text-warning-500 mr-2"></i>
-                                    Notes
-                                </label>
-                                <textarea name="notes" id="notes" rows="4" class="form-textarea">{{ old('notes', $patient->notes) }}</textarea>
-                                @error('notes')
-                                    <p class="form-error">{{ $message }}</p>
-                                @enderror
-                            </div>
                         </div>
                     </div>
                     

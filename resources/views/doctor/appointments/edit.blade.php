@@ -88,7 +88,7 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800">Modifier le Rendez-vous</h1>
             <div class="flex space-x-2">
-                <a href="#" onclick="history.back()"
+                <a href="{{ route('doctor.appointments.show',$appointment->id) }}"
                     class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-300 flex items-center shadow-md">
                     <i class="fas fa-arrow-left mr-2"></i>Retour
                 </a>
