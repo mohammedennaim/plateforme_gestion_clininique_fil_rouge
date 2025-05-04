@@ -98,7 +98,7 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-primary-50 to-secondary-50 min-h-screen flex flex-col">
-@if (auth()->check())
+    @if (auth()->check())
         <header class="bg-white shadow-sm py-4">
             <div class="container mx-auto px-4 flex justify-between items-center">
                 <div class="flex items-center">
@@ -109,7 +109,7 @@
                     <a href="{{ route('welcome') }}" class="text-primary-600 font-medium">Accueil</a>
                     <a href="{{ route('services') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Services</a>
                     <a href="{{ route('doctors') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Médecins</a>
-                    <a href="{{ route('patient.reserver.store') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
+                    <a href="{{ route('patient.reservation') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Rendez-vous</a>
                     <a href="{{ route('contact') }}" class="text-secondary-600 hover:text-primary-600 transition-colors">Contact</a>
                 </nav>
 
@@ -121,19 +121,19 @@
                                     class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700">
                                     <i class="fas fa-user-circle"></i>
                                 </div>
-                                <span class="text-sm font-medium text-secondary-700">{{ $user['name'] }}</span>
+                                <span class="text-sm font-medium text-secondary-700">{{ auth()->user()->name }}</span>
                                 <i class="fas fa-chevron-down text-secondary-400 text-xs"></i>
                             </button>
 
                             <div id="profile-dropdown"
                                 class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
-                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
                                     <i class="fas fa-user mr-2 text-secondary-400"></i>Mon profil
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                <a href="{{ route('appointments') }}" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
                                     <i class="fas fa-calendar-check mr-2 text-secondary-400"></i>Mes rendez-vous
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                <a href="{{ route('settings') }}" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
                                     <i class="fas fa-cog mr-2 text-secondary-400"></i>Paramètres
                                 </a>
                                 <div class="border-t border-secondary-200 my-1"></div>
@@ -141,7 +141,7 @@
                                 <form action="{{ route('logout') }}" method="POST" class="w-full">
                                     @csrf
                                     <button type="submit" id="logout-button"
-                                        class="block px-4 py-2 text-sm text-red-600 hover:bg-secondary-50 w-full">
+                                        class="block px-4 py-2 text-sm text-red-600 hover:bg-secondary-50 w-full text-left">
                                         <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
                                     </button>
                                 </form>
@@ -168,10 +168,10 @@
 
                 <div class="flex items-center space-x-4">
                     <div id="auth-buttons" class="flex items-center">
-                        <a href="{{ Route('login') }}" id="login-button"
+                        <a href="{{ route('login') }}" id="login-button"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">Se connecter</a>
                         <span class="mx-2 text-secondary-300">|</span>
-                        <a href="{{ Route('logout') }}"
+                        <a href="{{ route('register') }}"
                             class="text-sm font-medium text-primary-600 hover:text-primary-800">S'inscrire</a>
                     </div>
                 </div>
@@ -228,15 +228,15 @@
                         <h3 class="text-sm font-medium text-secondary-700 mb-3">Récapitulatif</h3>
                         <div class="flex justify-between mb-2">
                             <span class="text-secondary-600">Consultation</span>
-                            <span class="text-secondary-800 font-medium">35,00 €</span>
+                            <span class="text-secondary-800 font-medium">220,00 MAD</span>
                         </div>
                         <div class="flex justify-between mb-2">
                             <span class="text-secondary-600">Frais de dossier</span>
-                            <span class="text-secondary-800 font-medium">10,00 €</span>
+                            <span class="text-secondary-800 font-medium">30,00 MAD</span>
                         </div>
                         <div class="flex justify-between pt-2 border-t border-secondary-200">
                             <span class="text-secondary-800 font-medium">Total</span>
-                            <span class="text-secondary-800 font-medium">45,00 €</span>
+                            <span class="text-secondary-800 font-medium">250,00 MAD</span>
                         </div>
                     </div>
                     
@@ -268,11 +268,11 @@
                         <div>
                             <label for="billing-country" class="block text-sm font-medium text-secondary-700 mb-1">Pays <span class="text-red-500">*</span></label>
                             <select id="billing-country" name="billing_country" class="block w-full px-3 py-2.5 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required>
-                                <option value="FR" selected>France</option>
+                                <option value="MA" selected>Maroc</option>
+                                <option value="FR">France</option>
                                 <option value="BE">Belgique</option>
                                 <option value="CH">Suisse</option>
                                 <option value="CA">Canada</option>
-                                <option value="MA">Maroc</option>
                                 <option value="TN">Tunisie</option>
                             </select>
                         </div>
@@ -280,7 +280,7 @@
                         <div>
                             <label for="card-element" class="block text-sm font-medium text-secondary-700 mb-1">Carte de crédit <span class="text-red-500">*</span></label>
                             <div id="card-element" class="p-3 border border-secondary-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                                
+                                <!-- Stripe Card Element will be inserted here -->
                             </div>
                             <div id="card-errors" class="text-red-500 text-sm mt-1" role="alert"></div>
                         </div>
@@ -294,7 +294,7 @@
                         <!-- Bouton de paiement -->
                         <div class="pt-4 border-t border-secondary-200">
                             <button type="submit" id="submit-payment" class="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
-                                <span>Payer 45,00 €</span>
+                                <span>Payer 250,00 MAD</span>
                                 <i class="fas fa-lock ml-2"></i>
                             </button>
                             <p class="text-xs text-center text-secondary-500 mt-2">
@@ -308,7 +308,7 @@
             
             <!-- Retour à la réservation -->
             <div class="mt-6 text-center">
-                <a href="#" class="text-sm text-primary-600 hover:text-primary-800 inline-flex items-center">
+                <a href="{{ route('patient.reserver.store') }}" class="text-sm text-primary-600 hover:text-primary-800 inline-flex items-center">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Retour à la réservation
                 </a>
@@ -324,7 +324,7 @@
                     <i class="fas fa-hospital text-primary-600 text-xl mr-2"></i>
                     <span class="text-lg font-semibold text-primary-700">MediClinic</span>
                 </div>
-                <p class="text-secondary-500 text-sm">© 2023 MediClinic. Tous droits réservés.</p>
+                <p class="text-secondary-500 text-sm">© 2025 MediClinic. Tous droits réservés.</p>
                 <div class="flex space-x-4 mt-4 md:mt-0">
                     <a href="#" class="text-secondary-400 hover:text-primary-600 transition-colors">
                         <i class="fab fa-facebook-f"></i>
@@ -367,12 +367,12 @@
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-secondary-600">Montant payé :</span>
-                    <span class="text-secondary-800 font-medium">45,00 €</span>
+                    <span class="text-secondary-800 font-medium">250,00 MAD</span>
                 </div>
             </div>
             
             <div class="text-center space-y-3">
-                <a href="{{ route('appointment.details', $appointmentId ) }}" id="view-appointment" class="block w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <a href="{{ route('appointment.details', $appointmentId) }}" id="view-appointment" class="block w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Voir mon rendez-vous
                 </a>
                 <a href="{{ route('welcome') }}" class="block w-full px-4 py-2 border border-secondary-300 text-sm font-medium rounded-md text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
@@ -396,7 +396,7 @@
                 <button id="retry-payment" class="block w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Réessayer
                 </button>
-                <a href="#" class="block w-full px-4 py-2 border border-secondary-300 text-sm font-medium rounded-md text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <a href="{{ route('patient.reserver.store') }}" class="block w-full px-4 py-2 border border-secondary-300 text-sm font-medium rounded-md text-secondary-700 bg-white hover:bg-secondary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Annuler
                 </a>
             </div>
@@ -405,23 +405,27 @@
 
     <!-- JavaScript -->
     <script>
-        
+        // Gestion du dropdown de profil
         const profileDropdownButton = document.getElementById('profile-dropdown-button');
         const profileDropdown = document.getElementById('profile-dropdown');
-        profileDropdownButton.addEventListener('click', function () {
-            profileDropdown.classList.toggle('hidden');
-        });
+        
+        if (profileDropdownButton && profileDropdown) {
+            profileDropdownButton.addEventListener('click', function () {
+                profileDropdown.classList.toggle('hidden');
+            });
 
-        document.addEventListener('click', function (event) {
-            if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
-                profileDropdown.classList.add('hidden');
-            }
-        });
+            document.addEventListener('click', function (event) {
+                if (!profileDropdownButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Initialiser Stripe avec votre clé publique
             const stripe = Stripe('{{ config("services.stripe.key") }}');
             const elements = stripe.elements();
-            let paymentCheckInterval; // Pour stocker l'intervalle de vérification
+            let paymentCheckInterval; 
             
             // Créer les éléments Stripe
             const style = {
@@ -488,22 +492,20 @@
                     });
                     
                     if (error) {
-                        // Afficher l'erreur à l'utilisateur
                         handlePaymentError(error.message);
                     } else {
-                        // Appeler notre API pour traiter le paiement
                         const response = await fetch('{{ route("payment.process") }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             },
                             body: JSON.stringify({
                                 payment_method_id: paymentMethod.id,
-                                amount: 45, // Montant en euros
-                                currency: 'EUR',
+                                amount: 250, 
+                                currency: 'MAD',
                                 description: 'Paiement consultation médicale',
-                                appointment_id: '{{ request()->query("appointment_id") ?? "" }}' // ID du rendez-vous s'il existe
+                                appointment_id: '{{ request()->query("appointment_id") ?? "" }}' 
                             })
                         });
                         
@@ -533,7 +535,7 @@
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                     },
                                     body: JSON.stringify({
                                         payment_intent_id: paymentIntent.id
@@ -575,7 +577,7 @@
                 
                 // Réinitialiser le bouton de paiement
                 submitButton.disabled = false;
-                submitButton.innerHTML = '<span>Payer 45,00 €</span><i class="fas fa-lock ml-2"></i>';
+                submitButton.innerHTML = '<span>Payer 250,00 MAD</span><i class="fas fa-lock ml-2"></i>';
             });
             
             // Fonction pour démarrer la vérification périodique du statut de paiement
@@ -596,7 +598,7 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             },
                             body: JSON.stringify({
                                 payment_intent_id: paymentIntentId
@@ -671,8 +673,8 @@
             });
             
             // Gérer le bouton dans le modal de succès
-            document.getElementById('view-appointment').addEventListener('click', function() {
-                window.location.href = '{{ route("home") }}';
+            document.getElementById('view-appointment').addEventListener('click', function(e) {
+                // La redirection se fait automatiquement via l'attribut href
             });
         });
     </script>

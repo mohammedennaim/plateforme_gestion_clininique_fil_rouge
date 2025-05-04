@@ -48,22 +48,15 @@ Route::prefix('auth')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::post('/dashboard', [AdminController::class, 'storeAppointment']);
-    Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
-    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/settings', [ProfileController::class, 'showSettings'])->name('settings');
     Route::put('/dashboard/appointments/{id}', [AdminController::class, 'updateAppointment'])->name('appointment.update');
 
-    Route::get('/doctors/show', [AdminController::class, 'showDoctor'])->name('doctor.show');
-    // Route::get('/patients/{id}', [AdminController::class, 'showpatient'])->name('patients.show');
-    // Route::put('/patients/{id}', [AdminController::class, 'updatePatient'])->name('patients.edit');
-    // Route::delete('/patients/{id}', [AdminController::class, 'deletePatient'])->name('patients.delete');
-
-    Route::get('/dashboard/doctors/{id}', [AdminController::class, 'showDoctor']);
+    
+    // Route::get('/dashboard/doctors/{id}', [AdminController::class, 'showDoctor']);
     Route::put('/dashboard/doctors/{id}', [AdminController::class, 'updateDoctor']);
     Route::post('/dashboard/doctors', [AdminController::class, 'storeDoctor']);
     Route::delete('/dashboard/doctors/{id}', [AdminController::class, 'destroyDoctor']);
     Route::post('dashboard/doctors/{id}',[AdminController::class, 'updateStatus'])->name('doctors.change-status');
-
+    
     Route::get('/patients', [PatientController::class, 'index'])->name('patients.index');
     Route::get('/patients/create', [PatientController::class, 'create'])->name('patients.create');
     Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
@@ -72,13 +65,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
     Route::delete('/patients/{patient}', [PatientController::class, 'destroy'])->name('patients.destroy');
     Route::get('/patients/stats', [PatientController::class, 'stats'])->name('patients.stats');
-
-    Route::post('/doctors', [DoctorController::class, 'store'])->name('doctors.store');
-    Route::put('/doctors/{doctor}', [DoctorController::class, 'update'])->name('doctors.update');
-    Route::delete('/doctors/{doctor}', [DoctorController::class, 'destroy'])->name('doctors.destroy');
-
-    // Route::post('/patients', [PatientController::class, 'store'])->name('admin.patients.store');
-    // Route::put('/patients/{patient}', [PatientController::class, 'update'])->name('admin.patients.update');
+    
+    Route::get('/doctors/show/{id}', [AdminController::class, 'showDoctor'])->name('doctors.show');
+    Route::get('/doctor', [AdminController::class, 'createDoctor'])->name('doctors.create');
+    Route::post('/doctor', [AdminController::class, 'storeDoctor'])->name('doctors.store');
+    Route::get('/doctor/{id}', [AdminController::class, 'editDoctor'])->name('doctors.edit');
+    Route::put('/doctor/{id}', [AdminController::class, 'updateDoctor'])->name('doctors.update');
+    Route::delete('/doctor/{id}', [AdminController::class, 'destroyDoctor'])->name('doctors.destroy');
 });
 
 Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(function () {
@@ -108,8 +101,8 @@ Route::prefix('doctor')->name('doctor.')->middleware(['auth', 'doctor'])->group(
     Route::get('/patient/show/{id}', [DoctorController::class, 'showPatient'])->name('patients.show');
     // Profile routes
 
-    Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
-    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    // Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
+    // Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
 
     Route::get('/pending',[DoctorController::class, 'pending'])->name('pending');
 });

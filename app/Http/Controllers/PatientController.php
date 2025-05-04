@@ -77,7 +77,7 @@ class PatientController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $patient->user_id,
+            'email' => 'required|string|email|max:255|unique:users,email,',
             'phone' => 'nullable|string|max:20',
             'adresse' => 'nullable|string|max:255',
             'date_of_birth' => 'nullable|date',
@@ -85,10 +85,6 @@ class PatientController extends Controller
             'assurance_number' => 'nullable|string|max:255',
             'blood_type' => 'nullable|string|max:10',
             'emergency_contact' => 'nullable|string|max:255',
-            'medical_history' => 'nullable|string',
-            'allergies' => 'nullable|array',
-            'height' => 'nullable|numeric|min:0',
-            'weight' => 'nullable|numeric|min:0',
         ]);
 
         $patient = $this->patientService->updatePatient($patient, $validated);

@@ -168,9 +168,6 @@
                         <i class="fas fa-calendar-alt mr-2"></i>
                         Historique des rendez-vous
                     </h2>
-                    <button class="px-3 py-1.5 bg-white text-primary-600 rounded-lg shadow-sm hover:bg-gray-100 transition-colors text-sm font-medium" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
-                        <i class="fas fa-plus mr-1"></i> Nouveau rendez-vous
-                    </button>
                 </div>
                 <div class="p-6">
                     @if($patient->appointments && $patient->appointments->count() > 0)
@@ -251,9 +248,7 @@
                         <div class="flex flex-col items-center justify-center py-12 text-gray-400">
                             <i class="fas fa-calendar-times text-5xl mb-4"></i>
                             <p class="text-lg">Aucun rendez-vous enregistré</p>
-                            <button class="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg shadow-sm hover:bg-primary-700 transition-colors text-sm" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
-                                <i class="fas fa-plus mr-2"></i> Ajouter un rendez-vous
-                            </button>
+                           
                         </div>
                     @endif
                 </div>
@@ -316,74 +311,6 @@
                         Annuler
                     </button>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal d'ajout de rendez-vous -->
-<div class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden z-50" id="addAppointmentModal">
-    <div class="relative w-full max-w-2xl mx-auto mt-20">
-        <div class="relative bg-white rounded-lg shadow-xl overflow-hidden">
-            <div class="px-6 py-4 bg-primary-600 text-white flex justify-between items-center">
-                <h3 class="text-lg font-bold">Nouveau rendez-vous</h3>
-                <button type="button" class="text-white hover:text-gray-200 close-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-6">
-                <form action="" method="POST" id="appointment-form">
-                    @csrf
-                    <input type="hidden" name="patient_id" value="{{ $patient->id }}">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label for="doctor_id" class="block text-sm font-medium text-gray-700 mb-1">Médecin</label>
-                            <select id="doctor_id" name="doctor_id" class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500">
-                                <option value="">Sélectionner un médecin</option>
-                                @foreach(\App\Models\Doctor::with('user', 'speciality')->get() as $doctor)
-                                    <option value="{{ $doctor->id }}">Dr. {{ $doctor->user->name }} - {{ $doctor->speciality->name ?? 'Médecin généraliste' }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label for="speciality_id" class="block text-sm font-medium text-gray-700 mb-1">Service/Spécialité</label>
-                            <select id="speciality_id" name="speciality_id" class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500">
-                                <option value="">Sélectionner une spécialité</option>
-                                @foreach(\App\Models\Speciality::all() as $speciality)
-                                    <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input type="date" id="date" name="date" class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500" required>
-                        </div>
-                        
-                        <div>
-                            <label for="time" class="block text-sm font-medium text-gray-700 mb-1">Heure</label>
-                            <input type="time" id="time" name="time" class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500" required>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label for="reason" class="block text-sm font-medium text-gray-700 mb-1">Motif de la consultation</label>
-                        <textarea id="reason" name="reason" rows="3" class="w-full rounded-lg border-gray-300 focus:ring-primary-500 focus:border-primary-500" required></textarea>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-2">
-                        <button type="button" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors cancel-modal">
-                            Annuler
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                            <i class="fas fa-calendar-check mr-2"></i> Planifier le rendez-vous
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>

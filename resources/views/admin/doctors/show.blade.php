@@ -123,7 +123,7 @@
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
                             <i class="fas fa-plus fa-sm"></i> Nouveau rendez-vous
                         </button>
-                        <a href="{{ route('admin.doctors.appointments', $doctor->id) }}" class="btn btn-info btn-sm ml-2">
+                        <a href="" class="btn btn-info btn-sm ml-2">
                             <i class="fas fa-calendar fa-sm"></i> Voir tout
                         </a>
                     </div>

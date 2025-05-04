@@ -107,20 +107,6 @@ class AdminController extends Controller
     {
         return response()->json($this->dashboardService->deleteDoctor($id));
     }
-
-
-    // public function storeAppointment(Request $request)
-    // {
-    //     return response()->json($this->appointmentService->create($request->all()), 201);
-    // }
-    // public function updateAppointment(Request $request, $id)
-    // {
-    //     return response()->json($this->appointmentService->update($id, $request->all()));
-    // }
-    // public function destroyAppointment($id)
-    // {
-    //     return response()->json($this->appointmentService->delete($id));
-    // }
     
     public function editPatient($id)
     {

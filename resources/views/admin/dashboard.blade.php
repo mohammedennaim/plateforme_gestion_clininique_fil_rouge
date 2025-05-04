@@ -879,7 +879,7 @@
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </button>
                                                         </div>
-                                                        <a href=""
+                                                        <a href="{{ route('admin.doctors.show',$doctor['id']) }}"
                                                             class="text-sm font-medium text-primary-600 hover:text-primary-800 transition-colors flex items-center">
                                                             Voir détails
                                                             <i class="fas fa-chevron-right ml-1 text-xs"></i>
