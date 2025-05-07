@@ -351,22 +351,15 @@
                             <div id="doctor-fields" class="role-specific-fields">
                                 <div class="form-section-title">Professional Information</div>
                                 <div class="mb-3">
-                                    <label for="speciality" class="form-label">Medical Specialty</label>
+                                    <label for="id_speciality" class="form-label">Medical Specialty</label>
                                     <select class="form-control @error('speciality') is-invalid @enderror" 
-                                        id="speciality" name="speciality">
+                                        id="id_speciality" name="id_speciality">
                                         <option value="">Select your specialty</option>
-                                        <option value="Cardiologie" {{ old('speciality') == 'Cardiologie' ? 'selected' : '' }}>Cardiology</option>
-                                        <option value="Dermatologie" {{ old('speciality') == 'Dermatologie' ? 'selected' : '' }}>Dermatology</option>
-                                        <option value="Gastroentérologie" {{ old('speciality') == 'Gastroentérologie' ? 'selected' : '' }}>Gastroenterology</option>
-                                        <option value="Gynécologie" {{ old('speciality') == 'Gynécologie' ? 'selected' : '' }}>Gynecology</option>
-                                        <option value="Ophtalmologie" {{ old('speciality') == 'Ophtalmologie' ? 'selected' : '' }}>Ophthalmology</option>
-                                        <option value="Pédiatrie" {{ old('speciality') == 'Pédiatrie' ? 'selected' : '' }}>Pediatrics</option>
-                                        <option value="Psychiatrie" {{ old('speciality') == 'Psychiatrie' ? 'selected' : '' }}>Psychiatry</option>
-                                        <option value="Radiologie" {{ old('speciality') == 'Radiologie' ? 'selected' : '' }}>Radiology</option>
-                                        <option value="Médecine générale" {{ old('speciality') == 'Médecine générale' ? 'selected' : '' }}>General Medicine</option>
-                                        <option value="Autre" {{ old('speciality') == 'Autre' ? 'selected' : '' }}>Other</option>
+                                        @foreach ($specialities as $speciality)
+                                            <option value="{{ $speciality->id }}" value=" {{ old($speciality->name) }}">{{ $speciality->name }}</option>
+                                        @endforeach
                                     </select>
-                                    @error('speciality')
+                                    @error('id_speciality')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

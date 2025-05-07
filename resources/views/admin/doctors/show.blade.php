@@ -129,60 +129,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if($upcomingAppointments->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-bordered" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Heure</th>
-                                        <th>Patient</th>
-                                        <th>Statut</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($upcomingAppointments as $appointment)
-                                    <tr>
-                                        <td>{{ $appointment->date->format('d/m/Y') }}</td>
-                                        <td>{{ $appointment->time }}</td>
-                                        <td>
-                                            <div class="patient-profile">
-                                                <img src="{{ $appointment->patient->user->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($appointment->patient->user->name).'&color=7F9CF5&background=EBF4FF' }}" 
-                                                     alt="Patient" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                                                <span>{{ $appointment->patient->user->name }}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            @if($appointment->status == 'confirmed')
-                                                <span class="badge badge-success">Confirmé</span>
-                                            @elseif($appointment->status == 'pending')
-                                                <span class="badge badge-warning">En attente</span>
-                                            @elseif($appointment->status == 'canceled')
-                                                <span class="badge badge-danger">Annulé</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="action-menu">
-                                                <a href="{{ route('admin.appointments.show', $appointment->id) }}" class="btn btn-info btn-sm">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                @if($appointment->status == 'pending')
-                                                    <button class="btn btn-success btn-sm" onclick="confirmAppointment({{ $appointment->id }})">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm" onclick="cancelAppointment({{ $appointment->id }})">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
+                    
                         <div class="text-center py-5">
                             <i class="fas fa-calendar-check fa-4x text-gray-300 mb-3"></i>
                             <p class="text-gray-500">Aucun rendez-vous à venir pour ce médecin.</p>
@@ -190,7 +137,6 @@
                                 <i class="fas fa-plus fa-sm"></i> Programmer un rendez-vous
                             </button>
                         </div>
-                    @endif
                 </div>
             </div>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Speciality;
 use App\Repositories\Eloquent\AuthRepository;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
@@ -33,7 +34,8 @@ class AuthController extends Controller
 
     public function register()
     {
-        return view('auth.register');
+        $specialities = Speciality::all();
+        return view('auth.register',compact('specialities'));
     }
 
     public function authenticate(Request $request)

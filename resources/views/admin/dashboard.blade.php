@@ -686,7 +686,7 @@
                         <p class="text-gray-600">Liste et gestion des comptes médecins</p>
                     </div>
 
-                    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div class="mb-6 flex flex-col md:flex-row md:items-center md:flex-3 md:justify-between gap-4">
                         <div class="flex flex-col md:flex-row gap-3">
                             <div class="relative">
                                 <input type="text" placeholder="Rechercher un médecin..."

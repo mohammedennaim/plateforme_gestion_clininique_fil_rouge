@@ -129,7 +129,7 @@ Route::get('/home', function () {
     return view('home');
 })->name('home')->middleware('auth');
 
-SendMessage::dispatch('Hello, this is a test message!')->delay(now()->addMinutes(1));
+// SendMessage::dispatch('Hello, this is a test message!')->delay(now()->addMinutes(1));
 
 // Route::middleware('auth')->group(function () {
 //     Route::resource('medical-records', MedicalRecordController::class);

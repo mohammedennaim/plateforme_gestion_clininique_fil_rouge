@@ -11,7 +11,8 @@ class PatientService
 {
     public function createPatient(array $data): Patient
     {
-        return DB::transaction(function () use ($data) {
+        try {
+            // Create user first
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -21,8 +22,9 @@ class PatientService
                 'adresse' => $data['adresse'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? null,
             ]);
-
-            return Patient::create([
+            
+            // Then create patient
+            $patient = Patient::create([
                 'user_id' => $user->id,
                 'name_assurance' => $data['name_assurance'] ?? null,
                 'assurance_number' => $data['assurance_number'] ?? null,
@@ -33,7 +35,14 @@ class PatientService
                 'height' => $data['height'] ?? null,
                 'weight' => $data['weight'] ?? null,
             ]);
-        });
+            
+            return $patient;
+        } catch (\Exception $e) {
+            if (isset($user) && $user->exists) {
+                $user->delete();
+            }
+            throw $e;
+        }
     }
 
     public function updatePatient(Patient $patient, array $data): Patient

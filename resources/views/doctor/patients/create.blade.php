@@ -427,16 +427,7 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        
-                        <!-- <div class="col-span-1 md:col-span-2 float-label-input">
-                            <textarea name="allergies" id="allergies" rows="3" placeholder=" " class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none input-focus"></textarea>
-                            <label for="allergies" class="text-sm font-medium text-gray-700">Allergies</label>
-                            <p class="text-xs text-gray-500 mt-1">Entrez les allergies séparées par des virgules</p>
-                            @error('allergies')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div> -->
-                        
+
                         <div class="col-span-1 md:col-span-2 mt-4">
                             <label class="custom-checkbox flex items-center">
                                 <input type="checkbox" name="consent" id="consent">

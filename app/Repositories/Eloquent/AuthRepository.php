@@ -3,8 +3,6 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\User;
-use App\Models\Doctor;
-use App\Models\Patient;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
@@ -27,7 +25,8 @@ class AuthRepository implements AuthRepositoryInterface
         if ($data['role'] === "doctor") {
             $doctor = new DoctorRepository()->create([
                 'user_id' => $user->id,
-                'speciality' => $data['speciality'],
+                'speciality' => '',
+                'id_speciality' => $data['id_speciality'],
                 'is_available' => true,
                 'emergency_contact' => $data['emergency_contact']
             ]);
@@ -45,7 +44,6 @@ class AuthRepository implements AuthRepositoryInterface
             $patient->save();
         }
         
-        // Always return the User model instead of Patient or Doctor
         return $user;
     }
 

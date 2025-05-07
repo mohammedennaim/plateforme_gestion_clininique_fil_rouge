@@ -632,12 +632,9 @@
 
                 filterDoctors() {
                     this.filteredDoctors = this.doctors.filter(doctor => {
-                        const matchesSearch = this.searchTerm === '' || 
-                            doctor.name.toLowerCase().includes(this.searchTerm.toLowerCase());
-                        
-                        const matchesSpecialty = this.selectedSpecialty === '' || 
-                            doctor.specialty === this.selectedSpecialty;
-                        
+                        const matchesSearch = this.searchTerm === '' || doctor.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+                        const matchesSpecialty = this.selectedSpecialty === '' || doctor.specialty === this.selectedSpecialty;
+                                                
                         return matchesSearch && matchesSpecialty;
                     });
                 },

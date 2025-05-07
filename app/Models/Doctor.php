@@ -14,12 +14,10 @@ class Doctor extends Model
     protected $fillable = [
         'user_id',
         'speciality',
-        'experience',
-        'qualification',
         'is_available',
-        'nombre_cabinet',
-        'working_hours',
-        'consultation_fee',
+        'emergency_contact',
+        'id_speciality'
+        
         
     ];
     protected $casts = [

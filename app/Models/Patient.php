@@ -17,8 +17,8 @@ class Patient extends Model
         'assurance_number',
         'blood_type',
         'emergency_contact',
-        'height',
-        'weight',
+        // 'height',
+        // 'weight',
     ];
 
     protected $casts = [

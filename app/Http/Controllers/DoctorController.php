@@ -243,7 +243,6 @@ class DoctorController extends Controller
                 'assurance_number' => 'nullable|string|max:255',
                 'blood_type' => 'nullable|string|max:10',
                 'emergency_contact' => 'nullable|string|max:255',
-                'allergies' => 'nullable|string'
             ]);
             $randomPassword = bin2hex(random_bytes(4));
             $password = bcrypt($randomPassword);
@@ -254,7 +253,7 @@ class DoctorController extends Controller
                 'password' => $password,
                 'role' => 'patient',
                 'phone' => $validated['phone'] ?? null,
-                'adress' => $validated['adresse'] ?? null,
+                'adresse' => $validated['adresse'] ?? null,
                 'date_of_birth' => $validated['date_of_birth'] ?? null,
             ]);
 
@@ -264,7 +263,6 @@ class DoctorController extends Controller
                 'assurance_number' => $validated['assurance_number'] ?? null,
                 'blood_type' => $validated['blood_type'] ?? null,
                 'emergency_contact' => $validated['emergency_contact'] ?? null,
-                'allergies' => $validated['allergies'] ?? null
             ]);
             return redirect()->route('doctor.dashboard')->with('success', 'Patient créé avec succès.');
         } catch (\Exception $e) {

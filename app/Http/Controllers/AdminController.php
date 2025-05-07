@@ -51,7 +51,8 @@ class AdminController extends Controller
             $terminatedAppointments = $this->appointmentService->getTermine();
             $canceledAppointments = $this->appointmentService->getCanceled();
 
-            // dd($doctorStats);
+
+            
             $appointmentStats = [
                 'pending' => $pendingAppointments,
                 'confirmed' => $confirmedAppointments,
@@ -84,7 +85,12 @@ class AdminController extends Controller
     public function showDoctor($id)
     {
         $doctor = $this->dashboardService->getDoctorById($id);
-        return view('admin.doctors.show', compact('doctor'));
+        $todayAppointments = $this->appointmentService->getTodayAppointments($doctor->$id);
+        $nextAppointments = $todayAppointments->sortBy([
+            ['date', 'asc'],
+            ['time', 'asc'],
+        ])->first();
+        return view('admin.doctors.show', compact('doctor','nextAppointments'));
     }
 
     public function storeDoctor(Request $request)
