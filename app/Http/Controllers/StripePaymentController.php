@@ -15,13 +15,9 @@ class StripePaymentController extends Controller
 {
     public function __construct()
     {
-        // Utiliser config() au lieu de env() pour une meilleure fiabilité
         Stripe::setApiKey(config('services.stripe.secret'));
     }
 
-    /**
-     * Show the payment page
-     */
     public function showPaymentPage(Request $request)
     {
         
@@ -59,10 +55,10 @@ class StripePaymentController extends Controller
             
             // Get the payment method ID from the request
             $paymentMethodId = $validated['payment_method_id'];
-            $amount = $validated['amount'] ?? 45; // Default amount 45 euros
-            $currency = $validated['currency'] ?? 'EUR';
+            $amount = $validated['amount'];
+            $currency = $validated['currency'];
             $description = $validated['description'] ?? 'Consultation médicale';
-            $appointmentId = $validated['appointment_id'] ?? null;
+            $appointmentId = $validated['appointment_id'];
             
             // Convert amount to cents (Stripe requires amount in cents)
             $amountInCents = (int)($amount * 100);
@@ -128,7 +124,7 @@ class StripePaymentController extends Controller
                 return response()->json([
                     'success' => false, 
                     'message' => 'Erreur lors du traitement de votre carte: ' . $e->getMessage()
-                ], 400); // Code 400 au lieu de 500 pour les erreurs de carte
+                ], 400); 
             }
             
         } catch (ApiErrorException $e) {
@@ -146,9 +142,6 @@ class StripePaymentController extends Controller
         }
     }
     
-    /**
-     * Confirm the payment after 3D Secure authentication
-     */
     public function confirmPayment(Request $request)
     {
         try {
@@ -210,10 +203,7 @@ class StripePaymentController extends Controller
             ], 500);
         }
     }
-    
-    /**
-     * Check the status of a payment
-     */
+
     public function checkPaymentStatus(Request $request)
     {
         try {
@@ -252,17 +242,13 @@ class StripePaymentController extends Controller
             ], 500);
         }
     }
-    
-    /**
-     * Save payment record to database
-     */
+
     private function savePaymentRecord($paymentIntent, $appointmentId = null)
     {
         try {
             // Check if we already have a record for this payment
             $existingPayment = Payment::where('transaction_id', $paymentIntent->id)->first();
             if ($existingPayment) {
-                // Update the status if needed
                 if ($existingPayment->status !== $paymentIntent->status) {
                     $existingPayment->status = $paymentIntent->status;
                     $existingPayment->save();
@@ -323,9 +309,6 @@ class StripePaymentController extends Controller
         }
     }
     
-    /**
-     * Process appointment related actions after payment
-     */
     private function processAppointmentAfterPayment(Appointment $appointment)
     {
         try {
@@ -338,12 +321,6 @@ class StripePaymentController extends Controller
         }
     }
 
-    /**
-     * Affiche la page de succès après un paiement réussi
-     * 
-     * @param Request $request
-     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
-     */
     public function showSuccessPage(Request $request)
     {
         // Récupérer l'ID de transaction du paiement depuis la requête

@@ -39,7 +39,8 @@ class DoctorController extends Controller
         $todayAppointments = $this->appointmentService->getTodayAppointments($doctorId);
         $todayAppointmentsConfirmed = $this->appointmentService->getTodayAppointments($doctorId)->where('status', 'confirmed')->first();
         // dd(isset($todayAppointmentsConfirmed));
-        $appointments = $this->appointmentService->getAll();
+        $appointments = $this->appointmentService->getByDoctorId($doctorId);
+        // dd($appointments);
         // dd($appointments[0]->patient->user->name);
         $appointmentsUnique = $this->appointmentService->getByDoctorId($doctorId);
 
@@ -293,7 +294,7 @@ class DoctorController extends Controller
 
         try {
             $patient = $this->patientService->getPatientById($id)->firstOrFail();
-
+            
             $patient->update([
                 'emergency_contact' => $validated['emergency_contact'] ?? $patient->emergency_contact,
                 'name_assurance' => $validated['name_assurance'] ?? $patient->name_assurance,

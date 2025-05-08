@@ -29,37 +29,9 @@ class PatientController extends Controller
         return view('admin.patients.index', compact('patients'));
     }
 
-    // public function create()
-    // {
-    //     return view('admin.patients.create');
-    // }
-
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|string|min:8|confirmed',
-    //         'phone' => 'nullable|string|max:20',
-    //         'adresse' => 'nullable|string|max:255',
-    //         'date_of_birth' => 'nullable|date',
-    //         'name_assurance' => 'nullable|string|max:255',
-    //         'assurance_number' => 'nullable|string|max:255',
-    //         'blood_type' => 'nullable|string|max:10',
-    //         'emergency_contact' => 'nullable|string|max:255'
-    //     ]);
-
-    //     $patient = $this->patientService->createPatient($validated);
-
-    //     return redirect()
-    //         ->route('admin.patients.show', $patient)
-    //         ->with('success', 'Patient créé avec succès');
-    // }
-
     public function show(Patient $patient)
     {
         $visitor = $this->dashboardService->getPatientById($patient->id);
-        $appointments = $this->dashboardService->getAppointmentsByPatientId($patient->id);
         
         return view('admin.patients.show', compact('patient'));
     }

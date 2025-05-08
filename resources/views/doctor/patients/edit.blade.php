@@ -209,7 +209,7 @@
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- En-tête avec bouton retour -->
         <div class="flex items-center mb-8">
-            <a href="{{ route('doctor.patients') }}" class="flex items-center justify-center h-12 w-12 rounded-full bg-white text-primary-600 hover:bg-primary-50 transition duration-300 mr-4 shadow-sm">
+            <a href="{{ route('doctor.dashboard') }}" class="flex items-center justify-center h-12 w-12 rounded-full bg-white text-primary-600 hover:bg-primary-50 transition duration-300 mr-4 shadow-sm">
                 <i class="fas fa-arrow-left text-lg"></i>
             </a>
             <h1 class="text-3xl font-bold text-gray-900">Modifier le patient: {{ $patient->user->name }}</h1>
@@ -423,7 +423,7 @@
                     </div>
                     
                     <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
-                        <a href="{{ route('doctor.patients') }}" class="btn btn-secondary">
+                        <a href="{{ route('doctor.dashboard') }}" class="btn btn-secondary">
                             <i class="fas fa-times mr-2"></i>
                             Annuler
                         </a>
